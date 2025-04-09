@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udupi Delivery Optimizer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+        .header {
+            background-color: #4285f4;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .content {
+            display: flex;
+            gap: 20px;
+        }
+        .sidebar {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .map-container {
+            flex: 2;
+            height: 600px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #map {
+            height: 570px;
+            border-radius: 4px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            cursor: pointer;
+            border: none;
+            margin-top: 15px;
+            padding: 10px;
+        }
+        button:hover {
+            background-color: #3b78e7;
+        }
+        .delivery-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .delivery-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .route-info {
+            margin-top: 20px;
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .secondary-button {
+            background-color: #34a853;
+        }
+        .secondary-button:hover {
+            background-color: #2e8b47;
+        }
+        .delivery-form {
+            display: none;
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .form-row > div {
+            flex: 1;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .waypoint-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: #4285f4;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .error-message {
+            color: #ea4335;
+            background-color: #fdecea;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Udupi Delivery Optimizer</h1>
+        </div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <h2>Current Location</h2>
+                <div class="form-group">
+                    <label for="current-lat">Latitude</label>
+                    <input type="text" id="current-lat" value="13.3409">
+                </div>
+                <div class="form-group">
+                    <label for="current-lng">Longitude</label>
+                    <input type="text" id="current-lng" value="74.7421">
+                </div>
+                
+                <h2>Deliveries</h2>
+                <div class="delivery-list" id="delivery-list">
+                    <!-- Delivery items will be inserted here -->
+                </div>
+                
+                <div class="actions">
+                    <button id="add-delivery-btn">Add Delivery</button>
+                    <button id="optimize-btn" class="secondary-button">Optimize Route</button>
+                </div>
+                
+                <div class="delivery-form" id="delivery-form">
+                    <h3>New Delivery</h3>
+                    <div class="form-group">
+                        <label for="delivery-id">Package ID</label>
+                        <input type="text" id="delivery-id" placeholder="e.g., PKG001">
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-name">Customer Name</label>
+                        <input type="text" id="customer-name" placeholder="e.g., John Doe">
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label for="delivery-lat">Latitude</label>
+                            <input type="text" id="delivery-lat" placeholder="e.g., 13.3356">
+                        </div>
+                        <div>
+                            <label for="delivery-lng">Longitude</label>
+                            <input type="text" id="delivery-lng" placeholder="e.g., 74.7477">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery-address">Address</label>
+                        <input type="text" id="delivery-address" placeholder="e.g., Diana Circle, Udupi">
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label for="window-start">Time Window Start (minutes from now)</label>
+                            <input type="number" id="window-start" value="30" min="0">
+                        </div>
+                        <div>
+                            <label for="window-end">Time Window End (minutes from now)</label>
+                            <input type="number" id="window-end" value="120" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="package-desc">Package Description</label>
+                        <input type="text" id="package-desc" placeholder="e.g., Food delivery">
+                    </div>
+                    <div class="actions">
+                        <button id="save-delivery-btn">Save Delivery</button>
+                        <button id="cancel-delivery-btn">Cancel</button>
+                    </div>
+                </div>
+                
+                <div id="error-message" class="error-message"></div>
+                <div id="loading" class="loading">Optimizing route... Please wait.</div>
+                
+                <div class="route-info" id="route-info" style="display: none;">
+                    <h3>Route Information</h3>
+                    <div id="route-details"></div>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script>
+        // Sample delivery data
+        const sampleDeliveries = [
+            {
+                id: 'PKG001',
+                customer: 'Rahul Sharma',
+                location: {
+                    lat: 13.3356,
+                    lng: 74.7477,
+                    address: 'Diana Circle, Udupi'
+                },
+                timeWindowStart: 30,  // minutes from now
+                timeWindowEnd: 120,   // minutes from now
+                packageDetails: {
+                    description: 'Food delivery'
+                }
+            },
+            {
+                id: 'PKG002',
+                customer: 'Priya Patel',
+                location: {
+                    lat: 13.3448,
+                    lng: 74.7428,
+                    address: 'Manipal University, Udupi'
+                },
+                timeWindowStart: 60,
+                timeWindowEnd: 180,
+                packageDetails: {
+                    description: 'Document delivery'
+                }
+            }
+        ];
+
+        // Initialize map
+        const map = L.map('map').setView([13.3409, 74.7421], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Variables to store map elements
+        let routeLayer = null;
+        let markers = [];
+        let routeMarkers = [];
+
+        // DOM elements
+        const deliveryListEl = document.getElementById('delivery-list');
+        const addDeliveryBtn = document.getElementById('add-delivery-btn');
+        const optimizeBtn = document.getElementById('optimize-btn');
+        const deliveryForm = document.getElementById('delivery-form');
+        const saveDeliveryBtn = document.getElementById('save-delivery-btn');
+        const cancelDeliveryBtn = document.getElementById('cancel-delivery-btn');
+        const routeInfoEl = document.getElementById('route-info');
+        const routeDetailsEl = document.getElementById('route-details');
+        const loadingEl = document.getElementById('loading');
+        const errorMessageEl = document.getElementById('error-message');
+
+        // Keep track of deliveries
+        let deliveries = [...sampleDeliveries];
+
+        // Render the delivery list
+        function renderDeliveryList() {
+            deliveryListEl.innerHTML = '';
+            
+            deliveries.forEach((delivery, index) => {
+                const deliveryItem = document.createElement('div');
+                deliveryItem.className = 'delivery-item';
+                deliveryItem.innerHTML = `
+                    <strong>${delivery.id} - ${delivery.customer}</strong>
+                    <div>${delivery.location.address}</div>
+                    <div>Window: ${delivery.timeWindowStart}-${delivery.timeWindowEnd} min</div>
+                    <div style="margin-top: 5px;">
+                        <button class="remove-btn" data-index="${index}" style="width: auto; padding: 3px 8px; background-color: #ea4335;">Remove</button>
+                    </div>
+                `;
+                deliveryListEl.appendChild(deliveryItem);
+
+                // Add marker to the map
+                const marker = L.marker([delivery.location.lat, delivery.location.lng])
+                    .addTo(map)
+                    .bindPopup(`<b>${delivery.id} - ${delivery.customer}</b><br>${delivery.location.address}`);
+                markers.push(marker);
+            });
+
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    removeDelivery(index);
+                });
+            });
+        }
+
+        // Remove a delivery
+        function removeDelivery(index) {
+            deliveries.splice(index, 1);
+            // Clear and redraw markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            renderDeliveryList();
+        }
+
+        // Show the delivery form
+        addDeliveryBtn.addEventListener('click', () => {
+            deliveryForm.style.display = 'block';
+        });
+
+        // Cancel adding a delivery
+        cancelDeliveryBtn.addEventListener('click', () => {
+            deliveryForm.style.display = 'none';
+            // Clear form
+            document.getElementById('delivery-id').value = '';
+            document.getElementById('customer-name').value = '';
+            document.getElementById('delivery-lat').value = '';
+            document.getElementById('delivery-lng').value = '';
+            document.getElementById('delivery-address').value = '';
+            document.getElementById('window-start').value = '30';
+            document.getElementById('window-end').value = '120';
+            document.getElementById('package-desc').value = '';
+        });
+
+        // Save a new delivery
+        saveDeliveryBtn.addEventListener('click', () => {
+            const id = document.getElementById('delivery-id').value;
+            const customer = document.getElementById('customer-name').value;
+            const lat = parseFloat(document.getElementById('delivery-lat').value);
+            const lng = parseFloat(document.getElementById('delivery-lng').value);
+            const address = document.getElementById('delivery-address').value;
+            const windowStart = parseInt(document.getElementById('window-start').value);
+            const windowEnd = parseInt(document.getElementById('window-end').value);
+            const packageDesc = document.getElementById('package-desc').value;
+
+            if (!id || !customer || isNaN(lat) || isNaN(lng) || !address || isNaN(windowStart) || isNaN(windowEnd)) {
+                alert('Please fill in all required fields with valid values.');
+                return;
+            }
+
+            const newDelivery = {
+                id,
+                customer,
+                location: {
+                    lat,
+                    lng,
+                    address
+                },
+                timeWindowStart: windowStart,
+                timeWindowEnd: windowEnd,
+                packageDetails: {
+                    description: packageDesc
+                }
+            };
+
+            deliveries.push(newDelivery);
+            // Clear form
+            cancelDeliveryBtn.click();
+            // Redraw the list and map
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            renderDeliveryList();
+        });
+
+        // Optimize route
+        optimizeBtn.addEventListener('click', async () => {
+            // Get current location
+            const currentLat = parseFloat(document.getElementById('current-lat').value);
+            const currentLng = parseFloat(document.getElementById('current-lng').value);
+
+            if (isNaN(currentLat) || isNaN(currentLng)) {
+                alert('Please enter valid current location coordinates.');
+                return;
+            }
+
+            // Check if there are deliveries
+            if (deliveries.length === 0) {
+                showError('Please add at least one delivery location.');
+                return;
+            }
+
+            // Show loading indicator
+            loadingEl.style.display = 'block';
+            errorMessageEl.style.display = 'none';
+            routeInfoEl.style.display = 'none';
+
+            // Clear previous route if exists
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
+            }
+
+            // Clear previous route markers
+            routeMarkers.forEach(marker => map.removeLayer(marker));
+            routeMarkers = [];
+
+            // Prepare current time
+            const currentTime = new Date();
+
+            // Format deliveries for API
+            const formattedDeliveries = deliveries.map(delivery => {
+                const startTime = new Date(currentTime.getTime() + delivery.timeWindowStart * 60000);
+                const endTime = new Date(currentTime.getTime() + delivery.timeWindowEnd * 60000);
+
+                return {
+                    id: delivery.id,
+                    customer: delivery.customer,
+                    location: delivery.location,
+                    time_window: {
+                        start: startTime.toISOString().split('.')[0],
+                        end: endTime.toISOString().split('.')[0]// as iso mai end z comes and we need to remove it so(IMP)
+                    },
+                    package_details: delivery.packageDetails
+                };
+            });
+
+            // Prepare request payload
+            const payload = {
+                current_location: {
+                    lat: currentLat,
+                    lng: currentLng
+                },
+                current_time: currentTime.toISOString().split('.')[0],//as iso mai end z comes and we need to remove it so
+                deliveries: formattedDeliveries,
+                num_vehicles: 1
+            };
+
+            try {
+                // In a real application, replace with your actual API URL
+                const response = await fetch('http://localhost:5000/api/optimize-route', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                console.log('Response:', response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data.routes.length > 0) {
+                    displayRoute(data.data);
+                } else {
+                    showError('No valid route found. Please check the delivery parameters.');
+                }
+            } catch (error) {
+                console.error('Error optimizing route:', error);
+                showError('Failed to optimize route. Please try again later.');
+            } finally {
+                loadingEl.style.display = 'none';
+            }
+        });
+
+        // Display the optimized route on the map
+        function displayRoute(routeData) {
+            // Show route info
+            routeInfoEl.style.display = 'block';
+            
+            const route = routeData.routes[0]; // Assuming we have only one vehicle/route
+            
+            // Display route details
+            let routeHtml = `
+                <p><strong>Vehicle ID:</strong> ${route.vehicle_id}</p>
+                <p><strong>Total Distance:</strong> ${(route.total_distance_meters / 1000).toFixed(2)} km</p>
+                <p><strong>Total Time:</strong> ${(route.total_time / 60).toFixed(2)} hours</p>
+                <p><strong>Waypoints:</strong></p>
+                <ol>
+            `;
+            
+            // Extract delivery points from waypoints
+            const deliveryPoints = route.waypoints.filter(wp => wp.type === 'delivery_point');
+            
+            deliveryPoints.forEach(point => {
+                const arrivalTime = new Date(point.arrival_time);
+                routeHtml += `
+                    <li>
+                        <strong>${point.customer}</strong> - ${point.address}<br>
+                        Arrival: ${arrivalTime.toLocaleTimeString()}
+                    </li>
+                `;
+            });
+            
+            routeHtml += '</ol>';
+            routeDetailsEl.innerHTML = routeHtml;
+
+            // Draw route line on map
+            const routeCoordinates = route.waypoints.map(wp => [wp.lat, wp.lng]);
+            routeLayer = L.polyline(routeCoordinates, {
+                color: '#4285f4',
+                weight: 5,
+                opacity: 0.7
+            }).addTo(map);
+
+            // Add markers for waypoints (start, deliveries, end)
+            // Start marker
+            const startMarker = L.marker([routeCoordinates[0][0], routeCoordinates[0][1]], {
+                icon: L.divIcon({
+                    className: 'waypoint-marker',
+                    html: 'S',
+                    iconSize: [24, 24]
+                })
+            }).addTo(map);
+            routeMarkers.push(startMarker);
+
+            // Add markers for each delivery point
+            deliveryPoints.forEach((point, index) => {
+                const deliveryMarker = L.marker([point.lat, point.lng], {
+                    icon: L.divIcon({
+                        className: 'waypoint-marker',
+                        html: `${index + 1}`,
+                        iconSize: [24, 24]
+                    })
+                }).addTo(map);
+                
+                deliveryMarker.bindPopup(`
+                    <b>${point.customer}</b><br>
+                    ${point.address}<br>
+                    Arrival: ${new Date(point.arrival_time).toLocaleTimeString()}
+                `);
+                
+                routeMarkers.push(deliveryMarker);
+            });
+
+            // Fit map to show all route points
+            map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessageEl.textContent = message;
+            errorMessageEl.style.display = 'block';
+        }
+
+        // Initialize the app
+        renderDeliveryList();
+
+        // Add click event to the map to assist in picking delivery locations
+        map.on('click', function(e) {
+            // Only if the form is visible
+            if (deliveryForm.style.display === 'block') {
+                const lat = e.latlng.lat.toFixed(4);
+                const lng = e.latlng.lng.toFixed(4);
+                
+                document.getElementById('delivery-lat').value = lat;
+                document.getElementById('delivery-lng').value = lng;
+                
+                // Try to get an address via reverse geocoding (in a real app)
+                // For now, just a placeholder
+                document.getElementById('delivery-address').value = `Location at ${lat}, ${lng}`;
+            }
+        });
+
+        // Add sample marker for current location
+        const currentLocationMarker = L.marker([13.3409, 74.7421], {
+            icon: L.divIcon({
+                className: 'waypoint-marker',
+                html: '●',
+                iconSize: [24, 24]
+            })
+        }).addTo(map);
+        currentLocationMarker.bindPopup('Current Location');
+
+        // Update current location marker when inputs change
+        document.getElementById('current-lat').addEventListener('change', updateCurrentMarker);
+        document.getElementById('current-lng').addEventListener('change', updateCurrentMarker);
+
+        function updateCurrentMarker() {
+            const lat = parseFloat(document.getElementById('current-lat').value);
+            const lng = parseFloat(document.getElementById('current-lng').value);
+            
+            if (!isNaN(lat) && !isNaN(lng)) {
+                currentLocationMarker.setLatLng([lat, lng]);
+            }
+        }
+    </script>
+</body>
+</html>

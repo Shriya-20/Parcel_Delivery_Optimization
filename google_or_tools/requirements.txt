@@ -1,0 +1,17 @@
+osmnx
+networkx
+pandas
+matplotlib
+stable-baselines3[extra]
+gymnasium
+numpy
+torch
+geopy
+ortools
+geopandas
+shapely
+folium
+scikit-learn
+scikit-image
+flask
+flask-cors
