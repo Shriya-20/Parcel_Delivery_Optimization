@@ -1,8 +1,8 @@
 #  Parcel Delivery Optimization using Deep Q-Learning (DQN)
 
-This project optimizes parcel delivery routes using Deep Q-Learning. 
+This project optimizes parcel delivery routes using Deep Q-learning. 
 
----
+
 
 ## Features
 
@@ -11,5 +11,5 @@ This project optimizes parcel delivery routes using Deep Q-Learning.
 -  **Evaluation and visualization** of agent performance  
 -  **Map-based route plotting** with delivery points and depot
 
----
+
 
