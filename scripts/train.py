@@ -120,10 +120,25 @@ def train_dqn(env_path="data/udupi.graphml", deliveries_path="data/deliveries.cs
     #     verbose=1,
     #     tensorboard_log=log_dir
     # )
+
+    # model = DQN(
+    #     "MlpPolicy",
+    #     env,
+    #     policy_kwargs=policy_kwargs,
+    #     verbose=1,
+    #     tensorboard_log=log_dir
+    # )
     model = DQN(
         "MlpPolicy",
         env,
-        policy_kwargs=policy_kwargs,
+        learning_rate=0.0001,  # Lower learning rate
+        buffer_size=100000,    # Larger replay buffer
+        learning_starts=5000,  # More initial exploration
+        batch_size=128,        # Larger batch size
+        gamma=0.99,
+        exploration_fraction=0.3,  # Longer exploration
+        exploration_final_eps=0.1,  # Higher final exploration
+        policy_kwargs=dict(net_arch=[256, 256]),  # Larger network
         verbose=1,
         tensorboard_log=log_dir
     )
