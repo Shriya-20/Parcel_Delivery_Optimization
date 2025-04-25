@@ -114,7 +114,7 @@ class UdupiDeliveryEnv(gym.Env):
                 obs.extend([-1.0, -1.0, -1.0])  # Placeholder for delivered
 
         final_obs = np.array(obs, dtype=np.float32)
-        print(f"Observation shape: {final_obs.shape}")
+        # print(f"Observation shape: {final_obs.shape}")
         return final_obs
 
 
