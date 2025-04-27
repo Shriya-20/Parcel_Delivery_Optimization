@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_24bec46d0427d9de371b3c8b70e9724e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+        <div style="position: fixed; bottom: 50px; left: 50px; z-index: 1000; background-color: white; padding: 10px; border: 2px solid grey; border-radius: 5px;">
+        <h4>Delivery Routes</h4>
+        
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <div style="background-color: #418d7c; width: 15px; height: 15px; margin-right: 5px;"></div>
+                <span>Jane Smith</span>
+            </div>
+            
+        <div style="display: flex; align-items: center; margin-top: 10px;">
+            <div style="margin-right: 15px;">
+                <i class="fa fa-play" style="color: green;"></i> Start
+            </div>
+            <div>
+                <i class="fa fa-box" style="color: red;"></i> Delivery
+            </div>
+        </div>
+        </div>
+        
+    
+            <div class="folium-map" id="map_24bec46d0427d9de371b3c8b70e9724e" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_24bec46d0427d9de371b3c8b70e9724e = L.map(
+                "map_24bec46d0427d9de371b3c8b70e9724e",
+                {
+                    center: [13.348105293577982, 74.7528966944954],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_b63969e20831894fc74da8f02fad0f98 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_b63969e20831894fc74da8f02fad0f98.addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var marker_68c661dce6813eb1706ac6fcf0b1daa1 = L.marker(
+                [13.3506, 74.7587],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var icon_70becc4ca9ea356cbccd794b2dd69087 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "play",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a44c0039748f9c1fb72b52d34bb51731 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e1f773c60611e9dc5818bff82d4e2335 = $(`<div id="html_e1f773c60611e9dc5818bff82d4e2335" style="width: 100.0%; height: 100.0%;">Start: Jane Smith</div>`)[0];
+                popup_a44c0039748f9c1fb72b52d34bb51731.setContent(html_e1f773c60611e9dc5818bff82d4e2335);
+            
+        
+
+        marker_68c661dce6813eb1706ac6fcf0b1daa1.bindPopup(popup_a44c0039748f9c1fb72b52d34bb51731)
+        ;
+
+        
+    
+    
+                marker_68c661dce6813eb1706ac6fcf0b1daa1.setIcon(icon_70becc4ca9ea356cbccd794b2dd69087);
+            
+    
+            var poly_line_a9083da1a9087ad362a6a0a07207d156 = L.polyline(
+                [[13.3506, 74.7587], [13.3489444, 74.7588488], [13.3489467, 74.7589058], [13.3484681, 74.7588501], [13.3480032, 74.7587764], [13.34686, 74.7601926], [13.3462521, 74.7602171], [13.3463727, 74.7618534], [13.3462621, 74.76186], [13.3462075, 74.76101], [13.3453883, 74.7607564], [13.3449104, 74.7606127], [13.3445886, 74.760515], [13.3441992, 74.7604005], [13.3433746, 74.7601258], [13.3431357, 74.7600634], [13.3417901, 74.7597729], [13.3408516, 74.7592503], [13.3399283, 74.7588285], [13.3374469, 74.7581795], [13.3374607, 74.7580341], [13.3375027, 74.7575582], [13.3363387, 74.7573047], [13.3363675, 74.7568814], [13.3349355, 74.7563731], [13.3343045, 74.7561659], [13.3345765, 74.7550699], [13.3363585, 74.7552299], [13.336817, 74.7548613], [13.3368873, 74.7541044], [13.3369498, 74.7534317], [13.3375797, 74.7534429], [13.3380532, 74.7534755], [13.3390947, 74.7533687], [13.3397519, 74.7533912], [13.3406128, 74.7532737], [13.3410224, 74.7533574], [13.342206, 74.7532935], [13.3426257, 74.7533698], [13.3442055, 74.7539373], [13.3455478, 74.7532558], [13.3455201, 74.7518862], [13.345494, 74.751813], [13.3455798, 74.7517902], [13.3482557, 74.7514646], [13.348984, 74.7513765], [13.3508003, 74.7511702], [13.3518536, 74.7510711], [13.3540834, 74.7510399], [13.3549511, 74.7509408], [13.355027, 74.750911], [13.3556691, 74.7506592], [13.3562602, 74.7504273], [13.3566465, 74.7502717], [13.3566611, 74.750352], [13.3571737, 74.751969], [13.3574168, 74.7526938], [13.358955, 74.7525923], [13.3593527, 74.7525705], [13.3602793, 74.7520413], [13.3599397, 74.7498218], [13.3591922, 74.7497067], [13.3578983, 74.7498304], [13.3566611, 74.750352], [13.3566465, 74.7502717], [13.3580302, 74.7497039], [13.3586402, 74.7495912], [13.3626744, 74.7495124], [13.3639259, 74.7489484], [13.3647989, 74.7486564], [13.3656334, 74.7484315], [13.3655963, 74.7482632], [13.3652771, 74.7445724], [13.3639644, 74.7442289], [13.3625656, 74.7438438], [13.3609383, 74.7431171], [13.3571081, 74.7410468], [13.3544059, 74.7395256], [13.3516448, 74.7380338], [13.3476251, 74.7363921], [13.3465143, 74.7360035], [13.3459405, 74.7375613], [13.3455555, 74.7385653], [13.3452864, 74.7393148], [13.3447413, 74.7409379], [13.3441956, 74.7427644], [13.3440475, 74.7432929], [13.3439528, 74.7436382], [13.3439428, 74.7462481], [13.3440297, 74.7465996], [13.3439809, 74.7474743], [13.3440677, 74.7480233], [13.3446935, 74.7492914], [13.3455798, 74.7517902], [13.3456074, 74.7518691], [13.3456341, 74.7537958], [13.345645, 74.7546838], [13.3456962, 74.756245], [13.3459813, 74.7571295], [13.3462521, 74.7602171], [13.3463727, 74.7618534], [13.3463979, 74.76211], [13.3464534, 74.7629461], [13.3461472, 74.7640768], [13.3457156, 74.7664655], [13.34561, 74.7664532], [13.3458164, 74.7649562], [13.3451607, 74.7649427]],
+                {"bubblingMouseEvents": true, "color": "#418d7c", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#418d7c", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            poly_line_a9083da1a9087ad362a6a0a07207d156.bindTooltip(
+                `<div>
+                     Route for Jane Smith
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_ae762d83bf7d929ea096487973a94418 = L.marker(
+                [13.335, 74.755],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var icon_26caf886e128387f255e34a9f2e5a574 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d2bb9e78de2fcacd10cc19bcec6b5753 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4d751850228da709f086c3aeb6773452 = $(`<div id="html_4d751850228da709f086c3aeb6773452" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #1</b><br>                     Customer: Customer C<br>                     ID: del3<br>                     Arrival: 2025-04-27T09:55:00<br>                     789 Park Ave, Udupi                 </div>                 </div>`)[0];
+                popup_d2bb9e78de2fcacd10cc19bcec6b5753.setContent(html_4d751850228da709f086c3aeb6773452);
+            
+        
+
+        marker_ae762d83bf7d929ea096487973a94418.bindPopup(popup_d2bb9e78de2fcacd10cc19bcec6b5753)
+        ;
+
+        
+    
+    
+            marker_ae762d83bf7d929ea096487973a94418.bindTooltip(
+                `<div>
+                     Delivery #1: Customer C
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ae762d83bf7d929ea096487973a94418.setIcon(icon_26caf886e128387f255e34a9f2e5a574);
+            
+    
+            var marker_a757e79ecd42a01a223f755915eb04bf = L.marker(
+                [13.335, 74.755],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var div_icon_84b692ab31017477af973be5fa71abeb = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #418d7c; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e1\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_a757e79ecd42a01a223f755915eb04bf.setIcon(div_icon_84b692ab31017477af973be5fa71abeb);
+        
+    
+                marker_a757e79ecd42a01a223f755915eb04bf.setIcon(div_icon_84b692ab31017477af973be5fa71abeb);
+            
+    
+            var marker_97ed241bb622131b4c6cc34934cab14f = L.marker(
+                [13.3601, 74.7501],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var icon_6384d4b6ebde4fce2eb435a3473ac132 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_df5ee1ca4590874636e0d7115b42191c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3f41aaa763855c61635ab265618515dd = $(`<div id="html_3f41aaa763855c61635ab265618515dd" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #2</b><br>                     Customer: Customer B<br>                     ID: del2<br>                     Arrival: 2025-04-27T11:00:00<br>                     456 Market St, Udupi                 </div>                 </div>`)[0];
+                popup_df5ee1ca4590874636e0d7115b42191c.setContent(html_3f41aaa763855c61635ab265618515dd);
+            
+        
+
+        marker_97ed241bb622131b4c6cc34934cab14f.bindPopup(popup_df5ee1ca4590874636e0d7115b42191c)
+        ;
+
+        
+    
+    
+            marker_97ed241bb622131b4c6cc34934cab14f.bindTooltip(
+                `<div>
+                     Delivery #2: Customer B
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_97ed241bb622131b4c6cc34934cab14f.setIcon(icon_6384d4b6ebde4fce2eb435a3473ac132);
+            
+    
+            var marker_c1c531f4a5e958ede9ec28abcf958287 = L.marker(
+                [13.3601, 74.7501],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var div_icon_f0684b48e4c366d9fc951f0ef75eb23a = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #418d7c; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e2\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_c1c531f4a5e958ede9ec28abcf958287.setIcon(div_icon_f0684b48e4c366d9fc951f0ef75eb23a);
+        
+    
+                marker_c1c531f4a5e958ede9ec28abcf958287.setIcon(div_icon_f0684b48e4c366d9fc951f0ef75eb23a);
+            
+    
+            var marker_27855a5b7f060af1b94f0fa939bc05d4 = L.marker(
+                [13.3512, 74.7403],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var icon_5a2d1dc0d4d8c1e9b90a9772209d41b2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e7d5848e6356c5111b98968e8b6521fe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_194859b685bf18bedfeb1a8fc193e6a6 = $(`<div id="html_194859b685bf18bedfeb1a8fc193e6a6" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #3</b><br>                     Customer: Customer A<br>                     ID: del1<br>                     Arrival: 2025-04-27T11:04:00<br>                     123 Main St, Udupi                 </div>                 </div>`)[0];
+                popup_e7d5848e6356c5111b98968e8b6521fe.setContent(html_194859b685bf18bedfeb1a8fc193e6a6);
+            
+        
+
+        marker_27855a5b7f060af1b94f0fa939bc05d4.bindPopup(popup_e7d5848e6356c5111b98968e8b6521fe)
+        ;
+
+        
+    
+    
+            marker_27855a5b7f060af1b94f0fa939bc05d4.bindTooltip(
+                `<div>
+                     Delivery #3: Customer A
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_27855a5b7f060af1b94f0fa939bc05d4.setIcon(icon_5a2d1dc0d4d8c1e9b90a9772209d41b2);
+            
+    
+            var marker_207da99940cf173c4970d377b8e8d970 = L.marker(
+                [13.3512, 74.7403],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var div_icon_81fd871f19386634d9850dd08a44bf77 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #418d7c; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e3\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_207da99940cf173c4970d377b8e8d970.setIcon(div_icon_81fd871f19386634d9850dd08a44bf77);
+        
+    
+                marker_207da99940cf173c4970d377b8e8d970.setIcon(div_icon_81fd871f19386634d9850dd08a44bf77);
+            
+    
+            var marker_cee37832f213c1c01e56a433d2633c6a = L.marker(
+                [13.345, 74.765],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var icon_1bcff6186488f4921ec1b2dde9d0a6f9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1a1178d362c064573cb3e819d028a6c4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e166902df98b9c38ffa9588b8d9d13b0 = $(`<div id="html_e166902df98b9c38ffa9588b8d9d13b0" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #4</b><br>                     Customer: Customer D<br>                     ID: del4<br>                     Arrival: 2025-04-27T12:00:00<br>                     101 Beach Rd, Udupi                 </div>                 </div>`)[0];
+                popup_1a1178d362c064573cb3e819d028a6c4.setContent(html_e166902df98b9c38ffa9588b8d9d13b0);
+            
+        
+
+        marker_cee37832f213c1c01e56a433d2633c6a.bindPopup(popup_1a1178d362c064573cb3e819d028a6c4)
+        ;
+
+        
+    
+    
+            marker_cee37832f213c1c01e56a433d2633c6a.bindTooltip(
+                `<div>
+                     Delivery #4: Customer D
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cee37832f213c1c01e56a433d2633c6a.setIcon(icon_1bcff6186488f4921ec1b2dde9d0a6f9);
+            
+    
+            var marker_c3252664e8d6ff54d5e9ba9fd9b4bb66 = L.marker(
+                [13.345, 74.765],
+                {
+}
+            ).addTo(map_24bec46d0427d9de371b3c8b70e9724e);
+        
+    
+            var div_icon_d9d0612b090bdd355c11a6d1fd16f7da = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #418d7c; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e4\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_c3252664e8d6ff54d5e9ba9fd9b4bb66.setIcon(div_icon_d9d0612b090bdd355c11a6d1fd16f7da);
+        
+    
+                marker_c3252664e8d6ff54d5e9ba9fd9b4bb66.setIcon(div_icon_d9d0612b090bdd355c11a6d1fd16f7da);
+            
+</script>
+</html>

@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_f90c28a3ae62e882669bde3e8de56e09 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+        <div style="position: fixed; bottom: 50px; left: 50px; z-index: 1000; background-color: white; padding: 10px; border: 2px solid grey; border-radius: 5px;">
+        <h4>Delivery Routes</h4>
+        
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <div style="background-color: #f814e8; width: 15px; height: 15px; margin-right: 5px;"></div>
+                <span>Rajesh Kumar</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <div style="background-color: #f2161d; width: 15px; height: 15px; margin-right: 5px;"></div>
+                <span>Mohammed Ali</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <div style="background-color: #6e88da; width: 15px; height: 15px; margin-right: 5px;"></div>
+                <span>Anjali Nair</span>
+            </div>
+            
+        <div style="display: flex; align-items: center; margin-top: 10px;">
+            <div style="margin-right: 15px;">
+                <i class="fa fa-play" style="color: green;"></i> Start
+            </div>
+            <div>
+                <i class="fa fa-box" style="color: red;"></i> Delivery
+            </div>
+        </div>
+        </div>
+        
+    
+            <div class="folium-map" id="map_f90c28a3ae62e882669bde3e8de56e09" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_f90c28a3ae62e882669bde3e8de56e09 = L.map(
+                "map_f90c28a3ae62e882669bde3e8de56e09",
+                {
+                    center: [13.334772061754377, 74.75134286789469],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_ef0e066cca7a43f717331320e7623478 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ef0e066cca7a43f717331320e7623478.addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var marker_42979a8caefbbdc3f7ae7feaa3aeece2 = L.marker(
+                [13.3409, 74.7421],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_c74d3a5b567677e9b57d37963c58dcf2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "play",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3b290b73534bf3ab13112913476bd276 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0eaaf049941a89ef4b8ae55d9fdd56fc = $(`<div id="html_0eaaf049941a89ef4b8ae55d9fdd56fc" style="width: 100.0%; height: 100.0%;">Start: Rajesh Kumar</div>`)[0];
+                popup_3b290b73534bf3ab13112913476bd276.setContent(html_0eaaf049941a89ef4b8ae55d9fdd56fc);
+            
+        
+
+        marker_42979a8caefbbdc3f7ae7feaa3aeece2.bindPopup(popup_3b290b73534bf3ab13112913476bd276)
+        ;
+
+        
+    
+    
+                marker_42979a8caefbbdc3f7ae7feaa3aeece2.setIcon(icon_c74d3a5b567677e9b57d37963c58dcf2);
+            
+    
+            var poly_line_8651e35c6ff5cea0ea365a7114e5d2ae = L.polyline(
+                [[13.3409, 74.7421], [13.3408866, 74.7428656], [13.340246, 74.7431101], [13.3396911, 74.7433136], [13.3389408, 74.7434516], [13.3384954, 74.7434453], [13.3382266, 74.7434414], [13.3367412, 74.7433862], [13.3368056, 74.7438678], [13.3361901, 74.7438745], [13.3356824, 74.7439062], [13.3347859, 74.7440681], [13.3347168, 74.743765], [13.3345281, 74.7428938], [13.3344765, 74.7428378], [13.3352912, 74.7416442], [13.3348302, 74.7400708], [13.3342335, 74.7398773], [13.3330056, 74.739696], [13.332163, 74.7397668], [13.3317481, 74.7398017], [13.3316148, 74.7398129], [13.3316138, 74.7400685], [13.331054, 74.7407449], [13.3316138, 74.7400685], [13.3316148, 74.7398129], [13.3317481, 74.7398017], [13.332163, 74.7397668], [13.3330056, 74.739696], [13.3342335, 74.7398773], [13.3348302, 74.7400708], [13.3354301, 74.7402268], [13.3365373, 74.7400637], [13.3365964, 74.7399975], [13.3366652, 74.7399154], [13.336736, 74.7399582], [13.3367418, 74.7400052], [13.3366242, 74.7416305], [13.3367412, 74.7433862], [13.3382266, 74.7434414], [13.3384954, 74.7434453], [13.3387018, 74.7444558], [13.3390316, 74.7459776], [13.3387018, 74.7444558], [13.3384954, 74.7434453], [13.3382266, 74.7434414], [13.3381709, 74.7423621], [13.3392856, 74.7416722], [13.3392178, 74.7407946], [13.3391545, 74.7399751], [13.3391047, 74.7391681], [13.339, 74.7378823], [13.3389543, 74.7374177], [13.3388692, 74.7365447], [13.3370395, 74.7366404], [13.3370495, 74.7365402], [13.3276343, 74.7386691], [13.3216382, 74.7395317], [13.3171437, 74.7391783], [13.316091, 74.739184], [13.315943, 74.7392462], [13.3152374, 74.7395059], [13.313671, 74.7405862], [13.3130465, 74.7410036], [13.3111854, 74.7422733], [13.3092532, 74.7435424], [13.3074531, 74.7439769], [13.3053183, 74.7441572], [13.3036532, 74.7443514], [13.3013633, 74.7446724], [13.301353, 74.7445742], [13.3035919, 74.7442348], [13.3074259, 74.7438361], [13.3089333, 74.7435515], [13.3086814, 74.7428494], [13.3089333, 74.7435515], [13.3093372, 74.743356], [13.3117186, 74.7417591], [13.3123137, 74.7413609], [13.3130621, 74.7408458], [13.3154846, 74.7392748], [13.3158996, 74.7391381], [13.315943, 74.7392462], [13.3152374, 74.7395059], [13.313671, 74.7405862], [13.3130465, 74.7410036], [13.3111854, 74.7422733], [13.3092532, 74.7435424], [13.3074531, 74.7439769], [13.3053183, 74.7441572], [13.3036532, 74.7443514], [13.3013633, 74.7446724], [13.3010016, 74.7447402], [13.2944033, 74.7454717], [13.2895899, 74.745656], [13.2870452, 74.7472003], [13.28438, 74.7484047], [13.2776709, 74.7489549], [13.2719003, 74.74813], [13.2678697, 74.7487908], [13.2658917, 74.7490306], [13.2643517, 74.7489474], [13.2609198, 74.7482482], [13.2580549, 74.7476042], [13.2556865, 74.7465338], [13.2518819, 74.7447314], [13.2459737, 74.7441804], [13.2458666, 74.7441886], [13.2448718, 74.7443287], [13.2413132, 74.7453645], [13.2390408, 74.7460847], [13.2378879, 74.7464507], [13.2279663, 74.747678], [13.2263322, 74.7483062], [13.2256354, 74.7484279], [13.2222179, 74.748052], [13.2205465, 74.7485379], [13.2174595, 74.7497807], [13.2160954, 74.7501833], [13.2138538, 74.7507814], [13.2137005, 74.7508117], [13.2136713, 74.7507076], [13.2150099, 74.7503776], [13.2177519, 74.7495744], [13.2174159, 74.7473741], [13.2170594, 74.743724], [13.2171131, 74.7431929], [13.2170256, 74.7403177], [13.2219311, 74.7393781], [13.2219114, 74.7393272], [13.2224386, 74.7390263], [13.2219114, 74.7393272], [13.2219311, 74.7393781], [13.224685, 74.739411], [13.2257286, 74.7377807], [13.2267694, 74.7375572], [13.2269608, 74.7375161], [13.22764, 74.7372741], [13.2278833, 74.7371867], [13.2299296, 74.7368097], [13.2308673, 74.7366968], [13.2349216, 74.7358477], [13.2354287, 74.7357575], [13.2354928, 74.7361275], [13.2360373, 74.7396698], [13.2360828, 74.7400056], [13.2361195, 74.7402769], [13.2366102, 74.7434662], [13.2369192, 74.7450031], [13.2369513, 74.7452313], [13.2370656, 74.7463471], [13.2393715, 74.7456954], [13.2400974, 74.7455686], [13.2414803, 74.7451289], [13.2438564, 74.7444316], [13.2449736, 74.7441908], [13.2457413, 74.7440968], [13.2461518, 74.7440588], [13.2518899, 74.744628], [13.2531573, 74.7448727], [13.2556126, 74.7463535], [13.2584219, 74.7475956], [13.262383, 74.7484744], [13.2659074, 74.7489368], [13.2667263, 74.7488834], [13.2684065, 74.7485605], [13.2702274, 74.7482207], [13.2741061, 74.7478067], [13.2777015, 74.7488517], [13.2843592, 74.7482847], [13.2869907, 74.747091], [13.2901372, 74.7453249], [13.2909549, 74.7452317], [13.2936692, 74.7453425], [13.301353, 74.7445742], [13.302106, 74.7435005], [13.3038225, 74.7425232], [13.3038727, 74.7425013], [13.3031052, 74.7410319], [13.3024955, 74.739641], [13.3025515, 74.7389346], [13.3026158, 74.7384474], [13.3030581, 74.7381195], [13.3033368, 74.7372563], [13.3035731, 74.736396], [13.3039843, 74.7360514], [13.3045949, 74.7344382], [13.305084, 74.7339174], [13.3055637, 74.7334466], [13.3063519, 74.7329625], [13.3071332, 74.7325362], [13.3073133, 74.7322172], [13.3076939, 74.731642], [13.3080283, 74.7313558], [13.3085255, 74.7310281], [13.30856, 74.7310079], [13.3090863, 74.7306032], [13.3099226, 74.7303071], [13.3096445, 74.7296236], [13.3099077, 74.7259145], [13.3093309, 74.7238736], [13.3088714, 74.72374], [13.3087909, 74.7232361]],
+                {"bubblingMouseEvents": true, "color": "#f814e8", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f814e8", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            poly_line_8651e35c6ff5cea0ea365a7114e5d2ae.bindTooltip(
+                `<div>
+                     Route for Rajesh Kumar
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_3eb28a886b57578e1d9fa45422504994 = L.marker(
+                [13.331, 74.741],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_42bf6a747a1a9c718c99ad94d870f9fe = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ae2bddf6327b59f024c27ae4763ae441 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9660aff64fb5e750f2111768ab680bb6 = $(`<div id="html_9660aff64fb5e750f2111768ab680bb6" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #1</b><br>                     Customer: Delta Hospital<br>                     ID: del9<br>                     Arrival: 2025-04-27T09:15:00<br>                     Kunjibettu, Udupi                 </div>                 </div>`)[0];
+                popup_ae2bddf6327b59f024c27ae4763ae441.setContent(html_9660aff64fb5e750f2111768ab680bb6);
+            
+        
+
+        marker_3eb28a886b57578e1d9fa45422504994.bindPopup(popup_ae2bddf6327b59f024c27ae4763ae441)
+        ;
+
+        
+    
+    
+            marker_3eb28a886b57578e1d9fa45422504994.bindTooltip(
+                `<div>
+                     Delivery #1: Delta Hospital
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3eb28a886b57578e1d9fa45422504994.setIcon(icon_42bf6a747a1a9c718c99ad94d870f9fe);
+            
+    
+            var marker_224aec52120831072d502af2dc047101 = L.marker(
+                [13.331, 74.741],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_7fdbd5f28ac39fc841209820455db8fb = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f814e8; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e1\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_224aec52120831072d502af2dc047101.setIcon(div_icon_7fdbd5f28ac39fc841209820455db8fb);
+        
+    
+                marker_224aec52120831072d502af2dc047101.setIcon(div_icon_7fdbd5f28ac39fc841209820455db8fb);
+            
+    
+            var marker_edaeadf2f2013fe3b5c4ec4235e4f479 = L.marker(
+                [13.3394, 74.7455],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_0f01843dc23a34cabbe8dce0d1a3feda = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b483c93a81776e478d2df5b441d0f216 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b934e96eb91d401354b94044d0ca67d7 = $(`<div id="html_b934e96eb91d401354b94044d0ca67d7" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #2</b><br>                     Customer: MGM College<br>                     ID: del18<br>                     Arrival: 2025-04-27T10:00:00<br>                     MGM College, Udupi                 </div>                 </div>`)[0];
+                popup_b483c93a81776e478d2df5b441d0f216.setContent(html_b934e96eb91d401354b94044d0ca67d7);
+            
+        
+
+        marker_edaeadf2f2013fe3b5c4ec4235e4f479.bindPopup(popup_b483c93a81776e478d2df5b441d0f216)
+        ;
+
+        
+    
+    
+            marker_edaeadf2f2013fe3b5c4ec4235e4f479.bindTooltip(
+                `<div>
+                     Delivery #2: MGM College
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_edaeadf2f2013fe3b5c4ec4235e4f479.setIcon(icon_0f01843dc23a34cabbe8dce0d1a3feda);
+            
+    
+            var marker_ecb7d9f83b849f4ddea8ca086b5fcf3c = L.marker(
+                [13.3394, 74.7455],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_d9dd502a6ab77622d315969d26681fd5 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f814e8; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e2\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_ecb7d9f83b849f4ddea8ca086b5fcf3c.setIcon(div_icon_d9dd502a6ab77622d315969d26681fd5);
+        
+    
+                marker_ecb7d9f83b849f4ddea8ca086b5fcf3c.setIcon(div_icon_d9dd502a6ab77622d315969d26681fd5);
+            
+    
+            var marker_a3ee3bea975c07b7c32dd7182573b364 = L.marker(
+                [13.3378, 74.7427],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_27d914097b4a454b457ad8200be2bc6f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e89dacf05fc8f1d2fdc6fbc0f19fb072 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0341164411a21481a06d3361809f2685 = $(`<div id="html_0341164411a21481a06d3361809f2685" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #3</b><br>                     Customer: Kalmadi Market<br>                     ID: del5<br>                     Arrival: 2025-04-27T11:00:00<br>                     Kalmadi, Udupi                 </div>                 </div>`)[0];
+                popup_e89dacf05fc8f1d2fdc6fbc0f19fb072.setContent(html_0341164411a21481a06d3361809f2685);
+            
+        
+
+        marker_a3ee3bea975c07b7c32dd7182573b364.bindPopup(popup_e89dacf05fc8f1d2fdc6fbc0f19fb072)
+        ;
+
+        
+    
+    
+            marker_a3ee3bea975c07b7c32dd7182573b364.bindTooltip(
+                `<div>
+                     Delivery #3: Kalmadi Market
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a3ee3bea975c07b7c32dd7182573b364.setIcon(icon_27d914097b4a454b457ad8200be2bc6f);
+            
+    
+            var marker_1fb9292e92f747d3e26196f1728679ad = L.marker(
+                [13.3378, 74.7427],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_b2c87d5a39d237126f92d46caec96279 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f814e8; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e3\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_1fb9292e92f747d3e26196f1728679ad.setIcon(div_icon_b2c87d5a39d237126f92d46caec96279);
+        
+    
+                marker_1fb9292e92f747d3e26196f1728679ad.setIcon(div_icon_b2c87d5a39d237126f92d46caec96279);
+            
+    
+            var marker_9958340718b2c28bbecbd4423c6339d4 = L.marker(
+                [13.3082, 74.7418],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_6f56b5105914e92cf1455b0e746331c9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_05f7edbc03a3f71222468aa9c60f2108 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_305c56910349182361b29cb2680073f0 = $(`<div id="html_305c56910349182361b29cb2680073f0" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #4</b><br>                     Customer: Udyavara<br>                     ID: del16<br>                     Arrival: 2025-04-27T11:48:00<br>                     Udyavara, Udupi                 </div>                 </div>`)[0];
+                popup_05f7edbc03a3f71222468aa9c60f2108.setContent(html_305c56910349182361b29cb2680073f0);
+            
+        
+
+        marker_9958340718b2c28bbecbd4423c6339d4.bindPopup(popup_05f7edbc03a3f71222468aa9c60f2108)
+        ;
+
+        
+    
+    
+            marker_9958340718b2c28bbecbd4423c6339d4.bindTooltip(
+                `<div>
+                     Delivery #4: Udyavara
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9958340718b2c28bbecbd4423c6339d4.setIcon(icon_6f56b5105914e92cf1455b0e746331c9);
+            
+    
+            var marker_bacb1d7a2c369a887adfabf36f2999cc = L.marker(
+                [13.3082, 74.7418],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_3f4d38e0b59d04ce56c1dee1c251f7ee = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f814e8; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e4\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_bacb1d7a2c369a887adfabf36f2999cc.setIcon(div_icon_3f4d38e0b59d04ce56c1dee1c251f7ee);
+        
+    
+                marker_bacb1d7a2c369a887adfabf36f2999cc.setIcon(div_icon_3f4d38e0b59d04ce56c1dee1c251f7ee);
+            
+    
+            var marker_81483279a47a5c0e9a0e7fd47fc0438d = L.marker(
+                [13.2232, 74.7394],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_3ec9ba2bf309f8b6b5d4299b0ea9ef25 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c628feb5c03689d5e49b8ce7376443cd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cf83dd1a6447d7d07c0a398d6b2c1bb8 = $(`<div id="html_cf83dd1a6447d7d07c0a398d6b2c1bb8" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #5</b><br>                     Customer: Kaup Beach<br>                     ID: del8<br>                     Arrival: 2025-04-27T13:00:00<br>                     Kaup, Udupi                 </div>                 </div>`)[0];
+                popup_c628feb5c03689d5e49b8ce7376443cd.setContent(html_cf83dd1a6447d7d07c0a398d6b2c1bb8);
+            
+        
+
+        marker_81483279a47a5c0e9a0e7fd47fc0438d.bindPopup(popup_c628feb5c03689d5e49b8ce7376443cd)
+        ;
+
+        
+    
+    
+            marker_81483279a47a5c0e9a0e7fd47fc0438d.bindTooltip(
+                `<div>
+                     Delivery #5: Kaup Beach
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_81483279a47a5c0e9a0e7fd47fc0438d.setIcon(icon_3ec9ba2bf309f8b6b5d4299b0ea9ef25);
+            
+    
+            var marker_789b1643f97e4ba8f18e2ca476555e98 = L.marker(
+                [13.2232, 74.7394],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_81d925ea5f417280cff7e2634a48fe55 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f814e8; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e5\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_789b1643f97e4ba8f18e2ca476555e98.setIcon(div_icon_81d925ea5f417280cff7e2634a48fe55);
+        
+    
+                marker_789b1643f97e4ba8f18e2ca476555e98.setIcon(div_icon_81d925ea5f417280cff7e2634a48fe55);
+            
+    
+            var marker_cc53e229494eda20aba2e8b7596a36d6 = L.marker(
+                [13.3069, 74.7186],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_f1a68e5607bacf209f88973cb6883e4e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_be04b2be6916181ed38bdbf08734b23e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9100bf0c8d084fc74f911e955b6f9ba9 = $(`<div id="html_9100bf0c8d084fc74f911e955b6f9ba9" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #6</b><br>                     Customer: Kodi Beach<br>                     ID: del13<br>                     Arrival: 2025-04-27T14:00:00<br>                     Kodi Beach, Kundapura                 </div>                 </div>`)[0];
+                popup_be04b2be6916181ed38bdbf08734b23e.setContent(html_9100bf0c8d084fc74f911e955b6f9ba9);
+            
+        
+
+        marker_cc53e229494eda20aba2e8b7596a36d6.bindPopup(popup_be04b2be6916181ed38bdbf08734b23e)
+        ;
+
+        
+    
+    
+            marker_cc53e229494eda20aba2e8b7596a36d6.bindTooltip(
+                `<div>
+                     Delivery #6: Kodi Beach
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cc53e229494eda20aba2e8b7596a36d6.setIcon(icon_f1a68e5607bacf209f88973cb6883e4e);
+            
+    
+            var marker_c7ed73969954546264eb4cba6118cd71 = L.marker(
+                [13.3069, 74.7186],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_020cf6376f7a88f619ed6451efc7e421 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f814e8; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e6\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_c7ed73969954546264eb4cba6118cd71.setIcon(div_icon_020cf6376f7a88f619ed6451efc7e421);
+        
+    
+                marker_c7ed73969954546264eb4cba6118cd71.setIcon(div_icon_020cf6376f7a88f619ed6451efc7e421);
+            
+    
+            var marker_d7e1bf9a007253eddea9f88b8d9b967b = L.marker(
+                [13.335, 74.748],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_9cdd4f9912230dd71c5037300a112222 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "play",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5a111e9678396c6059cd1d197e16e722 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7c530551994a3e9c356e3242cc9bf9f7 = $(`<div id="html_7c530551994a3e9c356e3242cc9bf9f7" style="width: 100.0%; height: 100.0%;">Start: Mohammed Ali</div>`)[0];
+                popup_5a111e9678396c6059cd1d197e16e722.setContent(html_7c530551994a3e9c356e3242cc9bf9f7);
+            
+        
+
+        marker_d7e1bf9a007253eddea9f88b8d9b967b.bindPopup(popup_5a111e9678396c6059cd1d197e16e722)
+        ;
+
+        
+    
+    
+                marker_d7e1bf9a007253eddea9f88b8d9b967b.setIcon(icon_9cdd4f9912230dd71c5037300a112222);
+            
+    
+            var poly_line_f9b00e295db9c140473eb0a3e99326db = L.polyline(
+                [[13.335, 74.748], [13.3343433, 74.7480748], [13.3366862, 74.7490563], [13.3367105, 74.7491962], [13.3383294, 74.7488766], [13.3393043, 74.7486487], [13.3403171, 74.7482564], [13.3402851, 74.7483852], [13.3404527, 74.7495064], [13.3405662, 74.7494969], [13.3411566, 74.7494347], [13.3417427, 74.749304], [13.3423461, 74.7493046], [13.342837, 74.7493787], [13.3431607, 74.749321], [13.3434166, 74.7481924], [13.3439798, 74.7480476], [13.3439058, 74.7474958], [13.3439591, 74.7466075], [13.3436113, 74.7450031], [13.3436002, 74.744659], [13.3439803, 74.7432626], [13.3441226, 74.7427449], [13.3441956, 74.7427644], [13.3453861, 74.7429342], [13.3441956, 74.7427644], [13.3440475, 74.7432929], [13.3439528, 74.7436382], [13.3439428, 74.7462481], [13.3440297, 74.7465996], [13.3439809, 74.7474743], [13.3440677, 74.7480233], [13.3446935, 74.7492914], [13.3455798, 74.7517902], [13.3456074, 74.7518691], [13.3456341, 74.7537958], [13.345645, 74.7546838], [13.3456962, 74.756245], [13.3459813, 74.7571295], [13.3462521, 74.7602171], [13.3463727, 74.7618534], [13.3463979, 74.76211], [13.3464534, 74.7629461], [13.3461472, 74.7640768], [13.3457156, 74.7664655], [13.345548, 74.7678943], [13.3454318, 74.7702206], [13.3455232, 74.7707329], [13.3457342, 74.771726], [13.3460699, 74.7724608], [13.3467005, 74.7731916], [13.3475689, 74.7746697], [13.3477281, 74.7753074], [13.3478871, 74.7759568], [13.3479905, 74.7763685], [13.3480463, 74.7765955], [13.3481781, 74.7771908], [13.3482596, 74.7778312], [13.3483151, 74.7784949], [13.3473467, 74.7841126], [13.3473636, 74.7842043], [13.3488197, 74.7854983], [13.3489111, 74.7855699], [13.3491052, 74.7856978], [13.3521662, 74.7865157], [13.3524839, 74.7871648], [13.3525068, 74.7872633], [13.3524822, 74.7873236], [13.3535121, 74.7906383], [13.3536508, 74.7910025], [13.3535818, 74.7910354], [13.3529435, 74.7913301], [13.3529283, 74.7915719], [13.3529469, 74.7919837], [13.3519887, 74.7934165], [13.3529469, 74.7919837], [13.3529283, 74.7915719], [13.3529435, 74.7913301], [13.3535818, 74.7910354], [13.3523668, 74.7878824], [13.3523531, 74.7873089], [13.3523427, 74.787288], [13.3523434, 74.7871919], [13.3523532, 74.7871698], [13.3524839, 74.7871648], [13.3525068, 74.7872633], [13.3525541, 74.7872799], [13.3522255, 74.7864353], [13.3523356, 74.7862668], [13.3528576, 74.7855663], [13.3529736, 74.7853854], [13.3530308, 74.7852797], [13.3531062, 74.7852914], [13.3535835, 74.78544], [13.354399, 74.7855593], [13.3548832, 74.7855799], [13.3554147, 74.7856026], [13.3556833, 74.785614], [13.3574281, 74.785533], [13.3575426, 74.7855432], [13.3580812, 74.785583], [13.3586151, 74.7858068], [13.3600737, 74.7862814], [13.3599662, 74.7866961], [13.3603009, 74.786805], [13.360224, 74.7870122], [13.3611731, 74.7873286], [13.3613123, 74.7873727], [13.3634201, 74.7882761], [13.3647483, 74.7889811], [13.3650424, 74.789048], [13.3653243, 74.7891121], [13.3654865, 74.7899696], [13.3662096, 74.7911801], [13.3698913, 74.7919042], [13.3662096, 74.7911801], [13.3654865, 74.7899696], [13.3653243, 74.7891121], [13.3650424, 74.789048], [13.3647483, 74.7889811], [13.3634201, 74.7882761], [13.3613123, 74.7873727], [13.3611731, 74.7873286], [13.360224, 74.7870122], [13.3603009, 74.786805], [13.3599662, 74.7866961], [13.3600737, 74.7862814], [13.3602217, 74.7857519], [13.3587649, 74.7852674], [13.3586578, 74.7852456], [13.358619, 74.7851803], [13.3586489, 74.7850727], [13.358788, 74.7850529], [13.3596024, 74.7843445], [13.3603459, 74.783488], [13.3608196, 74.7828544], [13.3614472, 74.7824184], [13.3616263, 74.7823272], [13.3630493, 74.7799316], [13.3625334, 74.7779329], [13.3626044, 74.7761117], [13.3627825, 74.7755405], [13.3662287, 74.7709913], [13.3675465, 74.7688237], [13.36784, 74.7680839], [13.3686352, 74.7665255], [13.3688315, 74.7662511], [13.3693002, 74.7655621], [13.3702382, 74.7638993], [13.371451, 74.761408], [13.3713023, 74.7636581], [13.3723451, 74.7637367], [13.3741446, 74.7661151], [13.3752257, 74.7668001], [13.3757964, 74.7669049], [13.3789997, 74.7664191], [13.3757964, 74.7669049], [13.3752257, 74.7668001], [13.3741446, 74.7661151], [13.3723451, 74.7637367], [13.3713023, 74.7636581], [13.3695685, 74.7653217], [13.3689375, 74.7662404], [13.3679665, 74.7679612], [13.3676094, 74.7688612], [13.3665058, 74.7707262], [13.3665236, 74.7719313], [13.3649252, 74.7745027], [13.3642094, 74.7745192], [13.3627689, 74.7757858], [13.3626044, 74.7761117], [13.3627825, 74.7755405], [13.3598508, 74.7748805], [13.3584048, 74.7747566], [13.3574525, 74.7748183], [13.3567509, 74.7750684], [13.3546941, 74.776433], [13.354168, 74.7763669], [13.3540919, 74.7763998], [13.3537052, 74.7766051], [13.3500491, 74.7780912], [13.3494902, 74.7780614], [13.3492553, 74.7784262], [13.3483151, 74.7784949], [13.3473467, 74.7841126], [13.3473636, 74.7842043], [13.3472637, 74.7842157], [13.3470608, 74.7842093], [13.3461493, 74.7834851], [13.3456295, 74.7841557], [13.3461493, 74.7834851], [13.3444829, 74.7821188], [13.344246, 74.7823771], [13.3416406, 74.7818544], [13.3407636, 74.7816557], [13.340715, 74.7803454], [13.340607, 74.7787213], [13.3401685, 74.7773319], [13.3392704, 74.7764174], [13.338731, 74.7765537], [13.3386118, 74.7765611], [13.334269, 74.7768267], [13.3332247, 74.7766386], [13.3323651, 74.7766607], [13.3307936, 74.7771549], [13.3283796, 74.7783506], [13.3271905, 74.7790043], [13.3257304, 74.7809082], [13.3247266, 74.7811454], [13.3215525, 74.7823294], [13.3205493, 74.7819561], [13.3180657, 74.7818156], [13.3165271, 74.7807253], [13.316078, 74.7804015], [13.315676, 74.7800594], [13.3145176, 74.7796028], [13.3142578, 74.7795383], [13.3126437, 74.7795351], [13.3124387, 74.7802044], [13.3115081, 74.7817699], [13.3113642, 74.7819293], [13.3099021, 74.7831256], [13.3092202, 74.7834597], [13.3089395, 74.7801771]],
+                {"bubblingMouseEvents": true, "color": "#f2161d", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#f2161d", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            poly_line_f9b00e295db9c140473eb0a3e99326db.bindTooltip(
+                `<div>
+                     Route for Mohammed Ali
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_f342edb886c4dc95b81facdaab816ae6 = L.marker(
+                [13.3406, 74.7499],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_206f2487f5ceec01ae9611cbb99d76d7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_64b52b4d9db830fd432b64f1f7e1783a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_000e7f2106f049e57d6526d5a436e66d = $(`<div id="html_000e7f2106f049e57d6526d5a436e66d" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #1</b><br>                     Customer: Sri Krishna Temple<br>                     ID: del4<br>                     Arrival: 2025-04-27T09:00:00<br>                     Car Street, Udupi                 </div>                 </div>`)[0];
+                popup_64b52b4d9db830fd432b64f1f7e1783a.setContent(html_000e7f2106f049e57d6526d5a436e66d);
+            
+        
+
+        marker_f342edb886c4dc95b81facdaab816ae6.bindPopup(popup_64b52b4d9db830fd432b64f1f7e1783a)
+        ;
+
+        
+    
+    
+            marker_f342edb886c4dc95b81facdaab816ae6.bindTooltip(
+                `<div>
+                     Delivery #1: Sri Krishna Temple
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f342edb886c4dc95b81facdaab816ae6.setIcon(icon_206f2487f5ceec01ae9611cbb99d76d7);
+            
+    
+            var marker_36d1a18f612aa4218b66ef8527e71d1c = L.marker(
+                [13.3406, 74.7499],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_c923bc75cbd1899ce37ab95ba76757f5 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e1\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_36d1a18f612aa4218b66ef8527e71d1c.setIcon(div_icon_c923bc75cbd1899ce37ab95ba76757f5);
+        
+    
+                marker_36d1a18f612aa4218b66ef8527e71d1c.setIcon(div_icon_c923bc75cbd1899ce37ab95ba76757f5);
+            
+    
+            var marker_507d10b71c62ac9cac0608956a1c66d0 = L.marker(
+                [13.345, 74.7424],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_b7e4aa6905ca56477aab88165906b047 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8369149a669c6ec1d0329bff318c1af5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e03c84556ee022fc18eab522f31a2e46 = $(`<div id="html_e03c84556ee022fc18eab522f31a2e46" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #2</b><br>                     Customer: Diana Circle<br>                     ID: del12<br>                     Arrival: 2025-04-27T09:45:00<br>                     Diana Circle, Udupi                 </div>                 </div>`)[0];
+                popup_8369149a669c6ec1d0329bff318c1af5.setContent(html_e03c84556ee022fc18eab522f31a2e46);
+            
+        
+
+        marker_507d10b71c62ac9cac0608956a1c66d0.bindPopup(popup_8369149a669c6ec1d0329bff318c1af5)
+        ;
+
+        
+    
+    
+            marker_507d10b71c62ac9cac0608956a1c66d0.bindTooltip(
+                `<div>
+                     Delivery #2: Diana Circle
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_507d10b71c62ac9cac0608956a1c66d0.setIcon(icon_b7e4aa6905ca56477aab88165906b047);
+            
+    
+            var marker_b7d621fcc4f75e4a9b6aeec4462f564b = L.marker(
+                [13.345, 74.7424],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_ea0a348655b656c3429cd6178756d380 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e2\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_b7d621fcc4f75e4a9b6aeec4462f564b.setIcon(div_icon_ea0a348655b656c3429cd6178756d380);
+        
+    
+                marker_b7d621fcc4f75e4a9b6aeec4462f564b.setIcon(div_icon_ea0a348655b656c3429cd6178756d380);
+            
+    
+            var marker_eaa8f8a2ed2f0add7fa8068aaa0d2a12 = L.marker(
+                [13.352, 74.793],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_5deb2edc64dce82bc6bd2f87a2962072 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ca4f86028cf472054658b791b4b2d7d9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a1efda752b2ae942059b53b2cd2cb842 = $(`<div id="html_a1efda752b2ae942059b53b2cd2cb842" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #3</b><br>                     Customer: MIT Campus<br>                     ID: del2<br>                     Arrival: 2025-04-27T09:50:00<br>                     Manipal Institute of Technology                 </div>                 </div>`)[0];
+                popup_ca4f86028cf472054658b791b4b2d7d9.setContent(html_a1efda752b2ae942059b53b2cd2cb842);
+            
+        
+
+        marker_eaa8f8a2ed2f0add7fa8068aaa0d2a12.bindPopup(popup_ca4f86028cf472054658b791b4b2d7d9)
+        ;
+
+        
+    
+    
+            marker_eaa8f8a2ed2f0add7fa8068aaa0d2a12.bindTooltip(
+                `<div>
+                     Delivery #3: MIT Campus
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_eaa8f8a2ed2f0add7fa8068aaa0d2a12.setIcon(icon_5deb2edc64dce82bc6bd2f87a2962072);
+            
+    
+            var marker_490410d11af1389d5d787b8686934bb5 = L.marker(
+                [13.352, 74.793],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_33eedf0a5294fc81bb6de2bc90800730 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e3\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_490410d11af1389d5d787b8686934bb5.setIcon(div_icon_33eedf0a5294fc81bb6de2bc90800730);
+        
+    
+                marker_490410d11af1389d5d787b8686934bb5.setIcon(div_icon_33eedf0a5294fc81bb6de2bc90800730);
+            
+    
+            var marker_1ceb60810b4b8aa81123590573c830f8 = L.marker(
+                [13.354, 74.785],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_956d52584e685e117cd9234695341900 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ceabdfa01c252f640baed50c29471019 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1c779d4a330d983af69617870db44c87 = $(`<div id="html_1c779d4a330d983af69617870db44c87" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #4</b><br>                     Customer: Manipal University<br>                     ID: del10<br>                     Arrival: 2025-04-27T10:27:00<br>                     Manipal University Campus                 </div>                 </div>`)[0];
+                popup_ceabdfa01c252f640baed50c29471019.setContent(html_1c779d4a330d983af69617870db44c87);
+            
+        
+
+        marker_1ceb60810b4b8aa81123590573c830f8.bindPopup(popup_ceabdfa01c252f640baed50c29471019)
+        ;
+
+        
+    
+    
+            marker_1ceb60810b4b8aa81123590573c830f8.bindTooltip(
+                `<div>
+                     Delivery #4: Manipal University
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1ceb60810b4b8aa81123590573c830f8.setIcon(icon_956d52584e685e117cd9234695341900);
+            
+    
+            var marker_f3c0215182ce94b7a261ea7844896ef5 = L.marker(
+                [13.354, 74.785],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_872312e9df04f99b1e2814d563377569 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e4\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_f3c0215182ce94b7a261ea7844896ef5.setIcon(div_icon_872312e9df04f99b1e2814d563377569);
+        
+    
+                marker_f3c0215182ce94b7a261ea7844896ef5.setIcon(div_icon_872312e9df04f99b1e2814d563377569);
+            
+    
+            var marker_819cbe498be1e99972c41623d166f1d5 = L.marker(
+                [13.369, 74.7913],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_e83ccf1e34862334d27186d4b119c2a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_51bff65d806d32ba6c5081b28e41e9cc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2f4fff48cd6bc3ade170fcfc0b357e95 = $(`<div id="html_2f4fff48cd6bc3ade170fcfc0b357e95" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #5</b><br>                     Customer: Parkala<br>                     ID: del19<br>                     Arrival: 2025-04-27T11:30:00<br>                     Parkala, Udupi                 </div>                 </div>`)[0];
+                popup_51bff65d806d32ba6c5081b28e41e9cc.setContent(html_2f4fff48cd6bc3ade170fcfc0b357e95);
+            
+        
+
+        marker_819cbe498be1e99972c41623d166f1d5.bindPopup(popup_51bff65d806d32ba6c5081b28e41e9cc)
+        ;
+
+        
+    
+    
+            marker_819cbe498be1e99972c41623d166f1d5.bindTooltip(
+                `<div>
+                     Delivery #5: Parkala
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_819cbe498be1e99972c41623d166f1d5.setIcon(icon_e83ccf1e34862334d27186d4b119c2a2);
+            
+    
+            var marker_88bb335da1c66f0564588bbd74eec28d = L.marker(
+                [13.369, 74.7913],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_e1d4b4111b5f1fad870e0de1ab53f39f = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e5\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_88bb335da1c66f0564588bbd74eec28d.setIcon(div_icon_e1d4b4111b5f1fad870e0de1ab53f39f);
+        
+    
+                marker_88bb335da1c66f0564588bbd74eec28d.setIcon(div_icon_e1d4b4111b5f1fad870e0de1ab53f39f);
+            
+    
+            var marker_cc3211f5d67aa3608ebe3ce7c9637ac7 = L.marker(
+                [13.3616, 74.7824],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_1aae00d0231dfb08dc8547596643d44a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9bef486d6aa06691fb87ae91d167787a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_15da404e8fa4752d91a9c483e961abc8 = $(`<div id="html_15da404e8fa4752d91a9c483e961abc8" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #6</b><br>                     Customer: Indrali Temple<br>                     ID: del7<br>                     Arrival: 2025-04-27T11:33:00<br>                     Indrali, Udupi                 </div>                 </div>`)[0];
+                popup_9bef486d6aa06691fb87ae91d167787a.setContent(html_15da404e8fa4752d91a9c483e961abc8);
+            
+        
+
+        marker_cc3211f5d67aa3608ebe3ce7c9637ac7.bindPopup(popup_9bef486d6aa06691fb87ae91d167787a)
+        ;
+
+        
+    
+    
+            marker_cc3211f5d67aa3608ebe3ce7c9637ac7.bindTooltip(
+                `<div>
+                     Delivery #6: Indrali Temple
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cc3211f5d67aa3608ebe3ce7c9637ac7.setIcon(icon_1aae00d0231dfb08dc8547596643d44a);
+            
+    
+            var marker_f363a159d90fe3101d0433683c63a427 = L.marker(
+                [13.3616, 74.7824],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_9bab739c7018d40a6ff441c44e72cda9 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e6\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_f363a159d90fe3101d0433683c63a427.setIcon(div_icon_9bab739c7018d40a6ff441c44e72cda9);
+        
+    
+                marker_f363a159d90fe3101d0433683c63a427.setIcon(div_icon_9bab739c7018d40a6ff441c44e72cda9);
+            
+    
+            var marker_e545dbd5633db30db5786b1b93d1a1bd = L.marker(
+                [13.3777, 74.7667],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_00c1ef3a0592c5e5eb8511bfec80d637 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a2020b7dba4cc23b8c2c30e1fdfe239c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4f602d005ee76c6d36ff2c3f396a6dfc = $(`<div id="html_4f602d005ee76c6d36ff2c3f396a6dfc" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #7</b><br>                     Customer: Alevoor<br>                     ID: del14<br>                     Arrival: 2025-04-27T12:30:00<br>                     Alevoor, Udupi                 </div>                 </div>`)[0];
+                popup_a2020b7dba4cc23b8c2c30e1fdfe239c.setContent(html_4f602d005ee76c6d36ff2c3f396a6dfc);
+            
+        
+
+        marker_e545dbd5633db30db5786b1b93d1a1bd.bindPopup(popup_a2020b7dba4cc23b8c2c30e1fdfe239c)
+        ;
+
+        
+    
+    
+            marker_e545dbd5633db30db5786b1b93d1a1bd.bindTooltip(
+                `<div>
+                     Delivery #7: Alevoor
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e545dbd5633db30db5786b1b93d1a1bd.setIcon(icon_00c1ef3a0592c5e5eb8511bfec80d637);
+            
+    
+            var marker_f4c362cb600d58651180536ad542202b = L.marker(
+                [13.3777, 74.7667],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_c692f53f3497117959b4aa5a39d985b6 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e7\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_f4c362cb600d58651180536ad542202b.setIcon(div_icon_c692f53f3497117959b4aa5a39d985b6);
+        
+    
+                marker_f4c362cb600d58651180536ad542202b.setIcon(div_icon_c692f53f3497117959b4aa5a39d985b6);
+            
+    
+            var marker_d4052dd2bd16503951ca633bb71be9bb = L.marker(
+                [13.3463, 74.7845],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_6292d60cbf5ba92815e1b9ecb6c91d66 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_59fbb2e5ec6a613ba89cf9ef26394980 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ec54cb654f64a61bf7e621879d00fa8 = $(`<div id="html_0ec54cb654f64a61bf7e621879d00fa8" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #8</b><br>                     Customer: End Point Beach<br>                     ID: del6<br>                     Arrival: 2025-04-27T12:37:00<br>                     End Point Road, Manipal                 </div>                 </div>`)[0];
+                popup_59fbb2e5ec6a613ba89cf9ef26394980.setContent(html_0ec54cb654f64a61bf7e621879d00fa8);
+            
+        
+
+        marker_d4052dd2bd16503951ca633bb71be9bb.bindPopup(popup_59fbb2e5ec6a613ba89cf9ef26394980)
+        ;
+
+        
+    
+    
+            marker_d4052dd2bd16503951ca633bb71be9bb.bindTooltip(
+                `<div>
+                     Delivery #8: End Point Beach
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d4052dd2bd16503951ca633bb71be9bb.setIcon(icon_6292d60cbf5ba92815e1b9ecb6c91d66);
+            
+    
+            var marker_ec4fdfe39bb93c6ddd96292b3bcbaf44 = L.marker(
+                [13.3463, 74.7845],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_ccd6f6d19365358689792c04da604845 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e8\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_ec4fdfe39bb93c6ddd96292b3bcbaf44.setIcon(div_icon_ccd6f6d19365358689792c04da604845);
+        
+    
+                marker_ec4fdfe39bb93c6ddd96292b3bcbaf44.setIcon(div_icon_ccd6f6d19365358689792c04da604845);
+            
+    
+            var marker_9352d7b7b064ca9a3c74c1697c0ba92d = L.marker(
+                [13.3457, 74.783],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_fc57cd1324dd8e244a147b5edb9ba4ac = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_baa5527bd1b7ff537168ae22c046a201 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_700e0b6de5991bc603f3daad73df70cf = $(`<div id="html_700e0b6de5991bc603f3daad73df70cf" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #9</b><br>                     Customer: Tiger Circle<br>                     ID: del11<br>                     Arrival: 2025-04-27T12:38:00<br>                     Tiger Circle, Manipal                 </div>                 </div>`)[0];
+                popup_baa5527bd1b7ff537168ae22c046a201.setContent(html_700e0b6de5991bc603f3daad73df70cf);
+            
+        
+
+        marker_9352d7b7b064ca9a3c74c1697c0ba92d.bindPopup(popup_baa5527bd1b7ff537168ae22c046a201)
+        ;
+
+        
+    
+    
+            marker_9352d7b7b064ca9a3c74c1697c0ba92d.bindTooltip(
+                `<div>
+                     Delivery #9: Tiger Circle
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9352d7b7b064ca9a3c74c1697c0ba92d.setIcon(icon_fc57cd1324dd8e244a147b5edb9ba4ac);
+            
+    
+            var marker_ff264d1a87f405429f6e3561aec494be = L.marker(
+                [13.3457, 74.783],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_18e6d0a70fbada7e41bda09088cc5915 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e9\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_ff264d1a87f405429f6e3561aec494be.setIcon(div_icon_18e6d0a70fbada7e41bda09088cc5915);
+        
+    
+                marker_ff264d1a87f405429f6e3561aec494be.setIcon(div_icon_18e6d0a70fbada7e41bda09088cc5915);
+            
+    
+            var marker_dd9676136d558c24510f25588939a2c3 = L.marker(
+                [13.3075, 74.7788],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_5dfaab6242001d7800dd6748e29c5b92 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cc53d5fd1003a1edfdd331676dda54ae = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_652b76891d47589de65bcbc95f346fce = $(`<div id="html_652b76891d47589de65bcbc95f346fce" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #10</b><br>                     Customer: Korangrapady<br>                     ID: del20<br>                     Arrival: 2025-04-27T12:45:00<br>                     Korangrapady, Udupi                 </div>                 </div>`)[0];
+                popup_cc53d5fd1003a1edfdd331676dda54ae.setContent(html_652b76891d47589de65bcbc95f346fce);
+            
+        
+
+        marker_dd9676136d558c24510f25588939a2c3.bindPopup(popup_cc53d5fd1003a1edfdd331676dda54ae)
+        ;
+
+        
+    
+    
+            marker_dd9676136d558c24510f25588939a2c3.bindTooltip(
+                `<div>
+                     Delivery #10: Korangrapady
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dd9676136d558c24510f25588939a2c3.setIcon(icon_5dfaab6242001d7800dd6748e29c5b92);
+            
+    
+            var marker_511943c05c5492d701124eb1959c98bb = L.marker(
+                [13.3075, 74.7788],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_076db9e8ef2ffcb128b70dcfc08b8725 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #f2161d; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e10\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_511943c05c5492d701124eb1959c98bb.setIcon(div_icon_076db9e8ef2ffcb128b70dcfc08b8725);
+        
+    
+                marker_511943c05c5492d701124eb1959c98bb.setIcon(div_icon_076db9e8ef2ffcb128b70dcfc08b8725);
+            
+    
+            var marker_5f8ffa8cf7f8ba2fad43f0d7beedf016 = L.marker(
+                [13.3601, 74.7401],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_f1f1cefd12590ca45e0b12596413ff08 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "play",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e4e94c6c4901f705fb5e8208600eeedc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f218aa04ee7817572c092a36febceae4 = $(`<div id="html_f218aa04ee7817572c092a36febceae4" style="width: 100.0%; height: 100.0%;">Start: Anjali Nair</div>`)[0];
+                popup_e4e94c6c4901f705fb5e8208600eeedc.setContent(html_f218aa04ee7817572c092a36febceae4);
+            
+        
+
+        marker_5f8ffa8cf7f8ba2fad43f0d7beedf016.bindPopup(popup_e4e94c6c4901f705fb5e8208600eeedc)
+        ;
+
+        
+    
+    
+                marker_5f8ffa8cf7f8ba2fad43f0d7beedf016.setIcon(icon_f1f1cefd12590ca45e0b12596413ff08);
+            
+    
+            var poly_line_daf7371d6646173c8181f4de5ae7e0cb = L.polyline(
+                [[13.3601, 74.7401], [13.3592696, 74.7403273], [13.3592388, 74.7400566], [13.3592145, 74.7398553], [13.3587597, 74.7392074], [13.3568968, 74.7400867], [13.3570561, 74.7408524], [13.3609945, 74.7430235], [13.3609383, 74.7431171], [13.3571081, 74.7410468], [13.3544059, 74.7395256], [13.3516448, 74.7380338], [13.3476251, 74.7363921], [13.3465143, 74.7360035], [13.3464176, 74.7359766], [13.3465838, 74.7356887], [13.3471972, 74.7341054], [13.3474777, 74.733337], [13.3479134, 74.7319182], [13.3479426, 74.7317575], [13.3483353, 74.729126], [13.3482921, 74.7289192], [13.3480565, 74.7276037], [13.3479383, 74.7269556], [13.3475203, 74.7248581], [13.3473087, 74.7236644], [13.3473017, 74.7235483], [13.3474023, 74.7223726], [13.3474953, 74.7214929], [13.3475163, 74.7212092], [13.3475442, 74.7206533], [13.3476257, 74.719409], [13.3476981, 74.7182063], [13.3477341, 74.7177547], [13.3477906, 74.7169288], [13.3482384, 74.714022], [13.3485279, 74.7132], [13.3486948, 74.7118646], [13.3487265, 74.7104705], [13.3487518, 74.7101804], [13.3487221, 74.7092729], [13.3485622, 74.7072205], [13.3485448, 74.7067899], [13.3485118, 74.7056264], [13.3485215, 74.7052619], [13.3486511, 74.7041151], [13.3485937, 74.7033734], [13.3468384, 74.7040488], [13.3485937, 74.7033734], [13.3486511, 74.7041151], [13.3493904, 74.7041645], [13.3499102, 74.704199], [13.3517391, 74.7042275], [13.3516504, 74.705599], [13.3527048, 74.705717], [13.3538273, 74.7057666], [13.3541636, 74.7057814], [13.3543802, 74.7058028], [13.3560036, 74.7057653], [13.3561582, 74.7076857], [13.3560986, 74.7090119], [13.3561394, 74.7097873], [13.3561763, 74.7129468], [13.3562437, 74.7143646], [13.3568862, 74.7147455], [13.3574415, 74.7145821], [13.3588504, 74.7142378], [13.360271, 74.7141508], [13.3613171, 74.714118], [13.3618948, 74.7141437], [13.3627996, 74.7140267], [13.3632484, 74.7181412], [13.3652055, 74.7198081], [13.3652106, 74.7198124], [13.3669242, 74.7213685], [13.3674968, 74.7218963], [13.3689706, 74.7232413], [13.3692506, 74.7234896], [13.3694384, 74.7236599], [13.3696818, 74.7238705], [13.3699463, 74.7241494], [13.3704404, 74.7246909], [13.3706911, 74.7249776], [13.3709257, 74.725308], [13.3711126, 74.7255893], [13.3713292, 74.7259285], [13.3715458, 74.7262519], [13.3717528, 74.7265899], [13.3719319, 74.7269301], [13.3721493, 74.7275498], [13.3730744, 74.7287967], [13.3745494, 74.7308672], [13.375125, 74.7317323], [13.3754404, 74.7322167], [13.3755047, 74.7323569], [13.3758005, 74.7329954], [13.3761513, 74.7337426], [13.3763653, 74.7342039], [13.3763826, 74.7342408], [13.3766055, 74.7346139], [13.3770941, 74.7352589], [13.377309, 74.7355206], [13.378775, 74.7376512], [13.3802019, 74.738928], [13.3802815, 74.7390221], [13.3851306, 74.7384051], [13.3873434, 74.739434], [13.3883875, 74.7414895], [13.388544, 74.7437833], [13.3886468, 74.7441768], [13.3932147, 74.7495666], [13.3936903, 74.7496045], [13.4007545, 74.7495403], [13.4037199, 74.7476396], [13.4061643, 74.7460573], [13.4071321, 74.745775], [13.4115017, 74.7452776], [13.4158809, 74.7418564], [13.4160151, 74.7417175], [13.417986, 74.7402346], [13.4185367, 74.7401105], [13.420901, 74.7398927], [13.4254362, 74.7399726], [13.4317853, 74.7433917], [13.4321732, 74.743585], [13.4326194, 74.7437853], [13.4362812, 74.7442131], [13.4363424, 74.7443341], [13.4363572, 74.7443989], [13.4355846, 74.7450749], [13.4342274, 74.7458394], [13.4321063, 74.7474553], [13.4316075, 74.7478328], [13.4315114, 74.7479194], [13.4313753, 74.7480562], [13.4307394, 74.7487984], [13.4304948, 74.7490958], [13.430231, 74.7494006], [13.4299237, 74.7496948], [13.4293588, 74.7501855]],
+                {"bubblingMouseEvents": true, "color": "#6e88da", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#6e88da", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            poly_line_daf7371d6646173c8181f4de5ae7e0cb.bindTooltip(
+                `<div>
+                     Route for Anjali Nair
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_64c72a72af99d892425f391d433af669 = L.marker(
+                [13.3512, 74.7403],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_304b7fc7896720e59ee1c939dd5d3969 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8cc66875cbcf2d1d8c73ff1a64b4f1a0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7c67593ab555ba4fa2aeb5a280bb5cb6 = $(`<div id="html_7c67593ab555ba4fa2aeb5a280bb5cb6" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #1</b><br>                     Customer: Manipal Hospital<br>                     ID: del1<br>                     Arrival: 2025-04-27T09:00:00<br>                     Manipal, Udupi                 </div>                 </div>`)[0];
+                popup_8cc66875cbcf2d1d8c73ff1a64b4f1a0.setContent(html_7c67593ab555ba4fa2aeb5a280bb5cb6);
+            
+        
+
+        marker_64c72a72af99d892425f391d433af669.bindPopup(popup_8cc66875cbcf2d1d8c73ff1a64b4f1a0)
+        ;
+
+        
+    
+    
+            marker_64c72a72af99d892425f391d433af669.bindTooltip(
+                `<div>
+                     Delivery #1: Manipal Hospital
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_64c72a72af99d892425f391d433af669.setIcon(icon_304b7fc7896720e59ee1c939dd5d3969);
+            
+    
+            var marker_8ec21de2522bd974493a9d7a573d6831 = L.marker(
+                [13.3512, 74.7403],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_fe8ad8060736d5e37a4a91f600447c54 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #6e88da; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e1\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_8ec21de2522bd974493a9d7a573d6831.setIcon(div_icon_fe8ad8060736d5e37a4a91f600447c54);
+        
+    
+                marker_8ec21de2522bd974493a9d7a573d6831.setIcon(div_icon_fe8ad8060736d5e37a4a91f600447c54);
+            
+    
+            var marker_9ff87aaac52a8a990c5867a8d1021490 = L.marker(
+                [13.3477, 74.7042],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_b16b4925e0a9393c19ac0c3866a92229 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a80a9f962ccc855a3c3cf1d310dbd678 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_31a376abf1360f1ffffc9cf91a5828e3 = $(`<div id="html_31a376abf1360f1ffffc9cf91a5828e3" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #2</b><br>                     Customer: Malpe Beach Resort<br>                     ID: del3<br>                     Arrival: 2025-04-27T10:00:00<br>                     Malpe Beach, Udupi                 </div>                 </div>`)[0];
+                popup_a80a9f962ccc855a3c3cf1d310dbd678.setContent(html_31a376abf1360f1ffffc9cf91a5828e3);
+            
+        
+
+        marker_9ff87aaac52a8a990c5867a8d1021490.bindPopup(popup_a80a9f962ccc855a3c3cf1d310dbd678)
+        ;
+
+        
+    
+    
+            marker_9ff87aaac52a8a990c5867a8d1021490.bindTooltip(
+                `<div>
+                     Delivery #2: Malpe Beach Resort
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9ff87aaac52a8a990c5867a8d1021490.setIcon(icon_b16b4925e0a9393c19ac0c3866a92229);
+            
+    
+            var marker_5bb7101dd9314c040c1408feb578ef42 = L.marker(
+                [13.3477, 74.7042],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_0b25cd42b7440bd1437c226e25ad1cec = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #6e88da; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e2\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_5bb7101dd9314c040c1408feb578ef42.setIcon(div_icon_0b25cd42b7440bd1437c226e25ad1cec);
+        
+    
+                marker_5bb7101dd9314c040c1408feb578ef42.setIcon(div_icon_0b25cd42b7440bd1437c226e25ad1cec);
+            
+    
+            var marker_a3d1a1f78dbb105b0622d58cd2b20671 = L.marker(
+                [13.358, 74.715],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_336a0b6510097af90738133a35c5279b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d95ff3efee5ebf596e60aabb4e3ef79a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_93aa3131529f30e8b6defd2730be44d0 = $(`<div id="html_93aa3131529f30e8b6defd2730be44d0" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #3</b><br>                     Customer: Ambalpady<br>                     ID: del17<br>                     Arrival: 2025-04-27T10:03:00<br>                     Ambalpady, Udupi                 </div>                 </div>`)[0];
+                popup_d95ff3efee5ebf596e60aabb4e3ef79a.setContent(html_93aa3131529f30e8b6defd2730be44d0);
+            
+        
+
+        marker_a3d1a1f78dbb105b0622d58cd2b20671.bindPopup(popup_d95ff3efee5ebf596e60aabb4e3ef79a)
+        ;
+
+        
+    
+    
+            marker_a3d1a1f78dbb105b0622d58cd2b20671.bindTooltip(
+                `<div>
+                     Delivery #3: Ambalpady
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a3d1a1f78dbb105b0622d58cd2b20671.setIcon(icon_336a0b6510097af90738133a35c5279b);
+            
+    
+            var marker_e072788dc0f6453dab85e99766ddbc1f = L.marker(
+                [13.358, 74.715],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_2d6e35c5bf0a1220ecb42bbc5720ea61 = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #6e88da; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e3\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_e072788dc0f6453dab85e99766ddbc1f.setIcon(div_icon_2d6e35c5bf0a1220ecb42bbc5720ea61);
+        
+    
+                marker_e072788dc0f6453dab85e99766ddbc1f.setIcon(div_icon_2d6e35c5bf0a1220ecb42bbc5720ea61);
+            
+    
+            var marker_1aab8237a404d307e2ece16e4a0397df = L.marker(
+                [13.4294, 74.7507],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var icon_d88b5707bf86092e440286ffb284bc6f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "box",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bbb5cce204fcf72da31f39ea992a3949 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bb52aec529caa46c776e02977e04bcae = $(`<div id="html_bb52aec529caa46c776e02977e04bcae" style="width: 100.0%; height: 100.0%;">                 <div style="width:250px">                     <b>Delivery #4</b><br>                     Customer: Brahmavar<br>                     ID: del15<br>                     Arrival: 2025-04-27T11:00:00<br>                     Brahmavar, Udupi                 </div>                 </div>`)[0];
+                popup_bbb5cce204fcf72da31f39ea992a3949.setContent(html_bb52aec529caa46c776e02977e04bcae);
+            
+        
+
+        marker_1aab8237a404d307e2ece16e4a0397df.bindPopup(popup_bbb5cce204fcf72da31f39ea992a3949)
+        ;
+
+        
+    
+    
+            marker_1aab8237a404d307e2ece16e4a0397df.bindTooltip(
+                `<div>
+                     Delivery #4: Brahmavar
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1aab8237a404d307e2ece16e4a0397df.setIcon(icon_d88b5707bf86092e440286ffb284bc6f);
+            
+    
+            var marker_2fe6d066ac0ecdb96d797cc405669163 = L.marker(
+                [13.4294, 74.7507],
+                {
+}
+            ).addTo(map_f90c28a3ae62e882669bde3e8de56e09);
+        
+    
+            var div_icon_d0554d2e04f798f4613dc51c8828e1fe = L.divIcon({
+  "html": "\u003cdiv style=\"font-size: 10pt; color: white; background-color: #6e88da; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px;\"\u003e4\u003c/div\u003e",
+  "iconSize": [20, 20],
+  "iconAnchor": [10, 10],
+  "className": "empty",
+});
+            marker_2fe6d066ac0ecdb96d797cc405669163.setIcon(div_icon_d0554d2e04f798f4613dc51c8828e1fe);
+        
+    
+                marker_2fe6d066ac0ecdb96d797cc405669163.setIcon(div_icon_d0554d2e04f798f4613dc51c8828e1fe);
+            
+</script>
+</html>

@@ -19,9 +19,9 @@ export function Landing() {
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold">QD</span>
+              <span className="text-primary-foreground font-bold">NR</span>
             </div>
-            <span className="font-semibold text-lg">QuickDrop</span>
+            <span className="font-semibold text-lg">Nexustron</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a
