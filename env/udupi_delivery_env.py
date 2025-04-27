@@ -59,6 +59,7 @@ class UdupiDeliveryEnv(gym.Env):
             shape=(35,),  # Changed from 34 to 35
             dtype=np.float32
         )
+        
         # Action space: choose which delivery to do next
         self.action_space = spaces.Discrete(self.num_deliveries)
 
