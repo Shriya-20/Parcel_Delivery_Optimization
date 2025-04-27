@@ -50,7 +50,6 @@ def evaluate_agent(model_path="models/udupi_dqn_model",
         while not done:
             step_count += 1
             print(f"\nStep {step_count}:")
-            
             # Get current state before action
             print(f"Current node: {env.current_node}")
             print(f"Current time: {env.current_time:.2f}h")
@@ -80,6 +79,7 @@ def evaluate_agent(model_path="models/udupi_dqn_model",
                 print(f"Selected delivery: Node {delivery['node']}, Time window: {delivery['slot_start']}-{delivery['slot_end']}")
                 
                 # Calculate path before taking action
+                # This uses Dijkstra's algorithm to find the shortest path in the road network.
                 try:
                     path = nx.shortest_path(env.G, env.current_node, delivery['node'])
                     print(f"Path to delivery: {path}")
