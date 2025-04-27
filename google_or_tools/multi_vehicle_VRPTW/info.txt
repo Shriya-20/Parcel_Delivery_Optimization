@@ -1,0 +1,28 @@
+If all delivery personnel start from the same location (e.g., a warehouse)
+In this case:
+
+The optimizer would still divide deliveries among delivery personnel, but it would base the assignment primarily on time windows, geographical clusters, and overall optimization of the total route length.
+Not all delivery personnel might be assigned deliveries if using fewer vehicles results in a more cost-effective solution.
+The optimizer's goal is to minimize the total cost (time, distance), not to ensure every delivery person gets work.
+
+What's typical in delivery operations
+For most logistics operations:
+
+Having all delivery personnel start from a central warehouse or distribution center is indeed very common and often makes the most sense.
+This centralized model allows for better coordination, package sorting, and vehicle loading.
+The assignment would then be based purely on optimization factors rather than initial location advantages.
+
+Will all delivery people be assigned deliveries?
+If all delivery personnel start from the same location, the assignment will depend on:
+
+The total number of deliveries
+Time constraints (delivery windows)
+The geographical spread of deliveries
+The optimization algorithm's objective function (likely minimizing total distance/time)
+
+If the optimization determines that using all available delivery people provides the most efficient solution (considering all constraints), then all will be assigned. However, if the system determines that using fewer delivery personnel would be more cost-effective, then some might remain unassigned.
+For your project, starting all delivery personnel from a single warehouse location is probably the most realistic approach for most logistics scenarios. You could add a parameter to your optimizer that allows you to force the use of all available delivery personnel if that's a business requirement, even if it's not the most mathematically optimal solution.
+Your optimizer is likely following a standard Vehicle Routing Problem (VRP) approach where the objective is to minimize the total cost across all routes while satisfying all constraints, rather than ensuring full utilization of the delivery fleet.
+
+The single one (the old one only i can use with little tweaks for the reoptimization one also)
+reoptimization meaning if one delivery person has done 2 deliveries then want to optimize for the rest then sending undelivered with 3 locations then get the optimized route that also can be done
