@@ -1,115 +1,100 @@
-import { useEffect, useState, useRef } from "react";
-import { Parcel } from "@/lib/types";
+import { useEffect, useState } from "react";
 
-interface MapViewProps {
-  parcels: Parcel[];
+interface Driver {
+  id: string;
+  name: string;
+  status: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  vehicle: string;
 }
 
-export  function MapView({ parcels }: MapViewProps) {
-  const mapRef = useRef(null);
+interface MapViewProps {
+  drivers: Driver[];
+}
+
+export function MapView({ drivers }: MapViewProps) {
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Center coordinates for Udupi, Karnataka, India
-  const udupiCoordinates = [13.3409, 74.7421];
-
   useEffect(() => {
-    if (!mapLoaded && typeof window !== "undefined") {
-      // Create script elements for Leaflet CSS and JS
-      const linkEl = document.createElement("link");
-      linkEl.rel = "stylesheet";
-      linkEl.href =
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
-      document.head.appendChild(linkEl);
+    // In a real implementation, this would initialize a map library like Google Maps or Mapbox
+    const timer = setTimeout(() => {
+      setMapLoaded(true);
+    }, 500);
 
-      const scriptEl = document.createElement("script");
-      scriptEl.src =
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js";
-      scriptEl.onload = initializeMap;
-      document.body.appendChild(scriptEl);
-    }
-
-    return () => {
-      // Cleanup function for when component unmounts
-      if (mapRef.current && window.L) {
-        window.L.map(mapRef.current).remove();
-      }
-    };
+    return () => clearTimeout(timer);
   }, []);
-
-  const initializeMap = () => {
-    if (!mapRef.current || !window.L) return;
-
-    // Initialize map centered on Udupi
-    const map = window.L.map(mapRef.current).setView(udupiCoordinates, 13);
-
-    // Add OpenStreetMap tile layer
-    window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-
-    // Generate random locations around Udupi for parcels
-    parcels.forEach((parcel) => {
-      // Random offset within ~5km of Udupi center
-      const lat = udupiCoordinates[0] + (Math.random() - 0.5) * 0.05;
-      const lng = udupiCoordinates[1] + (Math.random() - 0.5) * 0.05;
-
-      const getStatusColor = (status: string) => {
-        switch (status) {
-          case "on-route":
-            return "#4CAF50";
-          case "waiting":
-            return "#FFC107";
-          case "canceled":
-            return "#F44336";
-          default:
-            return "#9E9E9E";
-        }
-      };
-
-      // Create marker with colored icon
-      const icon = window.L.divIcon({
-        className: "custom-marker",
-        html: `<div style="background-color: ${getStatusColor(
-          parcel.status
-        )}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.4);"></div>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-      });
-
-      // Add marker to map
-      const marker = window.L.marker([lat, lng], { icon }).addTo(map);
-
-      // Add popup with parcel info
-      marker.bindPopup(`
-        <b>Parcel ID:</b> ${parcel.id}<br>
-        <b>Status:</b> ${parcel.status}<br>
-        <b>Destination:</b> ${parcel.destination || "Unknown"}
-      `);
-    });
-
-    setMapLoaded(true);
-  };
 
   return (
     <div className="h-full w-full">
-      {!mapLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 z-10">
+      {!mapLoaded ? (
+        <div className="flex items-center justify-center h-full">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
+      ) : (
+        <div className="h-full w-full bg-white relative">
+          {/* This would be a real map in a production app */}
+          <div className="absolute inset-0 bg-[#f2f5f7]">
+            <svg
+              width="100%"
+              height="100%"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            >
+              <line x1="0" y1="0" x2="100" y2="100" stroke="#e2e2e2" />
+              <line x1="100" y1="0" x2="0" y2="100" stroke="#e2e2e2" />
+              <line x1="50" y1="0" x2="50" y2="100" stroke="#e2e2e2" />
+              <line x1="0" y1="50" x2="100" y2="50" stroke="#e2e2e2" />
+            </svg>
+          </div>
+
+          {/* Plot drivers on the map */}
+          {drivers.map((driver) => {
+            // In a real app, we'd use the actual geo coordinates
+            const randomX = Math.random() * 80 + 10;
+            const randomY = Math.random() * 80 + 10;
+
+            const getStatusColor = (status: string) => {
+              switch (status) {
+                case "active":
+                  return "#4CAF50"; // Green
+                case "break":
+                  return "#FFC107"; // Yellow
+                case "inactive":
+                  return "#F44336"; // Red
+                default:
+                  return "#9E9E9E"; // Grey
+              }
+            };
+
+            return (
+              <div
+                key={driver.id}
+                className="absolute h-6 w-6 rounded-full border-2 border-white shadow-md transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                style={{
+                  left: `${randomX}%`,
+                  top: `${randomY}%`,
+                  backgroundColor: getStatusColor(driver.status),
+                }}
+                title={driver.name}
+              >
+                <span className="text-white text-xs font-bold">
+                  {driver.vehicle === "truck"
+                    ? "T"
+                    : driver.vehicle === "van"
+                    ? "V"
+                    : driver.vehicle === "minivan"
+                    ? "M"
+                    : "C"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       )}
-      <div
-        ref={mapRef}
-        className="h-full w-full bg-gray-100"
-        style={{ minHeight: "400px" }}
-      />
     </div>
   );
-}
-
-// Add type definition for Leaflet
-declare global {
-  interface Window {
-    L: any;
-  }
 }

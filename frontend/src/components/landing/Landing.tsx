@@ -24,24 +24,24 @@ export function Landing() {
             <span className="font-semibold text-lg">Nexustron</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <a
+            <Link
               href="#features"
               className="text-sm text-foreground/70 hover:text-foreground"
             >
               Features
-            </a>
-            <a
+            </Link>
+            <Link
               href="#how-it-works"
               className="text-sm text-foreground/70 hover:text-foreground"
             >
               How it works
-            </a>
-            <a
+            </Link>
+            <Link
               href="#pricing"
               className="text-sm text-foreground/70 hover:text-foreground"
             >
               Pricing
-            </a>
+            </Link>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/login">
@@ -82,7 +82,7 @@ export function Landing() {
             <div className="relative w-full h-[400px]">
               <Image
                 src="/dashboard-preview.png"
-                alt="QuickDrop Dashboard Preview"
+                alt="Nexustron Dashboard Preview"
                 className="rounded-lg shadow-xl border"
                 fill
                 style={{ objectFit: "contain" }}
@@ -178,7 +178,7 @@ export function Landing() {
             Ready to streamline your delivery operations?
           </h2>
           <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that use QuickDrop to manage their
+            Join thousands of businesses that use Nexustron to manage their
             deliveries efficiently.
           </p>
           <Link href="/register">
@@ -195,38 +195,38 @@ export function Landing() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">QD</span>
+                <span className="text-primary-foreground font-bold">NR</span>
               </div>
-              <span className="font-semibold">QuickDrop</span>
+              <span className="font-semibold">Nexustron</span>
             </div>
             <div className="flex flex-wrap gap-8 justify-center mb-4 md:mb-0">
-              <a
+              <Link
                 href="#features"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Features
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#pricing"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Pricing
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Privacy
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Terms
-              </a>
+              </Link>
             </div>
             <div className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} QuickDrop. All rights reserved.
+              © {new Date().getFullYear()} Nexustron. All rights reserved.
             </div>
           </div>
         </div>
