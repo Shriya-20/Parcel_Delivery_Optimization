@@ -8,6 +8,9 @@ import {
   Truck,
   ClipboardList,
   Settings,
+  Calendar,
+  Users,
+  Route,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -65,7 +68,25 @@ export function Sidebar() {
             <SidebarLink
               to="/tracking"
               icon={Map}
-              label="Tracking"
+              label="Driver Tracking"
+              currentPath={pathname}
+            />
+            <SidebarLink
+              to="/assign"
+              icon={Calendar}
+              label="Assign Deliveries"
+              currentPath={pathname}
+            />
+            <SidebarLink
+              to="/customer"
+              icon={Users}
+              label="Customer Time Slots"
+              currentPath={pathname}
+            />
+            <SidebarLink
+              to="/optimize"
+              icon={Route}
+              label="Optimize Routes"
               currentPath={pathname}
             />
             <SidebarLink

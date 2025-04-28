@@ -183,9 +183,9 @@ function DriverCard({ driver }: { driver: Driver }) {
           <Button variant="outline" size="sm" className="flex-1">
             Profile
           </Button>
-          <Button variant="outline" size="sm" className="flex-1">
+          {/* <Button variant="outline" size="sm" className="flex-1">
             Assign
-          </Button>
+          </Button> */}
           <Button size="sm" className="flex-1">
             Contact
           </Button>

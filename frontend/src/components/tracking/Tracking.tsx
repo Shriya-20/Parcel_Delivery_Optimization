@@ -1,58 +1,116 @@
 "use client";
-
 import { useState } from "react";
-import { Search, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockParcels } from "@/lib/mock-data";
-import { ParcelCard } from "./ParcelCard";
+import { Card } from "@/components/ui/card";
+// import { mockParcels } from "@/lib/mock-data";
 import { MapView } from "./Mapview";
-import { CreateRouteDialog } from "./CreateRouteDialog";
+import Image from "next/image";
 
-export  function Tracking() {
+// Mock drivers data (in a real application, this would come from an API)
+const mockDrivers = [
+  {
+    id: "d1",
+    name: "Alex Johnson",
+    status: "active",
+    location: { lat: 40.7128, lng: -74.006 },
+    vehicle: "van",
+    currentDelivery: "P-4398",
+    avatar: "/placeholder.svg",
+    rating: 4.8,
+    deliveriesCompleted: 342,
+    phone: "+1 (555) 123-4567",
+  },
+  {
+    id: "d2",
+    name: "Maria Garcia",
+    status: "active",
+    location: { lat: 40.7282, lng: -73.996 },
+    vehicle: "truck",
+    currentDelivery: "P-8721",
+    avatar: "/placeholder.svg",
+    rating: 4.9,
+    deliveriesCompleted: 512,
+    phone: "+1 (555) 234-5678",
+  },
+  {
+    id: "d3",
+    name: "James Smith",
+    status: "inactive",
+    location: { lat: 40.7023, lng: -73.986 },
+    vehicle: "car",
+    currentDelivery: null,
+    avatar: "/placeholder.svg",
+    rating: 4.6,
+    deliveriesCompleted: 198,
+    phone: "+1 (555) 345-6789",
+  },
+  {
+    id: "d4",
+    name: "Sarah Williams",
+    status: "break",
+    location: { lat: 40.7328, lng: -74.016 },
+    vehicle: "minivan",
+    currentDelivery: "P-2341",
+    avatar: "/placeholder.svg",
+    rating: 4.7,
+    deliveriesCompleted: 287,
+    phone: "+1 (555) 456-7890",
+  },
+];
+type Driver = {
+  id: string;
+  name: string;
+  status: string;
+  location: { lat: number; lng: number };
+  vehicle: string;
+  currentDelivery: string | null;
+  avatar: string;
+  rating: number;
+  deliveriesCompleted: number;
+  phone: string;
+};
+
+export function Tracking() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showCreateRouteDialog, setShowCreateRouteDialog] = useState(false);
 
-  const filteredParcels = searchQuery
-    ? mockParcels.filter(
-        (parcel) =>
-          parcel.id.includes(searchQuery) ||
-          parcel.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          parcel.pickupAddress
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          parcel.deliveryAddress
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
+  // Filter drivers based on search query
+  const filteredDrivers = searchQuery
+    ? mockDrivers.filter(
+        (driver) =>
+          driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          driver.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          driver.vehicle.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : mockParcels;
+    : mockDrivers;
 
-  const onRouteParcels = filteredParcels.filter((p) => p.status === "on-route");
-  const waitingParcels = filteredParcels.filter((p) => p.status === "waiting");
-  const canceledParcels = filteredParcels.filter(
-    (p) => p.status === "canceled"
+  const activeDrivers = filteredDrivers.filter((d) => d.status === "active");
+  const inactiveDrivers = filteredDrivers.filter(
+    (d) => d.status === "inactive" || d.status === "break"
   );
 
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Tracking</h1>
+        <div className="flex flex-col  gap-2">
+          <h1 className="text-2xl font-bold tracking-tight">Driver Tracking</h1>
+          <p className="text-sm muted-foreground">
+            Track your drivers in <span className="font-bold">real-time</span>{" "}
+          </p>
+        </div>
         <div className="flex items-center gap-3">
           <div className="relative w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search parcels..."
+              placeholder="Search drivers..."
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button onClick={() => setShowCreateRouteDialog(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Route
-          </Button>
         </div>
       </div>
 
@@ -61,54 +119,92 @@ export  function Tracking() {
           <Tabs defaultValue="all">
             <TabsList className="mb-4">
               <TabsTrigger value="all">
-                All {filteredParcels.length}
+                All {filteredDrivers.length}
               </TabsTrigger>
-              <TabsTrigger value="on-route">
-                On route {onRouteParcels.length}
+              <TabsTrigger value="active">
+                Active {activeDrivers.length}
               </TabsTrigger>
-              <TabsTrigger value="waiting">
-                Waiting {waitingParcels.length}
-              </TabsTrigger>
-              <TabsTrigger value="canceled">
-                Canceled {canceledParcels.length}
+              <TabsTrigger value="inactive">
+                Inactive {inactiveDrivers.length}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="space-y-4 mr-3">
-              {filteredParcels.map((parcel) => (
-                <ParcelCard key={parcel.id} parcel={parcel} />
+              {filteredDrivers.map((driver) => (
+                <DriverCard key={driver.id} driver={driver} />
               ))}
             </TabsContent>
 
-            <TabsContent value="on-route" className="space-y-4 mr-3">
-              {onRouteParcels.map((parcel) => (
-                <ParcelCard key={parcel.id} parcel={parcel} />
+            <TabsContent value="active" className="space-y-4 mr-3">
+              {activeDrivers.map((driver) => (
+                <DriverCard key={driver.id} driver={driver} />
               ))}
             </TabsContent>
 
-            <TabsContent value="waiting" className="space-y-4 mr-3">
-              {waitingParcels.map((parcel) => (
-                <ParcelCard key={parcel.id} parcel={parcel} />
-              ))}
-            </TabsContent>
-
-            <TabsContent value="canceled" className="space-y-4 mr-3">
-              {canceledParcels.map((parcel) => (
-                <ParcelCard key={parcel.id} parcel={parcel} />
+            <TabsContent value="inactive" className="space-y-4 mr-3">
+              {inactiveDrivers.map((driver) => (
+                <DriverCard key={driver.id} driver={driver} />
               ))}
             </TabsContent>
           </Tabs>
         </div>
 
         <div className="md:col-span-3 bg-muted/30 rounded-lg overflow-hidden">
-          <MapView parcels={filteredParcels} />
+          <MapView drivers={filteredDrivers} />
         </div>
       </div>
-
-      <CreateRouteDialog
-        open={showCreateRouteDialog}
-        onClose={() => setShowCreateRouteDialog(false)}
-      />
     </div>
+  );
+}
+
+function DriverCard({ driver }: { driver: Driver }) {
+  return (
+    <Card className="p-4">
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+          <Image
+            src={driver.avatar}
+            alt={driver.name}
+            className="h-full w-full object-cover"
+            width={48}
+            height={48}
+          />
+        </div>
+        <div className="flex-1">
+          <div className="flex justify-between">
+            <h3 className="font-medium">{driver.name}</h3>
+            <div
+              className={`px-2 py-1 text-xs rounded-full ${
+                driver.status === "active"
+                  ? "bg-green-100 text-green-800"
+                  : driver.status === "break"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {driver.status === "active"
+                ? "Active"
+                : driver.status === "break"
+                ? "On Break"
+                : "Inactive"}
+            </div>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Vehicle: {driver.vehicle}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Current Delivery: {driver.currentDelivery || "None"}
+          </div>
+          <div className="mt-2 flex items-center text-sm">
+            <div className="flex items-center">
+              <span className="text-amber-500 mr-1">★</span>
+              <span>{driver.rating}</span>
+            </div>
+            <span className="mx-2">•</span>
+            <span>{driver.deliveriesCompleted} deliveries</span>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
