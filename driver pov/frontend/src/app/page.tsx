@@ -17,7 +17,7 @@ export default function LoginPage() {
   return (
     <div className="container flex flex-col items-center justify-center min-h-screen px-4 py-8">
       <div className="flex flex-col items-center mb-8">
-        <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
+        {/* <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -34,8 +34,11 @@ export default function LoginPage() {
             <path d="M12 8v4" />
             <path d="M12 16h.01" />
           </svg>
+        </div> */}
+        <div className="h-10 w-10 rounded-md bg-primary flex items-center justify-center">
+          <span className="text-primary-foreground font-bold">NR</span>
         </div>
-        <h1 className="text-3xl font-bold text-center">ParcelAI</h1>
+        <h1 className="text-3xl font-bold text-center">Nexustron</h1>
         <p className="text-muted-foreground text-center mt-1">Driver Portal</p>
       </div>
 
@@ -77,7 +80,10 @@ export default function LoginPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button asChild className="w-full bg-primary hover:bg-primary-foreground">
+              <Button
+                asChild
+                className="w-full bg-primary hover:bg-primary-foreground"
+              >
                 <Link href="/dashboard">Sign In</Link>
               </Button>
             </CardFooter>

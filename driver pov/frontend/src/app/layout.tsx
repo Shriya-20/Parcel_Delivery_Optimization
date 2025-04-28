@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Driver Portal | ParcelAI",
+  title: "Nexustron Driver Portal",
   description: "AI-driven parcel optimization platform for drivers",
 };
 
