@@ -43,16 +43,20 @@ export function Assign() {
         assignedDriver: {
           id: `d${(index % 4) + 1}`,
           name: [
-            "Alex Johnson",
-            "Maria Garcia",
-            "James Smith",
-            "Sarah Williams",
+            "Keerthan Kumar C",
+            "Shriya Bhat",  
+            "Bhanu Shashank",
+            "Santhosh",
           ][index % 4],
           avatar: "/placeholder.svg",
           rating: 4.8,
           deliveriesCompleted: 342,
-          vehicleType: ["van", "truck", "car", "minivan"][index % 4],
+          vehicle: ["van", "truck", "car", "minivan"][index % 4],
           available: true,
+          phone: "+1 (555) 123-4567",
+          status: "active",
+          location: { lat: 13.346573, lng: 74.794143 },
+          currentDelivery: delivery.id,
         },
       }))
     );
@@ -75,8 +79,12 @@ export function Assign() {
                 avatar: "/placeholder.svg",
                 rating: 4.8,
                 deliveriesCompleted: 342,
-                vehicleType: "van",
+                vehicle: "van",
                 available: true,
+                phone: "+1 (555) 123-4567",
+                status: "active",
+                location: { lat: 13.346573, lng: 74.794143 },
+                currentDelivery: d.id,
               },
             }
           : d

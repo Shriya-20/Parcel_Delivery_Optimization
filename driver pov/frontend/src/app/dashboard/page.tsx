@@ -1,3 +1,4 @@
+"use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
@@ -12,7 +13,8 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Alex</p>
+          <p className="text-muted-foreground">Welcome back</p>
+          <p className="text--foreground">Keerthan Kumar C</p>
         </div>
         <div className="flex items-center space-x-2">
           <Switch id="status" defaultChecked />
@@ -39,5 +41,5 @@ export default function Dashboard() {
         <DailySummary />
       </div>
     </div>
-  )
+  );
 }

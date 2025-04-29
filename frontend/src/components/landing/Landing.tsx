@@ -81,11 +81,11 @@ export function Landing() {
             <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent h-12 bottom-0 z-10"></div>
             <div className="relative w-full h-[400px]">
               <Image
-                src="/dashboard-preview.png"
+                src="/dashboard_for_landing_page.png"
                 alt="Nexustron Dashboard Preview"
                 className="rounded-lg shadow-xl border"
                 fill
-                style={{ objectFit: "contain" }}
+                style={{ objectFit: "fill" }}
               />
             </div>
           </div>

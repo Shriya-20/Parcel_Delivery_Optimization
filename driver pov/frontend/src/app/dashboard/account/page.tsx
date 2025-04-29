@@ -24,7 +24,7 @@ export default function AccountPage() {
           <User className="h-8 w-8 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">Alex Johnson</h2>
+          <h2 className="text-xl font-bold">Keerthan Kumar C</h2>
           <div className="flex items-center text-muted-foreground">
             <Star className="h-4 w-4 text-yellow-500 mr-1" />
             <span>4.9 Rating</span>

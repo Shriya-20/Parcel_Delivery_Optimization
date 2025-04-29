@@ -2,3 +2,4 @@ delivery_env/
 venv/
 .pyc
 logs/
+.env
