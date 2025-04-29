@@ -11,83 +11,85 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Route } from "lucide-react";
-// import { mockParcels } from "@/lib/mock-data";
 
 // Mock drivers data
 const mockDrivers = [
-  { id: "d1", name: "Alex Johnson" },
-  { id: "d2", name: "Maria Garcia" },
-  { id: "d3", name: "James Smith" },
-  { id: "d4", name: "Sarah Williams" },
+  { id: "d1", name: "Keerthan Kumar C" },
+  { id: "d2", name: "Shriya Bhat" },
+  { id: "d3", name: "Bhanu Shashank" },
+  { id: "d4", name: "Santhosh" },
 ];
 
-// Mock routes for demo
-const mockRoutes: Record<string, { id: string; address: string; timeSlot: string }[]> = {
+// Mock routes for demo (Udupi addresses)
+const mockRoutes: Record<
+  string,
+  { id: string; address: string; timeSlot: string }[]
+> = {
   d1: [
     {
       id: "P-1234",
-      address: "123 Main St, New York, NY",
+      address: "Manipal Institute of Technology, Udupi, Karnataka",
       timeSlot: "9:00 - 10:00",
     },
     {
       id: "P-2345",
-      address: "456 Broadway, New York, NY",
+      address: "End Point Road, Udupi, Karnataka",
       timeSlot: "10:00 - 11:00",
     },
     {
       id: "P-3456",
-      address: "789 5th Ave, New York, NY",
+      address: "KMC Hospital, Manipal, Udupi, Karnataka",
       timeSlot: "11:00 - 12:00",
     },
     {
       id: "P-4567",
-      address: "101 Park Ave, New York, NY",
+      address: "MIT Library, Manipal, Udupi, Karnataka",
       timeSlot: "13:00 - 14:00",
     },
   ],
   d2: [
     {
       id: "P-5678",
-      address: "202 Madison Ave, New York, NY",
+      address: "Manipal Lake, Udupi, Karnataka",
       timeSlot: "9:00 - 10:00",
     },
     {
       id: "P-6789",
-      address: "303 Lexington Ave, New York, NY",
+      address: "Indrali Railway Station, Udupi, Karnataka",
       timeSlot: "10:00 - 11:00",
     },
     {
       id: "P-7890",
-      address: "404 3rd Ave, New York, NY",
+      address: "Udupi Bus Stand, Udupi, Karnataka",
       timeSlot: "14:00 - 15:00",
     },
   ],
   d3: [
     {
       id: "P-8901",
-      address: "505 7th Ave, New York, NY",
+      address: "DC Office, Udupi, Karnataka",
       timeSlot: "11:00 - 12:00",
     },
     {
       id: "P-9012",
-      address: "606 8th Ave, New York, NY",
+      address: "Sri Krishna Temple, Udupi, Karnataka",
       timeSlot: "13:00 - 14:00",
     },
   ],
   d4: [
     {
       id: "P-0123",
-      address: "707 9th Ave, New York, NY",
+      address: "MIT Ground, Udupi, Karnataka",
       timeSlot: "15:00 - 16:00",
     },
     {
       id: "P-1235",
-      address: "808 10th Ave, New York, NY",
+      address: "Tiger Circle, Udupi, Karnataka",
       timeSlot: "16:00 - 17:00",
     },
     {
       id: "P-2346",
-      address: "909 11th Ave, New York, NY",
+      address: "Manipal Lake View, Udupi, Karnataka",
       timeSlot: "17:00 - 18:00",
     },
   ],
@@ -95,27 +97,27 @@ const mockRoutes: Record<string, { id: string; address: string; timeSlot: string
 
 export function OptimizeRoutes() {
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
-  const [optimized, setOptimized] = useState(false);
-  const [routes, setRoutes] = useState<{ id: string; address: string; timeSlot: string }[]>([]);
+  const [optimized, setOptimized] = useState(true); // default is Optimized
+  const [routes, setRoutes] = useState<
+    { id: string; address: string; timeSlot: string }[]
+  >([]);
 
   const handleSelectDriver = (driverId: string) => {
     setSelectedDriver(driverId);
-    // Load the driver's assigned deliveries
     setRoutes(mockRoutes[driverId as keyof typeof mockRoutes] || []);
-    setOptimized(false);
+    setOptimized(true); // reset to optimized view
   };
 
   const handleOptimizeRoute = () => {
     if (!selectedDriver) return;
 
     toast.success(
-      `Route optimized for ${
+      `Route re-optimized for ${
         mockDrivers.find((d) => d.id === selectedDriver)?.name
       }`
     );
 
-    // In a real app, we'd call an API to optimize the route
-    // For this demo, we'll just shuffle the routes to simulate optimization
+    // Shuffle to simulate re-optimization
     setRoutes([...routes].sort(() => Math.random() - 0.5));
     setOptimized(true);
   };
@@ -123,7 +125,13 @@ export function OptimizeRoutes() {
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Optimize Routes</h1>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold tracking-tight">Optimize Routes</h1>
+          <p className="text-sm text-foreground">
+            View the <span className="font-bold">Optimized Routes</span> for
+            your drivers (Assign the drivers first).
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -161,7 +169,7 @@ export function OptimizeRoutes() {
                   disabled={!selectedDriver || routes.length === 0}
                 >
                   <Route className="h-4 w-4" />
-                  Optimize Route
+                  Re-optimize Route
                 </Button>
 
                 {selectedDriver && routes.length > 0 && (
@@ -199,49 +207,21 @@ export function OptimizeRoutes() {
                       No deliveries assigned to this driver
                     </div>
                   ) : (
-                    /* In a real app, this would be a map component showing the route */
-                    <svg
+                    <iframe
                       width="100%"
                       height="100%"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 100 100"
-                      preserveAspectRatio="none"
-                    >
-                      <line x1="0" y1="0" x2="100" y2="100" stroke="#e2e2e2" />
-                      <line x1="100" y1="0" x2="0" y2="100" stroke="#e2e2e2" />
-                      <line x1="50" y1="0" x2="50" y2="100" stroke="#e2e2e2" />
-                      <line x1="0" y1="50" x2="100" y2="50" stroke="#e2e2e2" />
-
-                      {optimized &&
-                        routes.map((stop, index) => {
-                          const x = 10 + index * (80 / routes.length);
-                          return (
-                            <g key={stop.id}>
-                              {index > 0 && (
-                                <line
-                                  x1={10 + (index - 1) * (80 / routes.length)}
-                                  y1="50"
-                                  x2={x}
-                                  y2="50"
-                                  stroke="#4CAF50"
-                                  strokeWidth="2"
-                                  strokeDasharray="4"
-                                />
-                              )}
-                              <circle cx={x} cy="50" r="3" fill="#4CAF50" />
-                              <text
-                                x={x}
-                                y="45"
-                                fontSize="3"
-                                textAnchor="middle"
-                                fill="#333"
-                              >
-                                {index + 1}
-                              </text>
-                            </g>
-                          );
-                        })}
-                    </svg>
+                      frameBorder="0"
+                      style={{ border: 0 }}
+                      src={`https://www.google.com/maps/embed/v1/directions?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&origin=${encodeURIComponent(
+                        routes[0].address
+                      )}&destination=${encodeURIComponent(
+                        routes[routes.length - 1].address
+                      )}&waypoints=${routes
+                        .slice(1, -1)
+                        .map((r) => encodeURIComponent(r.address))
+                        .join("|")}`}
+                      allowFullScreen
+                    ></iframe>
                   )}
                 </div>
               </CardContent>
@@ -263,9 +243,7 @@ export function OptimizeRoutes() {
                     <table className="w-full">
                       <thead className="bg-muted/50 sticky top-0">
                         <tr>
-                          <th className="text-left p-3 text-sm">
-                            {optimized ? "Stop" : "ID"}
-                          </th>
+                          <th className="text-left p-3 text-sm">Stop</th>
                           <th className="text-left p-3 text-sm">
                             Delivery Address
                           </th>
@@ -279,13 +257,9 @@ export function OptimizeRoutes() {
                             className="border-b last:border-b-0"
                           >
                             <td className="p-3">
-                              {optimized ? (
-                                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                                  {index + 1}
-                                </div>
-                              ) : (
-                                stop.id
-                              )}
+                              <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                                {index + 1}
+                              </div>
                             </td>
                             <td className="p-3">{stop.address}</td>
                             <td className="p-3">{stop.timeSlot}</td>

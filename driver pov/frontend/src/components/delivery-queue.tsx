@@ -13,40 +13,40 @@ type Delivery = {
 const deliveries: Delivery[] = [
   {
     id: "DEL-1234",
-    address: "123 Main St, Apt 4B",
+    address: "Diana Circle, Udupi, Karnataka",
     time: "10:30 AM",
     priority: "high",
     status: "in-progress",
   },
   {
     id: "DEL-1235",
-    address: "456 Oak Ave",
+    address: "Manipal University, Udupi, Karnataka",
     time: "11:15 AM",
     priority: "medium",
     status: "pending",
   },
   {
     id: "DEL-1236",
-    address: "789 Pine Blvd, Suite 3",
+    address: "Malpe Beach, Udupi, Karnataka",
     time: "12:00 PM",
     priority: "medium",
     status: "pending",
   },
   {
     id: "DEL-1237",
-    address: "321 Cedar Ln",
+    address: "Sri Krishna Temple, Car Street, Udupi, Karnataka",
     time: "1:30 PM",
     priority: "low",
     status: "pending",
   },
   {
     id: "DEL-1238",
-    address: "654 Maple Dr",
+    address: "Kodi Beach, Udupi, Karnataka",
     time: "2:45 PM",
     priority: "low",
     status: "pending",
   },
-]
+];
 
 const priorityColors = {
   high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
@@ -76,10 +76,10 @@ export function DeliveryQueue() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className={priorityColors[delivery.priority]}>
+            {/* <Badge variant="outline" className={priorityColors[delivery.priority]}>
               {delivery.priority === "high" && <AlertTriangle className="h-3 w-3 mr-1" />}
               {delivery.priority.charAt(0).toUpperCase() + delivery.priority.slice(1)}
-            </Badge>
+            </Badge> */}
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </div>
         </Link>

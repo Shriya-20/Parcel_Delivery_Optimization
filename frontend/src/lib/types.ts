@@ -12,11 +12,15 @@ export interface Vehicle {
   type: string;
 }
 
-export interface Driver {
+export type Driver = {
   id: string;
   name: string;
+  status: string;
+  location: { lat: number; lng: number };
+  vehicle: string;
+  currentDelivery: string | null;
   avatar: string;
   rating: number;
-  available: boolean;
-  vehicleType: string;
-}
+  deliveriesCompleted: number;
+  phone: string;
+};

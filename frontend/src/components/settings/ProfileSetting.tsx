@@ -38,6 +38,8 @@ export function ProfileSettings() {
               src="/lovable-uploads/abef8128-ffc2-49df-a694-60d642d30841.png"
               alt="Profile"
               className="h-24 w-24 rounded-full object-cover"
+              width={96}
+              height={96}
             />
             <Button
               variant="secondary"

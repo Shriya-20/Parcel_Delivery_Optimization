@@ -15,35 +15,35 @@ type RouteStop = {
 const routeStops: RouteStop[] = [
   {
     id: "DEL-1233",
-    address: "987 Elm St",
+    address: "Diana Circle, Udupi, Karnataka",
     time: "9:15 AM",
     status: "completed",
     isActive: false,
   },
   {
     id: "DEL-1234",
-    address: "123 Main St, Apt 4B",
+    address: "Manipal University, Udupi, Karnataka",
     time: "10:30 AM",
     status: "in-progress",
     isActive: true,
   },
   {
     id: "DEL-1235",
-    address: "456 Oak Ave",
+    address: "Malpe Beach, Udupi, Karnataka",
     time: "11:15 AM",
     status: "pending",
     isActive: false,
   },
   {
     id: "DEL-1236",
-    address: "789 Pine Blvd, Suite 3",
+    address: "Sri Krishna Temple, Car Street, Udupi, Karnataka",
     time: "12:00 PM",
     status: "pending",
     isActive: false,
   },
   {
     id: "DEL-1237",
-    address: "321 Cedar Ln",
+    address: "Kodi Beach, Udupi, Karnataka",
     time: "1:30 PM",
     status: "pending",
     isActive: false,
@@ -69,7 +69,7 @@ const routeStops: RouteStop[] = [
     status: "pending",
     isActive: false,
   },
-]
+];
 
 const statusColors = {
   completed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",

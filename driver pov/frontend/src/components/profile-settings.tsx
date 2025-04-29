@@ -19,7 +19,7 @@ export function ProfileSettings() {
                 <Camera className="h-3 w-3" />
               </Button>
             </div>
-            <p className="font-medium">Alex Johnson</p>
+            <p className="font-medium">Keerthan Kumar C</p>
             <p className="text-sm text-muted-foreground">Driver ID: DRV-12345</p>
           </div>
 
@@ -27,27 +27,27 @@ export function ProfileSettings() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" defaultValue="Alex" />
+                <Input id="firstName" defaultValue="Keerthan" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" defaultValue="Johnson" />
+                <Input id="lastName" defaultValue="Kumar C" />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="alex.johnson@example.com" />
+              <Input id="email" type="email" defaultValue="kkc@example.com" />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" type="tel" defaultValue="(555) 123-4567" />
+              <Input id="phone" type="tel" defaultValue="+91 999990000" />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input id="address" defaultValue="456 Driver Lane, Cityville, ST 12345" />
+              <Input id="address" defaultValue="MIT Manipal" />
             </div>
 
             <Button className="w-full">Save Changes</Button>

@@ -20,7 +20,7 @@ export default function ActiveDelivery({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <DeliveryMap />
+      <DeliveryMap deliveryId={params.id} />
 
       <div className="grid grid-cols-1 gap-4">
         <DeliveryInfo />
@@ -33,7 +33,7 @@ export default function ActiveDelivery({ params }: { params: { id: string } }) {
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium">John Smith</p>
-                <p className="text-sm text-muted-foreground">123 Main St, Apt 4B</p>
+                <p className="text-sm text-muted-foreground">Diana Circle, Udupi</p>
               </div>
               <div className="flex space-x-2">
                 <Button size="icon" variant="outline">
@@ -58,10 +58,10 @@ export default function ActiveDelivery({ params }: { params: { id: string } }) {
         </Card>
 
         <div className="flex space-x-3">
-          <Button className="flex-1" variant="outline">
+          {/* <Button className="flex-1" variant="outline">
             <Camera className="h-4 w-4 mr-2" />
             Proof of Delivery
-          </Button>
+          </Button> */}
           <Button className="flex-1">
             <CheckCircle className="h-4 w-4 mr-2" />
             Complete Delivery

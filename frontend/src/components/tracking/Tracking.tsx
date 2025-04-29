@@ -13,9 +13,9 @@ import Image from "next/image";
 const mockDrivers = [
   {
     id: "d1",
-    name: "Alex Johnson",
+    name: "Keerthan Kumar C",
     status: "active",
-    location: { lat: 40.7128, lng: -74.006 },
+    location: { lat: 13.346573, lng: 74.794143 },
     vehicle: "van",
     currentDelivery: "P-4398",
     avatar: "/placeholder.svg",
@@ -25,9 +25,9 @@ const mockDrivers = [
   },
   {
     id: "d2",
-    name: "Maria Garcia",
+    name: "Shriya Bhat",
     status: "active",
-    location: { lat: 40.7282, lng: -73.996 },
+    location: { lat: 13.369604, lng: 74.805201 },
     vehicle: "truck",
     currentDelivery: "P-8721",
     avatar: "/placeholder.svg",
@@ -37,9 +37,9 @@ const mockDrivers = [
   },
   {
     id: "d3",
-    name: "James Smith",
+    name: "Bhanu Shashank",
     status: "inactive",
-    location: { lat: 40.7023, lng: -73.986 },
+    location: { lat: 13.301463, lng: 74.735969 },
     vehicle: "car",
     currentDelivery: null,
     avatar: "/placeholder.svg",
@@ -49,9 +49,9 @@ const mockDrivers = [
   },
   {
     id: "d4",
-    name: "Sarah Williams",
+    name: "Santhosh",
     status: "break",
-    location: { lat: 40.7328, lng: -74.016 },
+    location: { lat: 13.549314, lng: 74.702506 },
     vehicle: "minivan",
     currentDelivery: "P-2341",
     avatar: "/placeholder.svg",

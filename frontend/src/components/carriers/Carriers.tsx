@@ -22,7 +22,7 @@ export function Carriers() {
     ? mockDrivers.filter(
         (driver) =>
           driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          driver.vehicleType.toLowerCase().includes(searchQuery.toLowerCase())
+          driver.vehicle.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : mockDrivers;
 
@@ -83,7 +83,7 @@ export function Carriers() {
         <TabsContent value="available" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDrivers
-              .filter((driver) => driver.available)
+              .filter((driver) => driver.status === "active")
               .map((driver) => (
                 <DriverCard key={driver.id} driver={driver} />
               ))}
@@ -93,7 +93,7 @@ export function Carriers() {
         <TabsContent value="busy" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDrivers
-              .filter((driver) => !driver.available)
+              .filter((driver) => driver.status === "inactive")
               .map((driver) => (
                 <DriverCard key={driver.id} driver={driver} />
               ))}
@@ -145,19 +145,19 @@ function DriverCard({ driver }: { driver: Driver }) {
           </div>
           <span
             className={`text-xs px-2 py-1 rounded-full ${
-              driver.available
+              driver.status === "active"
                 ? "bg-green-100 text-green-800"
                 : "bg-amber-100 text-amber-800"
             }`}
           >
-            {driver.available ? "Available" : "Busy"}
+            {driver.status === "active" ? "Available" : "Busy"}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div>
             <p className="text-muted-foreground">Vehicle Type</p>
-            <p className="font-medium capitalize">{driver.vehicleType}</p>
+            <p className="font-medium capitalize">{driver.vehicle}</p>
           </div>
           <div>
             <p className="text-muted-foreground">License</p>
