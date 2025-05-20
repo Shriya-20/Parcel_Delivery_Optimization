@@ -1,0 +1,35 @@
+import express, { urlencoded, json } from "express";
+import cors from "cors";
+import authRouter from "./routes/auth.routes";
+import driverRouter from "./routes/drivers.routes";
+import deliveryRouter from "./routes/delivery.routes";
+import customerRouter from "./routes/customer.routes";
+import routeRouter from "./routes/route.routes";
+import timeslotRouter from "./routes/timeslot.routes";
+import adminRouter from "./routes/admin.routes";
+
+const port = process.env.PORT || 8000;
+const app = express();
+
+app.use(urlencoded({ extended: true }));
+app.use(json());
+app.use(cors())
+
+app.get("/", (req, res) => {
+  res.status(200).json({ msg: "Server is up and running" });
+});
+
+app.use("/api/auth",authRouter);
+app.use("/api/drivers", driverRouter);
+app.use("/api/delivery", deliveryRouter);
+app.use("/api/customers", customerRouter);
+app.use("/api/route", routeRouter);
+app.use("/api/timeslot", timeslotRouter);
+app.use("/api/admin", adminRouter);
+
+app.listen(port, () => {
+  console.log(`Server is listening at port ${port}`);
+});
+
+//each shd return success,message,data or error
+//each will have res.status.json then will have return
