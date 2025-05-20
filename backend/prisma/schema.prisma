@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model Driver{
+    driver_id    String  @id @default(uuid())
+    first_name     String
+    last_name      String?
+    email          String  @unique
+    hashed_password String
+    phone_number    String
+    address         String?
+    start_location  String?
+    refresh_token    String?//for authentication
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    vehicles    Vehicle[]
+    DeliveryQueue DeliveryQueue[]
+    OrderHistory OrderHistory[]
+    route Route[]
+    Assignment Assignment[]
+    driver_location DriverLocation[]
+    // driver_location is used to track the location of the driver in real time
+    feedback Feedback[]
+
+    @@index([email], name: "idx_driver_email")
+}
+
+model Vehicle{
+    vehicle_id   String  @id @default(uuid())
+    driver_id    String
+    type         VehicleType
+    company      String
+    model        String 
+    year         Int
+    color       String
+    license_plate String  @unique
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+
+    @@index([driver_id], name: "idx_vehicle_driver_id")
+}
+
+enum VehicleType {
+    motorcycle
+    sedan
+    suv
+    van
+    truck
+}
+
+model TimeSlot{
+    time_slot_id String @id @default(uuid())
+    start_time   DateTime
+    end_time     DateTime
+
+    Delivery Delivery[]
+
+    @@index([start_time, end_time], name: "idx_timeslot_start_end")
+}
+
+model Customer{
+    customer_id   String  @id @default(uuid())
+    first_name     String
+    last_name      String?
+    email          String  @unique
+    // hashed_password String for now no login done of customer so no password
+    phone_number    String
+    address         String?
+    latitude       Float?//just for now
+    // for now we are not using this but in future we can use this to track the location of the customer
+    longitude      Float?
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    Delivery Delivery[]
+    OrderHistory OrderHistory[]
+    feedback Feedback[]
+
+    @@index([email], name: "idx_customer_email")
+}
+
+model Delivery{
+    delivery_id   String  @id @default(uuid())
+    customer_id    String
+    weight       Float
+    size         String
+    delivery_instructions String?
+    time_slot_id   String //each delivery will have a time slot
+    dropoff_location String //for now is the address say shd be lat and long also ig she see to it
+    priority     Int @default(0) // 0 is normal, 1 is high, 2 is urgent
+    latitude    Float?
+    longitude   Float?//just for now as we can just geocode the address and get the lat and long
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    customer Customer @relation(fields: [customer_id], references: [customer_id])
+    time_slot TimeSlot @relation(fields: [time_slot_id], references: [time_slot_id])
+    DeliveryQueue DeliveryQueue[]
+    OrderHistory OrderHistory[]
+    route Route[]
+    Assignment Assignment[]
+
+    @@index([customer_id], name: "idx_delivery_customer_id")
+    @@index([time_slot_id], name: "idx_delivery_time_slot_id")
+}
+
+model DeliveryQueue{
+    queue_id     String  @id @default(uuid())
+    delivery_id   String
+    driver_id     String
+    status        DeliveryStatus
+    date         DateTime
+    position        Int? //position in the queue
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    delivery Delivery @relation(fields: [delivery_id], references: [delivery_id])
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+}
+
+enum DeliveryStatus {
+    pending
+    in_progress
+    completed
+    cancelled
+}
+
+model OrderHistory{
+    order_id     String  @id @default(uuid())
+    customer_id   String
+    driver_id     String
+    delivery_id   String
+    status        OrderStatus
+    date         DateTime
+
+    completed_at DateTime?//when the order was completed
+    delivery_duration Int? //in minutes
+    delivery_distance Float? //in km
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    customer Customer @relation(fields: [customer_id], references: [customer_id])
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+    delivery Delivery @relation(fields: [delivery_id], references: [delivery_id])
+
+    @@index([customer_id], name: "idx_order_history_customer_id")
+    @@index([driver_id,date], name: "idx_order_history_driver_id")//for his performance
+
+}
+enum OrderStatus {
+    on_time
+    late
+    early
+    not_delivered
+}
+
+
+model Route{
+    route_id String @id @default(uuid())
+    driver_id String
+    delivery_id String
+    route_details Json
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+    delivery Delivery @relation(fields: [delivery_id], references: [delivery_id])
+    Assignment Assignment[]
+
+    @@index([driver_id,createdAt], name: "idx_route_driver_id")
+}
+
+model Assignment{
+    assignment_id String @id @default(uuid())
+    driver_id String
+    delivery_id String
+    assigned_at DateTime @default(now())
+    route_id String
+    sequence_order Int? //order in which the delivery is to be done
+    expected_arrival_time DateTime? //when the driver is expected to arrive at the delivery location
+
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+    delivery Delivery @relation(fields: [delivery_id], references: [delivery_id])
+    route Route @relation(fields: [route_id], references: [route_id])
+
+    @@index([driver_id, assigned_at], name: "idx_assignment_driver_id")
+}
+
+model Admin{
+    admin_id     String  @id @default(uuid())
+    first_name     String
+    last_name      String?
+    email          String  @unique
+    hashed_password String
+    phone_number    String
+    role            AdminRole @default(standard)
+    region          String? //for regional admins
+
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+}//just so like if diff admin is there then based on that like we can then do region wise and also diff admin handle sets of drivers and customers
+//and also we can have a super admin who can handle all the admins and all the drivers and customers
+
+enum AdminRole {
+    super_admin
+    regional_admin
+    standard
+}
+
+model DriverLocation{
+    location_id String @id @default(uuid())
+    driver_id String
+    latitude Float
+    longitude Float
+    timestamp DateTime @default(now())
+
+    speed Float? // Current speed
+    heading Int? // Direction in degrees (0-359)
+    battery_level Int? // For mobile app tracking
+
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+
+    @@index([driver_id, timestamp])
+}
+
+model Feedback{
+    feedback_id String @id @default(uuid())
+    customer_id String
+    driver_id String
+    rating Int @default(1)
+    // Ensure rating is between 1 and 5 in application logic
+    comment String?
+    createdAt DateTime @default(now())
+    
+
+    customer Customer @relation(fields: [customer_id], references: [customer_id])
+    driver Driver @relation(fields: [driver_id], references: [driver_id])
+
+    @@index([driver_id],name: "idx_feedback_driver_id")
+    @@index([customer_id],name: "idx_feedback_customer_id")
+}
