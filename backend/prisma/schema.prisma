@@ -122,7 +122,7 @@ model DeliveryQueue{
     queue_id     String  @id @default(uuid())
     delivery_id   String
     driver_id     String
-    status        DeliveryStatus
+    status        DeliveryStatus @default(pending)
     date         DateTime
     position        Int? //position in the queue
 
@@ -131,6 +131,7 @@ model DeliveryQueue{
 
     delivery Delivery @relation(fields: [delivery_id], references: [delivery_id])
     driver Driver @relation(fields: [driver_id], references: [driver_id])
+    @@unique([driver_id, delivery_id], name: "idx_delivery_queue_driver_delivery_id")//making the combination of driver and delivery unique so that a driver can only have one delivery(i.e each delivery id is however unique so) in the queue at a time
 }
 
 enum DeliveryStatus {
@@ -226,7 +227,7 @@ enum AdminRole {
 
 model DriverLocation{
     location_id String @id @default(uuid())
-    driver_id String
+    driver_id String @unique  //each driver has a unique location or each driver location is updated so each driver will have one entry only so unique
     latitude Float
     longitude Float
     timestamp DateTime @default(now())
