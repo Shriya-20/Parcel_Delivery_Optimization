@@ -98,11 +98,13 @@ model Delivery{
     weight       Float
     size         String
     delivery_instructions String?
-    time_slot_id   String //each delivery will have a time slot
+    time_slot_id   String  //each delivery will have a time slot i.e of the preffered time slot only if not then it will be default time slot that will be taken or set by the admin
     dropoff_location String //for now is the address say shd be lat and long also ig she see to it
     priority     Int @default(0) // 0 is normal, 1 is high, 2 is urgent
     latitude    Float?
     longitude   Float?//just for now as we can just geocode the address and get the lat and long
+    date        DateTime @default(now())//when the delivery is created
+    delivery_date DateTime @default(now())//when the delivery is to be done
 
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt

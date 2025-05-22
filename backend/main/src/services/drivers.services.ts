@@ -24,10 +24,39 @@ export async function getAllDriversService(){
               type: true,
               license_plate: true
             }
+          },
+        }
+      });
+      const driverRatings = await prisma.feedback.aggregate({
+        _avg: {
+          rating: true
+        },
+        where: {
+          driver_id: {
+            in: drivers.map((driver) => driver.driver_id)
           }
         }
       });
-    return drivers;
+      const completedDeliveries = await prisma.orderHistory.aggregate({
+        _count: {
+          delivery_id: true
+        },
+        where: {
+          driver_id: {
+            in: drivers.map((driver) => driver.driver_id)
+          }
+        }
+      });
+      const driverandRatings = drivers.map((driver) => {
+        const rating = driverRatings._avg.rating;
+        const completed = completedDeliveries._count.delivery_id;
+        return {
+          ...driver,
+          rating: rating,
+          completed_deliveries: completed
+        }
+      })
+    return driverandRatings;
 }
 
 export async function getDriverByIdService(id:string){
