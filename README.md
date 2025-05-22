@@ -1,5 +1,24 @@
 #  Parcel Delivery Optimization using Reinforcement Learning Algorithms
 
+## Admin View Images from the Project
+
+![Dashboard](./frontend/public//images/dashboard.png)
+![Tracking](./frontend/public//images//tracking.png)
+![Assignment](./frontend/public//images//assign.png)
+![OrderHistory](./frontend/public//images//order_history.png)
+![Customers](./frontend/public//images//customer.png)
+![Optimize](./frontend/public//images//optimize.png)
+![Carriers](./frontend/public//images//carriers.png)
+
+## Driver View Images from the Project
+
+![Dashboard](./frontend/public/images/driver_app/dashboard.png)
+![Active_1](./frontend/public/images/driver_app/active1.png)
+![Active_2](./frontend/public/images/driver_app/active2.png)
+![Route](./frontend/public/images/driver_app/route.png)
+![Navigation](./frontend/public/images/driver_app/navigation.png)
+![Profile](./frontend/public/images/driver_app/profile.png)
+
 This project optimizes parcel delivery routes using RL Algorithms.
 
 ## Features
