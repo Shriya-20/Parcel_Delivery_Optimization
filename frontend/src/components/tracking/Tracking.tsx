@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { Button } from "@/components/ui/button";
@@ -8,6 +8,9 @@ import { Card } from "@/components/ui/card";
 // import { mockParcels } from "@/lib/mock-data";
 import { MapView } from "./Mapview";
 import Image from "next/image";
+import io from "socket.io-client";
+
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_IO_URL as string);
 
 // Mock drivers data (in a real application, this would come from an API)
 const mockDrivers = [
@@ -90,6 +93,28 @@ export function Tracking() {
   const inactiveDrivers = filteredDrivers.filter(
     (d) => d.status === "inactive" || d.status === "break"
   );
+
+  //for now we are just updating mock data else we load the data from api and maintain state and then we update that state
+  useEffect(()=>{
+    socket.on("location_update", (data) => {
+      console.log(data);
+      const updatedDriver = mockDrivers.find((driver) => driver.id === data.driverId);
+      if (updatedDriver) {
+        updatedDriver.location = {
+          lat: data.latitude,
+          lng: data.longitude,
+        };
+      }
+      filteredDrivers.forEach((driver) => {
+        if (driver.id === data.driverId) {
+          driver.location = {
+            lat: data.latitude,
+            lng: data.longitude,
+          };
+        }
+      });
+    });
+  },[filteredDrivers]);
 
   return (
     <div className="h-full flex flex-col">

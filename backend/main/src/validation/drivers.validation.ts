@@ -25,3 +25,17 @@ export const driverSchema = z.object({
 });
 
 export type Driver = z.infer<typeof driverSchema>;
+
+export const driverLocationSchema = z.object({
+  location_id: z.string().uuid().optional(),
+  driver_id: z.string().uuid(),
+  latitude: z.number(),
+  longitude: z.number(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  timestamp: z.date().optional(),
+  speed: z.number().optional(),
+  heading: z.number().optional(),
+  battery_level: z.number().optional(),
+});
+export type DriverLocation = z.infer<typeof driverLocationSchema>;
