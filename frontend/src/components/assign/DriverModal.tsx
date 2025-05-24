@@ -35,7 +35,7 @@ export const DriverModal = ({ driver, isOpen, onClose }: DriverModalProps) => (
               {driver.first_name} {driver.last_name}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Driver ID: {driver.driver_id}
+              Driver ID: <br /> {driver.driver_id}
             </p>
             <div className="flex items-center gap-1 mt-1">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />

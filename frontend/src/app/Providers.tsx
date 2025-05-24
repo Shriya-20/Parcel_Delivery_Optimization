@@ -14,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster
-          position="top-right"
+          position="bottom-right"
           toastOptions={{
             duration: 4000,
             style: {

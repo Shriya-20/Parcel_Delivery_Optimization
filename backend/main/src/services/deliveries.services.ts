@@ -130,48 +130,298 @@ export async function getDeliveriesByDateService(date: string) {
 }
 
 
-export async function getOrderHistoryService(){
+export async function getCompleteOrderHistoryService() {
+  try {
+    // Get completed order history
     const orderHistory = await prisma.orderHistory.findMany({
-        include:{
-            delivery:{
-                select:{
-                    dropoff_location:true,
-                    priority:true,
-                    delivery_id:true,
-                    time_slot:{
-                        select:{
-                            start_time:true,
-                            end_time:true,
-                        }
-                    }
-                }
+      include: {
+        delivery: {
+          select: {
+            dropoff_location: true,
+            priority: true,
+            delivery_id: true,
+            weight: true,
+            size: true,
+            delivery_instructions: true,
+            delivery_date: true,
+            time_slot: {
+              select: {
+                start_time: true,
+                end_time: true,
+              },
             },
-            customer:{
-                select:{
-                    first_name:true,
-                    last_name:true,
-                }
+          },
+        },
+        customer: {
+          select: {
+            first_name: true,
+            last_name: true,
+            email: true,
+            phone_number: true,
+            address: true,
+            customer_id: true,
+          },
+        },
+        driver: {
+          select: {
+            first_name: true,
+            last_name: true,
+            phone_number: true,
+            email: true,
+            driver_id: true,
+            vehicles: {
+              select: {
+                type: true,
+                company: true,
+                model: true,
+                year: true,
+                color: true,
+                license_plate: true,
+              },
             },
-            driver:{
-                select:{
-                    first_name:true,
-                    last_name:true,
-                }
-            }
-        }
-    });//for now just this thinking of making a modal type thing to show driver and customer details so then entire shd be returned so thinking of that
-    if (!orderHistory) {
-        return null;
-      }
-      const orderHistoryData = orderHistory.map((d) => ({
-        delivery: d.delivery,
-        customer: d.customer,
-        driver: d.driver,
-        delivery_date: d.date,
-        order_id: d.order_id,
-        delivery_status: d.status,
-        preffered_time: d.delivery.time_slot.start_time + " - " + d.delivery.time_slot.end_time,
-        completed_time: d.completed_at,
-      }));
-      return orderHistoryData;
+          },
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    // Get ongoing deliveries (from DeliveryQueue with in_progress status)
+    const ongoingDeliveries = await prisma.deliveryQueue.findMany({
+      where: {
+        status: "in_progress",
+      },
+      include: {
+        delivery: {
+          include: {
+            customer: {
+              select: {
+                first_name: true,
+                last_name: true,
+                email: true,
+                phone_number: true,
+                address: true,
+                customer_id: true,
+              },
+            },
+            time_slot: {
+              select: {
+                start_time: true,
+                end_time: true,
+              },
+            },
+          },
+        },
+        driver: {
+          select: {
+            first_name: true,
+            last_name: true,
+            phone_number: true,
+            email: true,
+            driver_id: true,
+            vehicles: {
+              select: {
+                type: true,
+                company: true,
+                model: true,
+                year: true,
+                color: true,
+                license_plate: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    // Get pending deliveries (from DeliveryQueue with pending status)
+    const pendingDeliveries = await prisma.deliveryQueue.findMany({
+      where: {
+        status: "pending",
+      },
+      include: {
+        delivery: {
+          include: {
+            customer: {
+              select: {
+                first_name: true,
+                last_name: true,
+                email: true,
+                phone_number: true,
+                address: true,
+                customer_id: true,
+              },
+            },
+            time_slot: {
+              select: {
+                start_time: true,
+                end_time: true,
+              },
+            },
+          },
+        },
+        driver: {
+          select: {
+            first_name: true,
+            last_name: true,
+            phone_number: true,
+            email: true,
+            driver_id: true,
+            vehicles: {
+              select: {
+                type: true,
+                company: true,
+                model: true,
+                year: true,
+                color: true,
+                license_plate: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        { position: "asc" }, // Order by queue position
+        { date: "desc" },
+      ],
+    });
+
+    // Transform completed order history data
+    const completedOrdersData = orderHistory.map((order) => ({
+      order_id: order.order_id,
+      delivery_id: order.delivery.delivery_id,
+      status: "completed",
+      delivery_status: order.status, // on_time, late, early, not_delivered
+      delivery: {
+        dropoff_location: order.delivery.dropoff_location,
+        priority: order.delivery.priority,
+        weight: order.delivery.weight,
+        size: order.delivery.size,
+        delivery_instructions: order.delivery.delivery_instructions,
+        delivery_date: order.delivery.delivery_date,
+      },
+      customer: order.customer,
+      driver: order.driver,
+      preferred_time: `${order.delivery.time_slot.start_time} - ${order.delivery.time_slot.end_time}`,
+      completed_time: order.completed_at,
+      delivery_date: order.date,
+      delivery_duration: order.delivery_duration,
+      delivery_distance: order.delivery_distance,
+    }));
+
+    // Transform ongoing deliveries data
+    const ongoingOrdersData = ongoingDeliveries.map((queue) => ({
+      queue_id: queue.queue_id,
+      delivery_id: queue.delivery.delivery_id,
+      status: "ongoing",
+      delivery_status: queue.status, // in_progress
+      delivery: {
+        dropoff_location: queue.delivery.dropoff_location,
+        priority: queue.delivery.priority,
+        weight: queue.delivery.weight,
+        size: queue.delivery.size,
+        delivery_instructions: queue.delivery.delivery_instructions,
+        delivery_date: queue.delivery.delivery_date,
+      },
+      customer: queue.delivery.customer,
+      driver: queue.driver,
+      preferred_time: `${queue.delivery.time_slot.start_time} - ${queue.delivery.time_slot.end_time}`,
+      queue_date: queue.date,
+      position: queue.position,
+      completed_time: null,
+      delivery_duration: null,
+      delivery_distance: null,
+    }));
+
+    // Transform pending deliveries data
+    const pendingOrdersData = pendingDeliveries.map((queue) => ({
+      queue_id: queue.queue_id,
+      delivery_id: queue.delivery.delivery_id,
+      status: "pending",
+      delivery_status: queue.status, // pending
+      delivery: {
+        dropoff_location: queue.delivery.dropoff_location,
+        priority: queue.delivery.priority,
+        weight: queue.delivery.weight,
+        size: queue.delivery.size,
+        delivery_instructions: queue.delivery.delivery_instructions,
+        delivery_date: queue.delivery.delivery_date,
+      },
+      customer: queue.delivery.customer,
+      driver: queue.driver,
+      preferred_time: `${queue.delivery.time_slot.start_time} - ${queue.delivery.time_slot.end_time}`,
+      queue_date: queue.date,
+      position: queue.position,
+      completed_time: null,
+      delivery_duration: null,
+      delivery_distance: null,
+    }));
+
+    // Return combined data
+    return  {
+        completed: completedOrdersData,
+        ongoing: ongoingOrdersData,
+        pending: pendingOrdersData,
+        summary: {
+          total_completed: completedOrdersData.length,
+          total_ongoing: ongoingOrdersData.length,
+          total_pending: pendingOrdersData.length,
+          total_orders:
+            completedOrdersData.length +
+            ongoingOrdersData.length +
+            pendingOrdersData.length,
+        },
+      };
+  } catch (error) {
+    console.error("Error fetching complete order history:", error);
+    return {
+      success: false,
+      error: "Failed to fetch order history",
+      data: null,
+    };
+  }
 }
+
+// Alternative function that returns all orders in a single array with status indicators
+// export async function getAllOrdersFlattened() {
+//   try {
+//     const result = await getCompleteOrderHistoryService();
+
+//     if (!result.success) {
+//       return result;
+//     }
+
+//     // Combine all orders into a single array
+//     const allOrders = [
+//       ...result.data.completed,
+//       ...result.data.ongoing,
+//       ...result.data.pending,
+//     ];
+
+//     // Sort by most recent first (using appropriate date field for each status)
+//     allOrders.sort((a, b) => {
+//       const dateA = a.completed_time || a.queue_date || a.delivery_date;
+//       const dateB = b.completed_time || b.queue_date || b.delivery_date;
+//       return new Date(dateB) - new Date(dateA);
+//     });
+
+//     return {
+//       success: true,
+//       data: {
+//         orders: allOrders,
+//         summary: result.data.summary,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("Error fetching flattened orders:", error);
+//     return {
+//       success: false,
+//       error: "Failed to fetch orders",
+//       data: null,
+//     };
+//   }
+// }
