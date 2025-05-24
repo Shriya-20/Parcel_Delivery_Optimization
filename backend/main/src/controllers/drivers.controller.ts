@@ -193,10 +193,11 @@ export async function getDriverDeliveries(req: Request, res: Response) {
     }
     const driverDeliveryQueue: DeliveryQueueForDriver =
       await getDriverDeliveriesService(id, date as string);
-    if (!driverDeliveryQueue) {
+      // console.log("Driver Delivery Queue:", driverDeliveryQueue);
+    if (driverDeliveryQueue.length === 0) {
       res.status(404).json({
         success: false,
-        message: "No assigned deliveries for this driver on this date",
+        message: `No assigned deliveries for this driver on this date: ${date}`,
         data: null,
       });
       return;

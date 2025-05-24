@@ -1,22 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { APIProvider, Map, AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
+import { getAllDrivers } from "@/lib/types";
 
-type Driver = {
-  id: string;
-  name: string;
-  status: string;
-  location: { lat: number; lng: number };
-  vehicle: string;
-  currentDelivery: string | null;
-  avatar: string;
-  rating: number;
-  deliveriesCompleted: number;
-  phone: string;
-};
+
 
 interface MapViewProps {
-  drivers: Driver[];
+  drivers: getAllDrivers[];
 }
 
 interface MarkerInfo {
@@ -32,11 +22,11 @@ export function MapView({ drivers }: MapViewProps) {
   // UseEffect to safely update markers only when drivers change(else infinte as whenever rendered it will change)
   useEffect(() => {
     const newMarkers = drivers.map((driver) => ({
-      id: driver.id,
-      name: driver.name,
+      id: driver.driver_id,
+      name: driver.first_name + " " + driver.last_name,
       position: {
-        lat: driver.location.lat,
-        lng: driver.location.lng,
+        lat: driver.driver_location[0].latitude,
+        lng: driver.driver_location[0].longitude,
       },
     }));
     setMarkers(newMarkers);
