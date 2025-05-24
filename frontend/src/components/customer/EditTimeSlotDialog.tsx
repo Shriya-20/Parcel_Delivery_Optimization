@@ -50,7 +50,12 @@ export function EditTimeSlotDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Time Slot for Delivery {deliveryId}</DialogTitle>
+          <DialogTitle>
+            Edit Time Slot for Delivery <br />{" "}
+            <span className="text-md text-muted-foreground mt-2">
+              Delivery ID: <br /> {deliveryId}
+            </span>
+          </DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <RadioGroup

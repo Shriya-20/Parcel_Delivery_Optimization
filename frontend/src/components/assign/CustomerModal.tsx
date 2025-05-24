@@ -36,7 +36,7 @@ export const CustomerModal = ({ customer, isOpen, onClose }: CustomerModalProps)
               {customer.first_name} {customer.last_name}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Customer ID: {customer.customer_id}
+              Customer ID: <br/> {customer.customer_id}
             </p>
           </div>
         </div>

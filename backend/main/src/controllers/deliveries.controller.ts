@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getDeliveriesByDateService, getOrderHistoryService } from "../services/deliveries.services";
+import { getCompleteOrderHistoryService, getDeliveriesByDateService } from "../services/deliveries.services";
 
 export async function getDeliveries(
   req: Request<{}, {}, {}, { date: string }>,
@@ -43,7 +43,7 @@ export async function getDeliveries(
 
 export async function getOrderHistory(req: Request, res: Response) {
   try {
-    const orderHistory = await getOrderHistoryService();//for now gets complete shd limit to date also some 5 days and have pagination impletement also then
+    const orderHistory = await getCompleteOrderHistoryService();//for now gets complete shd limit to date also some 5 days and have pagination impletement also then
     if (!orderHistory) {
       res.status(404).json({
         success: false,
