@@ -3,6 +3,7 @@ import { getCustomerDetails, sendEmailsToCustomers } from "../controllers/custom
 
 const customerRouter = Router();
 
+//working fine
 customerRouter.get("/:customer_id", getCustomerDetails); // Get customer details by ID
 
 customerRouter.get("/sendemails", sendEmailsToCustomers); //this requires date in query params, and also since we get date and we send to al just a normal function we are doing here

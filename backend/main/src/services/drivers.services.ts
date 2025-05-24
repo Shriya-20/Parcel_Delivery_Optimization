@@ -18,11 +18,22 @@ export async function getAllDriversService(){
           phone_number: true,
           start_location: true,
           createdAt: true,
+          address: true,
           vehicles: {
             select: {
               vehicle_id: true,
               type: true,
-              license_plate: true
+              license_plate: true,
+              model: true,
+              year: true,
+              color: true,
+              company: true
+            }
+          },
+          driver_location: {
+            select: {
+              latitude: true,
+              longitude: true
             }
           },
         }
@@ -187,11 +198,25 @@ export async function getDriverDeliveriesService(id:string, date:string){
     };
 
     if (date) {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
+      // const startOfDay = new Date(date);
+      // startOfDay.setHours(0, 0, 0, 0);
 
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
+      // const endOfDay = new Date(date);
+      // endOfDay.setHours(23, 59, 59, 999);
+      // Instead of relying on ambiguous Date parsing
+      const parsedDate = new Date(`${date}T00:00:00Z`);
+      //shd send date as YYYY-MM-DD
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Invalid date format");
+      }
+
+      const startOfDay = new Date(parsedDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(parsedDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+      console.log("Start of day:", startOfDay.toISOString());
+      console.log("End of day:", endOfDay.toISOString());
 
       where.date = {
         gte: startOfDay,
