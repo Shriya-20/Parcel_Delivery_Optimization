@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createDriver, deliveryStatusChange, getAllDrivers, getDriverById, getDriverDeliveries, getDriverRouteDelivery, updateDriver, updateDriverLocation } from "../controllers/drivers.controller";
+import { createDriver, deliveryStatusChange, getAllDrivers, getDriverById, getDriverDeliveries, getDriverRouteDelivery, getDriverSpecificDelivery, updateDriver, updateDriverLocation } from "../controllers/drivers.controller";
 
 const driverRouter = Router();
 
@@ -17,6 +17,9 @@ driverRouter.put("/:id", updateDriver);//to update driver info
 //working fine
 driverRouter.get("/:id/deliveries", getDriverDeliveries);//to get the delivery queue for a driver and date shd be passed as query param
 // driverRouter.get("/:id/route", getDriverRoute);
+
+driverRouter.get("/:id/deliveries/:deliveryId", getDriverSpecificDelivery);//to get the delivery details for a specific delivery for a driver
+
 
 //!IMP-> the route details in this of the ortools api we need to store ig so that part shd be done
 //it is working fine

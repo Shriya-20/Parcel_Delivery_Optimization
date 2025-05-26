@@ -1,4 +1,4 @@
-import { DeliveryStatus, VehicleType } from "@prisma/client";
+import { DeliveryStatus, Driver, VehicleType } from "@prisma/client";
 import { JsonValue } from "@prisma/client/runtime/library";
 
 export {
@@ -60,7 +60,9 @@ export type DeliveryQueueForDriver = {
     start_time: Date;
     end_time: Date;
   };
-}[];
+  driver: Partial<Driver>;
+  priority: number;
+};
 
 export type RouteDetailsForDelivery = {
   driver_id: string;

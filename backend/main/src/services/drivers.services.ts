@@ -215,8 +215,8 @@ export async function getDriverDeliveriesService(id:string, date:string){
 
       const endOfDay = new Date(parsedDate);
       endOfDay.setUTCHours(23, 59, 59, 999);
-      console.log("Start of day:", startOfDay.toISOString());
-      console.log("End of day:", endOfDay.toISOString());
+      // console.log("Start of day:", startOfDay.toISOString());
+      // console.log("End of day:", endOfDay.toISOString());
 
       where.date = {
         gte: startOfDay,
@@ -241,7 +241,18 @@ export async function getDriverDeliveriesService(id:string, date:string){
             },
             time_slot: true,
           },
+          
         },
+        driver:{
+          select: {
+            driver_id: true,
+            first_name: true,
+            last_name: true,
+            phone_number: true,
+            email: true,
+            start_location: true,
+          },
+        }
       },
       orderBy: {
         position: "asc",
@@ -249,12 +260,14 @@ export async function getDriverDeliveriesService(id:string, date:string){
     });
 
     // Format response
-    const deliveries: DeliveryQueueForDriver = deliveryQueue.map((queue) => ({
+    const deliveries: DeliveryQueueForDriver[] = deliveryQueue.map((queue) => ({
       queue_id: queue.queue_id,
       delivery_id: queue.delivery_id,
       status: queue.status,
       date: queue.date,
       position: queue.position,
+      priority: queue.delivery.priority,
+      driver: queue.driver,
       customer: queue.delivery.customer,
       dropoff_location: queue.delivery.dropoff_location,
       weight: queue.delivery.weight,
@@ -268,7 +281,97 @@ export async function getDriverDeliveriesService(id:string, date:string){
     return deliveries;
 }
 
+export async function getDeliveryForDriver(id: string, date: string, delivery_id: string) {
+  //this gives specific delivery for a driver on a specific date
 
+  // Build where clause
+  const where: any = {
+    driver_id: id,
+    delivery_id: delivery_id,
+  };
+
+  if (date) {
+    // const startOfDay = new Date(date);
+    // startOfDay.setHours(0, 0, 0, 0);
+
+    // const endOfDay = new Date(date);
+    // endOfDay.setHours(23, 59, 59, 999);
+    // Instead of relying on ambiguous Date parsing
+    const parsedDate = new Date(`${date}T00:00:00Z`);
+    //shd send date as YYYY-MM-DD
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error("Invalid date format");
+    }
+
+    const startOfDay = new Date(parsedDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(parsedDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+    // console.log("Start of day:", startOfDay.toISOString());
+    // console.log("End of day:", endOfDay.toISOString());
+
+    where.date = {
+      gte: startOfDay,
+      lte: endOfDay,
+    };
+  }
+
+  // Fetch deliveries
+  const deliveryQueue = await prisma.deliveryQueue.findMany({
+    where,
+    include: {
+      delivery: {
+        include: {
+          customer: {
+            select: {
+              first_name: true,
+              last_name: true,
+              phone_number: true,
+              address: true,
+              customer_id: true,
+            },
+          },
+          time_slot: true,
+        },
+      },
+      driver: {
+        select: {
+          driver_id: true,
+          first_name: true,
+          last_name: true,
+          phone_number: true,
+          email: true,
+          start_location: true,
+        },
+      },
+    },
+  });
+  if (!deliveryQueue) {
+    throw new Error("Delivery not found for the specified driver and date");
+  }
+
+  // Format response
+  const deliveries: DeliveryQueueForDriver[] = deliveryQueue.map((queue) => ({
+    queue_id: queue.queue_id,
+    delivery_id: queue.delivery_id,
+    status: queue.status,
+    date: queue.date,
+    position: queue.position,
+    priority: queue.delivery.priority,
+    customer: queue.delivery.customer,
+    dropoff_location: queue.delivery.dropoff_location,
+    weight: queue.delivery.weight,
+    size: queue.delivery.size,
+    delivery_instructions: queue.delivery.delivery_instructions,
+    time_slot: {
+      start_time: queue.delivery.time_slot.start_time,
+      end_time: queue.delivery.time_slot.end_time,
+    },
+    driver: queue.driver,
+  }));
+  return deliveries;
+}
 export async function getDriverRouteDeliveryService(driver_id:string, delivery_id:string){
     const route: RouteDetailsForDelivery = await prisma.route.findFirst({
       where: {
