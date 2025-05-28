@@ -30,4 +30,5 @@ This project optimizes parcel delivery routes using RL Algorithms.
 - Delivery Person website - to get details of the delivery, mark the task as complete/incomplete, and contact the customer
 
 ## Model 1: Deep Q Learning
-## Model 2: To be decided
+## Model 2: Google OR Tools with ML Layer to modify the matri based on several features like day of week, month, is_weekend, is_rush_hour, is_night, temperature, humidity, weather_condition, wind_speed, visibility, package_weight, etc that learns on custom data.
+## Model 3: To be decided
