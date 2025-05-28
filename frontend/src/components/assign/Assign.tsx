@@ -18,13 +18,13 @@ import {
   Truck,
 } from "lucide-react";
 import { AssignDriverDialog } from "./AssignDriverDialog";
-import { getTomorrowScheduledDeliveries } from "@/lib/fetchDataService";
-import { DriverWithRatings, DriverWithRelations, getTommorrowScheduledDeliveries } from "@/lib/types";
+import { getDriversData, getTomorrowScheduledDeliveries } from "@/lib/fetchDataService";
+import {  getAllDrivers, getTommorrowScheduledDeliveries } from "@/lib/types";
 import { CustomerModal } from "./CustomerModal";
 import { DriverModal } from "./DriverModal";
 
 interface DeliveryWithAssignment extends getTommorrowScheduledDeliveries {
-  assignedDriver?: DriverWithRelations | null;
+  assignedDriver?: getAllDrivers | null;
 }
 
 const SKELETON_ROWS = 5;
@@ -79,6 +79,7 @@ export function Assign() {
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [selectedDelivery, setSelectedDelivery] =
     useState<DeliveryWithAssignment | null>(null);
+  const [drivers, setDrivers] = useState<getAllDrivers[]>([]);
 
   // Modal states
   const [showCustomerModal, setShowCustomerModal] = useState(false);
@@ -87,7 +88,7 @@ export function Assign() {
     getTommorrowScheduledDeliveries["customer"] | null
   >(null);
   const [selectedDriver, setSelectedDriver] =
-    useState<DriverWithRatings | null>(null);
+    useState<getAllDrivers | null>(null);
 
   const handleAssignAllDrivers = useCallback(() => {
     toast.success("Drivers assigned successfully!");
@@ -105,14 +106,36 @@ export function Assign() {
     (driverId: string, driverName: string) => {
       if (!selectedDelivery) return;
 
-      setShowAssignDialog(false);
-      setSelectedDelivery(null);
+      const updatedDriver = drivers.find((d) => d.driver_id === driverId);
+      if (!updatedDriver) return;
+
       toast.success(
         `${driverName} assigned to delivery ${selectedDelivery.delivery_id} successfully`
       );
+
+      setDeliveries((prevDeliveries) =>
+        prevDeliveries.map((delivery) =>
+          delivery.delivery_id === selectedDelivery.delivery_id
+            ? {
+                ...delivery,
+                Assignment: [
+                  {
+                    ...delivery.Assignment[0],
+                    driver: updatedDriver,
+                  },
+                ],
+              }
+            : delivery
+        )
+      );
+
+      // Reset state *after* updating deliveries
+      setShowAssignDialog(false);
+      setSelectedDelivery(null);
     },
-    [selectedDelivery]
+    [selectedDelivery, drivers]
   );
+  
 
   const handleOpenCustomerModal = useCallback(
     (customer: getTommorrowScheduledDeliveries["customer"]) => {
@@ -122,7 +145,7 @@ export function Assign() {
     []
   );
 
-  const handleOpenDriverModal = useCallback((driver: DriverWithRatings) => {
+  const handleOpenDriverModal = useCallback((driver: getAllDrivers) => {
     setSelectedDriver(driver);
     setShowDriverModal(true);
   }, []);
@@ -133,7 +156,11 @@ export function Assign() {
       setError(null);
 
       const deliveries = await getTomorrowScheduledDeliveries();
-
+      const driversData = await getDriversData();
+      if (!driversData || driversData.length === 0) {
+        throw new Error("No drivers found");
+      }
+      setDrivers(driversData);
       if (deliveries && deliveries.length > 0) {
         setDeliveries(deliveries);
         if (showToast) {
@@ -326,6 +353,7 @@ export function Assign() {
           }}
           onAssign={handleAssignDriverToDelivery}
           deliveryId={selectedDelivery.delivery_id}
+          driversData={drivers}
         />
       )}
 

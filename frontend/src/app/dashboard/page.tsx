@@ -1,5 +1,5 @@
 "use client"
-import DeliveryDashboard from "@/components/dashboard/BetterDashboard";
+import DeliveryDashboard from "@/components/dashboard/fallbackDashboard";
 // import { Dashboard } from "@/components/dashboard/Dashboard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 

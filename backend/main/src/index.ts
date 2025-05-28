@@ -5,7 +5,7 @@ import driverRouter from "./routes/drivers.routes";
 import deliveryRouter from "./routes/delivery.routes";
 import customerRouter from "./routes/customer.routes";
 import routeRouter from "./routes/route.routes";
-import timeslotRouter from "./routes/timeslot.routes";
+import dashboardRouter from "./routes/dashboard.routes";
 import adminRouter from "./routes/admin.routes";
 
 const port = process.env.PORT || 8000;
@@ -24,7 +24,7 @@ app.use("/api/drivers", driverRouter);
 app.use("/api/delivery", deliveryRouter);
 app.use("/api/customers", customerRouter);
 app.use("/api/route", routeRouter);
-app.use("/api/timeslot", timeslotRouter);
+app.use("/api/dashboard", dashboardRouter);
 app.use("/api/admin", adminRouter);
 
 app.listen(port, () => {

@@ -1,6 +1,6 @@
 "use server"
 import axios from 'axios';
-import { getAllDrivers, getTommorrowScheduledDeliveries, ResponseData } from './types';
+import { getAllDrivers, getTommorrowScheduledDeliveries, OrderData, ResponseData } from './types';
 
 const backendURL = process.env.NEXT_PUBLIC_API_URL as string; 
 
@@ -20,9 +20,11 @@ export async function getDriversData(){
 }
 
 export async function getTomorrowScheduledDeliveries() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const formattedDate = tomorrow.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    // const tomorrow = new Date();
+    // tomorrow.setDate(tomorrow.getDate() + 1);
+    // const formattedDate = tomorrow.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    //for now we will use today's date
+    const formattedDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
     const res = await axios.get(`${backendURL}/delivery?date=${formattedDate}`);
     const data: getTomorrowScheduledDeliveriesResponse = res.data;
     if (data.success) {
@@ -30,64 +32,8 @@ export async function getTomorrowScheduledDeliveries() {
     }
     throw new Error(data.message);
 }
-interface Customer {
-  customer_id: string;
-  first_name: string;
-  last_name?: string;
-  email: string;
-  phone_number: string;
-  address?: string;
-}
-
-interface Vehicle {
-  type: string;
-  company: string;
-  model: string;
-  year: number;
-  color: string;
-  license_plate: string;
-}
-
-interface Driver {
-  driver_id: string;
-  first_name: string;
-  last_name?: string;
-  email: string;
-  phone_number: string;
-  vehicles: Vehicle[];
-}
-
-interface DeliveryDetails {
-  dropoff_location: string;
-  priority: number;
-  weight?: number;
-  size?: string;
-  delivery_instructions?: string;
-  delivery_date: string;
-}
-interface OrderData {
-  order_id?: string;
-  queue_id?: string;
-  delivery_id: string;
-  status: "completed" | "ongoing" | "pending";
-  delivery_status: string;
-  delivery: DeliveryDetails;
-  customer: Customer;
-  driver: Driver;
-  preferred_time: string;
-  completed_time?: string;
-  delivery_date?: string;
-  queue_date?: string;
-  delivery_duration?: number;
-  delivery_distance?: number;
-  position?: number;
-}
-interface OrderHistoryResponse {
-  success: boolean;
-  message: string;
+interface OrderHistoryResponse extends ResponseData {
   data: {
-    success: boolean;
-    data: {
       completed: OrderData[];
       ongoing: OrderData[];
       pending: OrderData[];
@@ -98,7 +44,6 @@ interface OrderHistoryResponse {
         total_orders: number;
       };
     };
-  };
 }
 export async function getOrderHistory() {
     const res = await axios.get(`${backendURL}/delivery/orderhistory`);
@@ -108,4 +53,40 @@ export async function getOrderHistory() {
         return data.data;
     }
     throw new Error(data.message);
+}
+
+export async function getDashboardStats(){
+    const res = await axios.get(`${backendURL}/dashboard/stats`);
+    return res;
+}
+export async function getDailyPerformance(days: number){
+    const res = await axios.get(`${backendURL}/dashboard/performance?days=${days}`);
+    return res;
+}
+
+export async function getStatusDistribution() {
+    const res = await axios.get(`${backendURL}/dashboard/status-distribution`);
+    return res;
+}
+
+export async function fetchtopDrivers(){
+    const res = await axios.get(`${backendURL}/dashboard/drivers/top?limit=5`);
+    return res;
+}
+
+export async function getRecentActivities() {
+    const res = await axios.get(`${backendURL}/dashboard/activity?limit=10`);
+    return res;
+}
+
+export async function getPeakHours(days: number) {
+    const res = await axios.get(
+      `${backendURL}/dashboard/peak-hours?days=${days}`
+    );
+    return res;
+}
+
+export async function getFleetStatus(){
+    const res = await axios.get(`${backendURL}/dashboard/fleet-status`);
+    return res;
 }

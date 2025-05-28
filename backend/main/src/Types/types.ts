@@ -70,3 +70,60 @@ export type RouteDetailsForDelivery = {
   route_id: string;
   route_details: JsonValue;
 } | null;
+
+
+export interface DashboardStats {
+  activeDeliveries: number;
+  pendingDeliveries: number;
+  onRouteDeliveries: number;
+  canceledDeliveries: number;
+  availableDrivers: number;
+  todayCompleted: number;
+  totalRevenue?: number;
+}
+
+export interface DailyPerformance {
+  date: string;
+  completed: number;
+  failed: number;
+  pending: number;
+}
+
+export interface DeliveryStatusDistribution {
+  status: string;
+  count: number;
+  percentage: number;
+}
+
+export interface TopDriver {
+  driver_id: string;
+  name: string;
+  deliveries: number;
+  rating: number;
+  status: "active" | "busy" | "offline";
+  completionRate: number;
+}
+
+export interface RecentActivity {
+  id: string;
+  type: "delivery" | "assignment" | "cancel" | "new" | "completed";
+  message: string;
+  driver_name?: string;
+  customer_name?: string;
+  delivery_id: string;
+  timestamp: Date;
+  status: string;
+}
+
+export interface PeakHour {
+  hour: number;
+  deliveries: number;
+  averageDeliveryTime: number;
+}
+
+export interface VehicleFleetStatus {
+  type: string;
+  total: number;
+  active: number;
+  utilization: number;
+}
