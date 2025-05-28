@@ -422,7 +422,7 @@ export interface DriverWithRatings extends DriverWithRelations {
   completed_deliveries: number;
 }
 export interface AssignedDriver extends AssignmentWithRelations{
-  driver: DriverWithRatings;
+  driver: getAllDrivers;
 }
 export interface getTommorrowScheduledDeliveries {
   delivery_id: string;
@@ -438,4 +438,38 @@ export interface ResponseData {
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any | null; //for now we are just using any
+}
+
+//to get all the drivers data
+export interface getDriversDataResponse extends ResponseData {
+  data: getAllDrivers[];
+}
+
+
+
+interface OrderHistoryDeliveryDetails {
+  dropoff_location: string;
+  priority: number;
+  weight?: number;
+  size?: string;
+  delivery_instructions?: string;
+  delivery_date: string;
+}
+
+export interface OrderData {
+  order_id?: string;
+  queue_id?: string;
+  delivery_id: string;
+  status: "completed" | "ongoing" | "pending";
+  delivery_status: string;
+  delivery: OrderHistoryDeliveryDetails;
+  customer: Customer;
+  driver: DriverWithRelations;
+  preferred_time: string;
+  completed_time?: string;
+  delivery_date?: string;
+  queue_date?: string;
+  delivery_duration?: number;
+  delivery_distance?: number;
+  position?: number;
 }

@@ -3,6 +3,7 @@ import {
   createDriverService,
   deliveryStatusChangeService,
   getAllDriversService,
+  getDeliveryForDriver,
   getDriverByEmailService,
   getDriverByIdService,
   getDriverDeliveriesService,
@@ -182,6 +183,7 @@ export async function getDriverDeliveries(req: Request, res: Response) {
     return;
   }
   try {
+    console.log("reached here");
     const driver = await getDriverByIdService(id);
     if (!driver) {
       res.status(404).json({
@@ -191,7 +193,7 @@ export async function getDriverDeliveries(req: Request, res: Response) {
       });
       return;
     }
-    const driverDeliveryQueue: DeliveryQueueForDriver =
+    const driverDeliveryQueue: DeliveryQueueForDriver[] =
       await getDriverDeliveriesService(id, date as string);
       // console.log("Driver Delivery Queue:", driverDeliveryQueue);
     if (driverDeliveryQueue.length === 0) {
@@ -206,6 +208,64 @@ export async function getDriverDeliveries(req: Request, res: Response) {
       success: true,
       message: "Driver deliveries fetched successfully",
       data: driverDeliveryQueue,
+    });
+  } catch (error) {
+    console.error("Get Driver Deliveries Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+}
+export async function getDriverSpecificDelivery(req: Request, res: Response) {
+  const { id, deliveryId } = req.params;
+  const { date } = req.query;
+  if (!id || !deliveryId) {
+    res.status(400).json({
+      success: false,
+      message: "Driver ID is required",
+      data: null,
+    });
+    return;
+  }
+  if (!date) {
+    res.status(400).json({
+      success: false,
+      message: "Date is required",
+      data: null,
+    });
+    return;
+  }
+  try {
+    console.log("reached here");
+    const driver = await getDriverByIdService(id);
+    if (!driver) {
+      res.status(404).json({
+        success: false,
+        message: "Driver not found",
+        data: null,
+      });
+      return;
+    }
+    const deliveryDetails: DeliveryQueueForDriver[] = await getDeliveryForDriver(
+      id,
+      date as string,
+      deliveryId
+    );
+    // console.log("Driver Delivery Queue:", driverDeliveryQueue);
+    if (deliveryDetails.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: `No assigned deliveries for this driver on this date: ${date}`,
+        data: null,
+      });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      message: "Driver deliveries fetched successfully",
+      data: deliveryDetails,
     });
   } catch (error) {
     console.error("Get Driver Deliveries Error:", error);

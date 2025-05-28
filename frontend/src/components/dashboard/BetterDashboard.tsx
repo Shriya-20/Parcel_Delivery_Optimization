@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
 import {
   BarChart,
   Bar,
@@ -18,101 +20,129 @@ import {
   Package,
   Clock,
   Users,
-  MapPin,
   Star,
-  TrendingUp,
   AlertCircle,
+  RefreshCw,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import {
+  fetchtopDrivers,
+  getDailyPerformance,
+  getDashboardStats,
+  getFleetStatus,
+  getPeakHours,
+  getRecentActivities,
+  getStatusDistribution,
+} from "@/lib/fetchDataService";
 
-// Mock data based on your schema structure
-const mockData = {
-  stats: {
-    activeDeliveries: 6,
-    pendingDeliveries: 3,
-    onRouteDeliveries: 3,
-    canceledDeliveries: 2,
-    availableDrivers: 12,
-    todayCompleted: 28,
-  },
-  dailyDeliveries: [
-    { day: "Mon", completed: 65, failed: 8 },
-    { day: "Tue", completed: 59, failed: 12 },
-    { day: "Wed", completed: 80, failed: 6 },
-    { day: "Thu", completed: 81, failed: 9 },
-    { day: "Fri", completed: 56, failed: 15 },
-    { day: "Sat", completed: 55, failed: 11 },
-    { day: "Sun", completed: 40, failed: 7 },
-  ],
-  deliveryStatus: [
-    { name: "Completed", value: 156, color: "#10B981" },
-    { name: "In Progress", value: 6, color: "#3B82F6" },
-    { name: "Pending", value: 3, color: "#F59E0B" },
-    { name: "Canceled", value: 2, color: "#EF4444" },
-  ],
-  topDrivers: [
-    { name: "John Smith", deliveries: 42, rating: 4.8, status: "active" },
-    { name: "Sarah Johnson", deliveries: 38, rating: 4.9, status: "active" },
-    { name: "Mike Wilson", deliveries: 35, rating: 4.7, status: "busy" },
-    { name: "Emily Davis", deliveries: 32, rating: 4.6, status: "active" },
-    { name: "David Brown", deliveries: 29, rating: 4.5, status: "offline" },
-  ],
-  recentActivity: [
-    {
-      id: 1,
-      type: "delivery",
-      message: "Parcel #814726 out for delivery",
-      driver: "John Smith",
-      time: "15 minutes ago",
-      status: "in_progress",
-    },
-    {
-      id: 2,
-      type: "assignment",
-      message: "Driver Max Roberts assigned to parcel #358536",
-      time: "42 minutes ago",
-      status: "assigned",
-    },
-    {
-      id: 3,
-      type: "cancel",
-      message: "Parcel #369485 canceled by customer",
-      time: "1 hour ago",
-      status: "canceled",
-    },
-    {
-      id: 4,
-      type: "new",
-      message: "New parcel #354337 created",
-      time: "2 hours ago",
-      status: "created",
-    },
-    {
-      id: 5,
-      type: "completed",
-      message: "Parcel #123456 delivered successfully",
-      time: "3 hours ago",
-      status: "completed",
-    },
-  ],
-  peakHours: [
-    { hour: "6 AM", deliveries: 5 },
-    { hour: "8 AM", deliveries: 15 },
-    { hour: "10 AM", deliveries: 28 },
-    { hour: "12 PM", deliveries: 35 },
-    { hour: "2 PM", deliveries: 42 },
-    { hour: "4 PM", deliveries: 38 },
-    { hour: "6 PM", deliveries: 25 },
-    { hour: "8 PM", deliveries: 12 },
-  ],
-  vehicleTypes: [
-    { type: "Motorcycle", count: 8, active: 6 },
-    { type: "Sedan", count: 5, active: 4 },
-    { type: "Van", count: 3, active: 2 },
-    { type: "Truck", count: 2, active: 1 },
-  ],
-};
 
-function StatCard({ title, value, change, icon: Icon, color = "blue" }) {
+// Types
+interface DashboardStats {
+  activeDeliveries: number;
+  pendingDeliveries: number;
+  onRouteDeliveries: number;
+  canceledDeliveries: number;
+  availableDrivers: number;
+  todayCompleted: number;
+  totalRevenue?: number;
+}
+
+interface DailyPerformance {
+  date: string;
+  completed: number;
+  failed: number;
+  pending: number;
+  day?: string;
+}
+
+interface DeliveryStatusDistribution {
+  status: string;
+  count: number;
+  percentage: number;
+  name?: string;
+  value?: number;
+  color?: string;
+}
+
+interface TopDriver {
+  driver_id: string;
+  name: string;
+  deliveries: number;
+  rating: number;
+  status: "active" | "busy" | "offline";
+  completionRate: number;
+}
+
+interface RecentActivity {
+  id: string;
+  type: "delivery" | "assignment" | "cancel" | "new" | "completed";
+  message: string;
+  driver_name?: string;
+  customer_name?: string;
+  delivery_id: string;
+  timestamp: Date | string;
+  status: string;
+}
+
+interface PeakHour {
+  hour: number | string;
+  deliveries: number;
+  averageDeliveryTime?: number;
+}
+
+interface VehicleFleetStatus {
+  type: string;
+  total: number;
+  active: number;
+  utilization: number;
+}
+
+// Skeleton Loading Component
+const SkeletonCard = () => (
+  <Card>
+    <CardContent className="p-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+          <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
+          <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="h-12 w-12 bg-gray-200 rounded-lg animate-pulse" />
+      </div>
+    </CardContent>
+  </Card>
+);
+
+// StatCard Component
+interface StatCardProps {
+  title: string;
+  value: number | string;
+  change?: string;
+  icon: React.ElementType;
+  color?: "blue" | "green" | "yellow" | "red";
+  isLoading?: boolean;
+}
+
+function StatCard({
+  title,
+  value,
+  change,
+  icon: Icon,
+  color = "blue",
+  isLoading = false,
+}: StatCardProps) {
   const colorClasses = {
     blue: "bg-blue-50 text-blue-600 border-blue-200",
     green: "bg-green-50 text-green-600 border-green-200",
@@ -120,32 +150,44 @@ function StatCard({ title, value, change, icon: Icon, color = "blue" }) {
     red: "bg-red-50 text-red-600 border-red-200",
   };
 
+  if (isLoading) return <SkeletonCard />;
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-          {change && (
-            <p
-              className={`text-sm mt-2 ${
-                change.includes("+") ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {change}
-            </p>
-          )}
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+            {change && (
+              <div className="flex items-center mt-2">
+                {change.includes("+") ? (
+                  <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
+                ) : (
+                  <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
+                )}
+                <p
+                  className={`text-sm ${
+                    change.includes("+") ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {change}
+                </p>
+              </div>
+            )}
+          </div>
+          <div className={`p-3 rounded-lg border ${colorClasses[color]}`}>
+            <Icon size={24} />
+          </div>
         </div>
-        <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
-          <Icon size={24} />
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
-function ActivityItem({ activity }) {
-  const getIcon = (type) => {
+// ActivityItem Component
+function ActivityItem({ activity }: { activity: RecentActivity }) {
+  const getIcon = (type: string) => {
     switch (type) {
       case "delivery":
         return <Truck className="text-blue-500" size={16} />;
@@ -162,109 +204,360 @@ function ActivityItem({ activity }) {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case "completed":
-        return "bg-green-100 text-green-800";
+        return "default";
       case "in_progress":
-        return "bg-blue-100 text-blue-800";
+        return "secondary";
       case "assigned":
-        return "bg-purple-100 text-purple-800";
-      case "canceled":
-        return "bg-red-100 text-red-800";
-      case "created":
-        return "bg-gray-100 text-gray-800";
+        return "outline";
+      case "cancelled":
+        return "destructive";
+      case "pending":
+        return "secondary";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "secondary";
     }
   };
 
+  const formatTimeAgo = (timestamp: Date | string) => {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInMinutes = Math.floor(
+      (now.getTime() - activityTime.getTime()) / (1000 * 60)
+    );
+
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+    if (diffInMinutes < 1440)
+      return `${Math.floor(diffInMinutes / 60)} hours ago`;
+    return `${Math.floor(diffInMinutes / 1440)} days ago`;
+  };
+
   return (
-    <div className="flex items-center space-x-3 py-3 border-b border-gray-100 last:border-b-0">
+    <div className="flex items-center space-x-3 py-3 border-b border-border last:border-b-0">
       <div className="flex-shrink-0">{getIcon(activity.type)}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-900">{activity.message}</p>
-        <p className="text-xs text-gray-500">{activity.time}</p>
+        <p className="text-sm text-foreground">{activity.message}</p>
+        <p className="text-xs text-muted-foreground">
+          {formatTimeAgo(activity.timestamp)}
+        </p>
       </div>
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-          activity.status
-        )}`}
-      >
+      <Badge variant={getStatusVariant(activity.status)}>
         {activity.status.replace("_", " ")}
-      </span>
+      </Badge>
     </div>
   );
 }
 
-function DriverRow({ driver }) {
-  const getStatusColor = (status) => {
+// DriverRow Component
+function DriverRow({ driver }: { driver: TopDriver }) {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800";
+        return "default";
       case "busy":
-        return "bg-yellow-100 text-yellow-800";
+        return "secondary";
       case "offline":
-        return "bg-gray-100 text-gray-800";
+        return "outline";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "secondary";
     }
   };
 
   return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+    <tr className="hover:bg-muted/50">
+      <td className="px-4 py-3 text-sm font-medium text-foreground">
         {driver.name}
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600">{driver.deliveries}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">
+      <td className="px-4 py-3 text-sm text-muted-foreground">
+        {driver.deliveries}
+      </td>
+      <td className="px-4 py-3 text-sm text-muted-foreground">
         <div className="flex items-center">
           <Star className="text-yellow-400 mr-1" size={14} />
-          {driver.rating}
+          {driver.rating.toFixed(1)}
         </div>
       </td>
+      <td className="px-4 py-3 text-sm text-muted-foreground">
+        {driver.completionRate}%
+      </td>
       <td className="px-4 py-3">
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-            driver.status
-          )}`}
-        >
-          {driver.status}
-        </span>
+        <Badge variant={getStatusVariant(driver.status)}>{driver.status}</Badge>
       </td>
     </tr>
   );
 }
 
+// Main Dashboard Component
 export default function DeliveryDashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState("7d");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
+    null
+  );
+  const [dailyPerformance, setDailyPerformance] = useState<DailyPerformance[]>(
+    []
+  );
+  const [statusDistribution, setStatusDistribution] = useState<
+    DeliveryStatusDistribution[]
+  >([]);
+  const [topDrivers, setTopDrivers] = useState<TopDriver[]>([]);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [peakHours, setPeakHours] = useState<PeakHour[]>([]);
+  const [fleetStatus, setFleetStatus] = useState<VehicleFleetStatus[]>([]);
+
+  const fetchDashboardStats = useCallback(async () => {
+    try {
+      console.log("Fetching dashboard stats...");
+      const response = await getDashboardStats();
+      if (response.data.success) setDashboardStats(response.data.data);
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      toast.error("Failed to fetch dashboard statistics");
+    }
+  }, []);
+
+  const fetchDailyPerformance = useCallback(async () => {
+    try {
+      console.log("Fetching daily performance for:", selectedTimeRange);
+      // setDailyPerformance([]);
+      const days =
+        selectedTimeRange === "24h" ? 1 : selectedTimeRange === "7d" ? 7 : 30;
+      const response = await getDailyPerformance(days);
+      if (response.data.success) {
+        const chartData = response.data.data.map((item: DailyPerformance) => ({
+          ...item,
+          day: new Date(item.date).toLocaleDateString("en-US", {
+            weekday: "short",
+          }),
+        }));
+        setDailyPerformance(chartData);
+      }
+    } catch (error) {
+      console.error("Error fetching daily performance:", error);
+      toast.error("Failed to fetch performance data");
+    }
+  }, [selectedTimeRange]);
+
+  const fetchStatusDistribution = useCallback(async () => {
+    try {
+      console.log("Fetching delivery status distribution...");
+      // setStatusDistribution([]);
+      const response = await getStatusDistribution();
+      if (response.data.success) {
+        const pieData = response.data.data.map(
+          (item: DeliveryStatusDistribution) => ({
+            ...item,
+            name: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+            value: item.count,
+            color: getStatusColor(item.status),
+          })
+        );
+        setStatusDistribution(pieData);
+      }
+    } catch (error) {
+      console.error("Error fetching status distribution:", error);
+      toast.error("Failed to fetch status distribution");
+    }
+  }, []);
+
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      completed: "#10B981",
+      in_progress: "#3B82F6",
+      pending: "#F59E0B",
+      cancelled: "#EF4444",
+      assigned: "#8B5CF6",
+    };
+    return colors[status] || "#6B7280";
+  };
+
+  const fetchTopDrivers = useCallback(async () => {
+    try {
+      console.log("Fetching top drivers...");
+      // setTopDrivers([]);
+      const response = await fetchtopDrivers();
+      if (response.data.success) setTopDrivers(response.data.data);
+    } catch (error) {
+      console.error("Error fetching top drivers:", error);
+      toast.error("Failed to fetch top drivers");
+    }
+  }, []);
+
+  const fetchRecentActivity = useCallback(async () => {
+    try {
+      console.log("Fetching recent activity...");
+      // setRecentActivity([]);
+      const response = await getRecentActivities();
+      if (response.data.success) setRecentActivity(response.data.data);
+    } catch (error) {
+      console.error("Error fetching recent activity:", error);
+      toast.error("Failed to fetch recent activity");
+    }
+  }, []);
+
+  const fetchPeakHours = useCallback(async () => {
+    try {
+      console.log("Fetching peak hours for:", selectedTimeRange);
+      // setPeakHours([]);
+      const days =
+        selectedTimeRange === "24h" ? 1 : selectedTimeRange === "7d" ? 7 : 30;
+      const response = await getPeakHours(days);
+      if (response.data.success) {
+        const chartData = response.data.data.map((item: PeakHour) => ({
+          ...item,
+          hour: `${item.hour}:00`,
+        }));
+        setPeakHours(chartData);
+      }
+    } catch (error) {
+      console.error("Error fetching peak hours:", error);
+      toast.error("Failed to fetch peak hours data");
+    }
+  }, [selectedTimeRange]);
+
+  const fetchFleetStatus = useCallback(async () => {
+    try {
+      console.log("Fetching fleet status...");
+      // setFleetStatus([]);
+      const response = await getFleetStatus();
+      if (response.data.success) setFleetStatus(response.data.data);
+    } catch (error) {
+      console.error("Error fetching fleet status:", error);
+      toast.error("Failed to fetch fleet status");
+    }
+  }, []);
+
+  const fetchAllData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      console.log("Fetching all dashboard data...");
+      setDashboardStats(null);
+      await Promise.all([
+        fetchDashboardStats(),
+        fetchDailyPerformance(),
+        fetchStatusDistribution(),
+        fetchTopDrivers(),
+        fetchRecentActivity(),
+        fetchPeakHours(),
+        fetchFleetStatus(),
+      ]);
+      toast.success("Dashboard data loaded successfully");
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+      toast.error("Failed to load dashboard data");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    fetchDashboardStats,
+    fetchDailyPerformance,
+    fetchStatusDistribution,
+    fetchTopDrivers,
+    fetchRecentActivity,
+    fetchPeakHours,
+    fetchFleetStatus,
+  ]);
+
+  const handleRefresh = useCallback(async () => {
+    console.log("Refreshing dashboard data...");
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    await fetchAllData();
+    setIsRefreshing(false);
+  }, [fetchAllData, isRefreshing]);
+
+  useEffect(() => {
+    console.log("Loading initial dashboard data...");
+    setIsLoading(true);
+    fetchAllData();
+  }, [fetchAllData]);
+
+  // useEffect(() => {
+  //   console.log("Time range changed, refetching data...");
+  //   const fetchData = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       setDailyPerformance([]);
+  //       setPeakHours([]);
+  //       const days =
+  //         selectedTimeRange === "24h" ? 1 : selectedTimeRange === "7d" ? 7 : 30;
+  //       const [dailyRes, peakRes] = await Promise.all([
+  //         getDailyPerformance(days),
+  //         getPeakHours(days),
+  //       ]);
+  //       if (dailyRes.data.success) {
+  //         const chartData = dailyRes.data.data.map(
+  //           (item: DailyPerformance) => ({
+  //             ...item,
+  //             day: new Date(item.date).toLocaleDateString("en-US", {
+  //               weekday: "short",
+  //             }),
+  //           })
+  //         );
+  //         setDailyPerformance(chartData);
+  //       }
+  //       if (peakRes.data.success) {
+  //         const chartData = peakRes.data.data.map((item: PeakHour) => ({
+  //           ...item,
+  //           hour: `${item.hour}:00`,
+  //         }));
+  //         setPeakHours(chartData);
+  //       }
+  //     } catch (error) {
+  //       toast.error("Failed to fetch time-range-based data");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [selectedTimeRange]);
+  
+  
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               Delivery Dashboard
             </h1>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-muted-foreground mt-1">
               Overview of your delivery operations
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <select
+            <Select
               value={selectedTimeRange}
-              onChange={(e) => setSelectedTimeRange(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onValueChange={setSelectedTimeRange}
+              disabled={isLoading}
             >
-              <option value="24h">Last 24 Hours</option>
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-            </select>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="24h">Last 24 Hours</SelectItem>
+                <SelectItem value="7d">Last 7 Days</SelectItem>
+                <SelectItem value="30d">Last 30 Days</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              variant="default"
+            >
+              <RefreshCw
+                size={16}
+                className={`mr-2 ${isRefreshing ? "animate-spin" : ""}`}
+              />
               Refresh Data
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -274,178 +567,247 @@ export default function DeliveryDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             title="Active Deliveries"
-            value={mockData.stats.activeDeliveries}
+            value={dashboardStats?.activeDeliveries || 0}
             change="+2% from last month"
             icon={Package}
             color="blue"
+            isLoading={isLoading}
           />
           <StatCard
             title="Pending"
-            value={mockData.stats.pendingDeliveries}
+            value={dashboardStats?.pendingDeliveries || 0}
             change="-5% from last month"
             icon={Clock}
             color="yellow"
+            isLoading={isLoading}
           />
           <StatCard
             title="On Route"
-            value={mockData.stats.onRouteDeliveries}
+            value={dashboardStats?.onRouteDeliveries || 0}
             change="+12% from last month"
             icon={Truck}
             color="green"
+            isLoading={isLoading}
           />
           <StatCard
             title="Available Drivers"
-            value={mockData.stats.availableDrivers}
+            value={dashboardStats?.availableDrivers || 0}
             change="+3 from yesterday"
             icon={Users}
             color="blue"
+            isLoading={isLoading}
           />
         </div>
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Daily Performance Chart */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Weekly Delivery Performance
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mockData.dailyDeliveries}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="completed" fill="#10B981" name="Completed" />
-                <Bar dataKey="failed" fill="#EF4444" name="Failed" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Daily Delivery Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="h-[300px] bg-muted rounded animate-pulse" />
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={dailyPerformance}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="completed" fill="#10B981" name="Completed" />
+                    <Bar dataKey="failed" fill="#EF4444" name="Failed" />
+                    <Bar dataKey="pending" fill="#F59E0B" name="Pending" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Delivery Status Distribution */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Delivery Status Distribution
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={mockData.deliveryStatus}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {mockData.deliveryStatus.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Delivery Status Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="h-[300px] bg-muted rounded animate-pulse" />
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={statusDistribution}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {statusDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Peak Hours Chart */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Peak Delivery Hours
-          </h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={mockData.peakHours}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="hour" />
-              <YAxis />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="deliveries"
-                stroke="#3B82F6"
-                strokeWidth={3}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Peak Delivery Hours</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="h-[250px] bg-muted rounded animate-pulse" />
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={peakHours}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="deliveries"
+                    stroke="#3B82F6"
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Bottom Row - Tables and Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top Drivers */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Top Performing Drivers
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Driver
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Deliveries
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Rating
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {mockData.topDrivers.map((driver, index) => (
-                    <DriverRow key={index} driver={driver} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Performing Drivers</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                {isLoading ? (
+                  <div className="space-y-3">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-12 bg-muted rounded animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Driver
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Deliveries
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Rating
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Success Rate
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {topDrivers.map((driver, index) => (
+                        <DriverRow
+                          key={driver.driver_id || index}
+                          driver={driver}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Recent Activity
-            </h3>
-            <div className="space-y-1">
-              {mockData.recentActivity.map((activity) => (
-                <ActivityItem key={activity.id} activity={activity} />
-              ))}
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {isLoading ? (
+                  <div className="space-y-3">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-16 bg-muted rounded animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  recentActivity.map((activity) => (
+                    <ActivityItem key={activity.id} activity={activity} />
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Vehicle Fleet Status */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Fleet Status
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {mockData.vehicleTypes.map((vehicle, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-lg p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      {vehicle.type}
-                    </p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {vehicle.active}/{vehicle.count}
-                    </p>
-                    <p className="text-xs text-gray-500">Active/Total</p>
-                  </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Truck className="text-blue-600" size={20} />
-                  </div>
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Fleet Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-24 bg-muted rounded animate-pulse"
+                  />
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {fleetStatus.map((vehicle, index) => (
+                  <Card key={index}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">
+                            {vehicle.type}
+                          </p>
+                          <p className="text-lg font-bold text-foreground">
+                            {vehicle.active}/{vehicle.total}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Active/Total ({vehicle.utilization}% utilization)
+                          </p>
+                        </div>
+                        <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center border border-blue-200">
+                          <Truck className="text-blue-600" size={20} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { date } from "zod";
 import { prisma } from "../db/db";
 
 //TODO->shd make the delivery date as only date and not datetime and also the time slot is changing and not of indian or as stored in db so shd make that proper
@@ -134,6 +135,11 @@ export async function getCompleteOrderHistoryService() {
   try {
     // Get completed order history
     const orderHistory = await prisma.orderHistory.findMany({
+      where:{
+        status:{
+          in: ["on_time", "late", "early", "not_delivered"],
+        }
+      },
       include: {
         delivery: {
           select: {
@@ -335,6 +341,7 @@ export async function getCompleteOrderHistoryService() {
       completed_time: null,
       delivery_duration: null,
       delivery_distance: null,
+      delivery_date: queue.delivery.delivery_date, // Include delivery date for ongoing orders
     }));
 
     // Transform pending deliveries data
@@ -359,6 +366,7 @@ export async function getCompleteOrderHistoryService() {
       completed_time: null,
       delivery_duration: null,
       delivery_distance: null,
+      delivery_date: queue.delivery.delivery_date, // Include delivery date for pending orders
     }));
 
     // Return combined data

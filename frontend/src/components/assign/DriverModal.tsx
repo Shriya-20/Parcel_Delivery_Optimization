@@ -1,4 +1,4 @@
-import { DriverWithRatings } from "@/lib/types";
+import {  getAllDrivers } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import { Truck, User, Star, Phone, Mail, Car, Package} from "lucide-react";
 
 // Driver Details Modal Component
 interface DriverModalProps {
-  driver: DriverWithRatings;
+  driver: getAllDrivers;
   isOpen: boolean;
   onClose: () => void;
 }
