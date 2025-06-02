@@ -84,16 +84,39 @@ class MultiVehicleDeliveryOptimizer:
             routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
         )
         # Add timeout for real-time applications
-        search_parameters.time_limit.seconds = 10
+        #!IMP was 10
+        search_parameters.time_limit.seconds = 60
+        #! was not there earlier
+        search_parameters.log_search = True  # Enable logging for debugging
         
         # Solve the problem
         solution = routing.SolveWithParameters(search_parameters)
-        
+        #!was not there earlier
+        if not solution:
+            # Try with relaxed constraints
+            print("Initial solve failed, trying with relaxed constraints...")
+            
+            # Remove time window constraints temporarily
+            routing.solver().Add(routing.solver().AllowUnjustifiedAssignment())
+            solution = routing.SolveWithParameters(search_parameters)
         if solution:
             return self._process_solution(data, manager, routing, solution, delivery_persons, deliveries, current_time)
         else:
-            return {"status": "failed", "message": "No solution found"}
-    
+            # return {"status": "failed", "message": "No solution found"}
+            # Return debug information
+            return {
+                "status": "failed", 
+                "message": "No solution found",
+                "debug_info": {
+                    "num_locations": len(data['time_matrix']),
+                    "num_vehicles": data['num_vehicles'],
+                    "time_windows": data['time_windows'],
+                    "max_travel_time": max(max(row) for row in data['time_matrix']),
+                    "current_time": current_time.isoformat(),
+                    "first_delivery_time": deliveries[0]['time_window']['start'].isoformat() if deliveries else None
+                }
+            }
+
     def _create_data_model(self, 
                           delivery_persons: List[Dict[str, Any]], 
                           current_time: datetime.datetime,
@@ -135,7 +158,7 @@ class MultiVehicleDeliveryOptimizer:
         
         # Add delivery person locations as depots (time window starts now)
         for _ in delivery_persons:
-            data['time_windows'].append((0, 0))  # No wait time at current location
+            data['time_windows'].append((0, 60))  # Allow 1-hour flexibility at start
         
         # Add time windows for each delivery
         for delivery in deliveries:
@@ -144,7 +167,11 @@ class MultiVehicleDeliveryOptimizer:
             
             # Ensure time windows are valid (not in the past)
             start_time = max(0, start_time)
-            end_time = max(start_time, end_time)
+            end_time = max(start_time + 30, end_time)
+            
+            # If time window is too far in future, make it more flexible
+            if start_time > 600:  # More than 10 hours away
+                start_time = max(0, start_time - 60)  # Allow 1 hour earlier arrival
             
             data['time_windows'].append((start_time, end_time))
         
@@ -242,9 +269,9 @@ class MultiVehicleDeliveryOptimizer:
             # Calculate distance in meters
             # Note: This is a rough approximation
             distance = origin_point.distance(dest_point) * 111000  # Convert degrees to meters
-            
-            # Assume an average speed of 25 km/h in city
-            return distance / (25 * 1000 / 3600)  # Travel time in seconds
+
+            # Assume an average speed of 65 km/h in city
+            return distance / (65 * 1000 / 3600)  # Travel time in seconds
     
     def _add_time_dimension(self, routing, manager, transit_callback_index, data):
         """
@@ -268,6 +295,29 @@ class MultiVehicleDeliveryOptimizer:
             False,  # Don't force start cumul to zero
             dimension_name
         )
+        # max_wait_time = 120      # Increase to 2 hours
+        # max_route_time = 12 * 60 # Increase to 12 hours
+
+        # dimension_name = "Time"
+        # routing.AddDimension(
+        #     transit_callback_index,
+        #     max_wait_time,
+        #     max_route_time,
+        #     False,
+        #     dimension_name
+        # )
+        # max_wait_time = 60 * 60        # 60 minutes = 3600 seconds
+        # max_route_time = 8 * 60 * 60   # 8 hours = 28800 seconds
+
+        # dimension_name = "Time"
+        # routing.AddDimension(
+        #     transit_callback_index,
+        #     max_wait_time,     # Slack
+        #     max_route_time,    # Vehicle max travel time
+        #     False,             # Don't force start cumul to zero
+        #     dimension_name
+        # )
+
         
         time_dimension = routing.GetDimensionOrDie(dimension_name)
         

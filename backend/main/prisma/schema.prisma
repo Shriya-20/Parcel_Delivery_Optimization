@@ -16,8 +16,11 @@ model Driver{
     hashed_password String
     phone_number    String
     address         String?
-    start_location  String?
+    start_location_latitude Float? //just for now //to get the start location of the driver
+    start_location_longitude Float? //just for now
+    start_location String //to get the start location of the driver in string format
     refresh_token    String?//for authentication
+    status                   String   @default("ACTIVE") // ACTIVE, INACTIVE, BUSY
 
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
@@ -78,10 +81,9 @@ model Customer{
     // hashed_password String for now no login done of customer so no password
     phone_number    String
     address         String?
-    latitude       Float?//just for now
-    // for now we are not using this but in future we can use this to track the location of the customer
-    longitude      Float?
-
+    latitude       Float
+    longitude      Float
+    //make the latitude and longitude compulsory so this is basically the geoencode of the address so that diretly we can use this one
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 

@@ -1,31 +1,379 @@
-import { Request,Response } from "express";
-
-export async function bulkAssignRoutes(req:Request, res:Response) {
-    try {
-        // Logic to bulk assign routes
-        // This is mainly for the Assign deliveries section in admin where we assign drivers and store them in assignments routes
-        res.status(200).json({ message: "Bulk routes assigned successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to assign bulk routes" });
-    }
+import { Request, Response } from "express";
+import { prisma } from "../db/db";
+import { getTommorrowScheduledDeliveries } from "../Types/types";
+import axios from "axios";
+import { getDeliveriesByDateService } from "../services/deliveries.services";
+interface OptimizationRequest {
+  delivery_persons: Array<{
+    id: string;
+    name: string;
+    location: {
+      lat: number;
+      lng: number;
+    };
+  }>;
+  current_time?: string;
+  deliveries: Array<{
+    id: string;
+    customer: string;
+    location: {
+      lat: number;
+      lng: number;
+      address?: string;
+    };
+    time_window: {
+      start: string;
+      end: string;
+    };
+    package_details?: {
+      weight?: number;
+      description?: string;
+    };
+  }>;
 }
 
-export async function getRouteByDriverIdAndDate(req:Request, res:Response) {
-    try {
-        const { driver_id, date } = req.params;
-        // Logic to get route by driver ID and date
-        res.status(200).json({ message: `Route for driver ${driver_id} on date ${date}` });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to get route" });
+interface OptimizationResponse {
+  status: "success" | "error";
+  data?: {
+    routes: Array<{
+      driver_id: string;
+      driver_name: string;
+      deliveries: Array<{
+        delivery_id: string;
+        sequence: number;
+        estimated_arrival: string;
+        travel_time_from_previous: number;
+      }>;
+      route_geometry: {
+        waypoints: Array<{
+          lat: number;
+          lng: number;
+          address?: string;
+        }>;
+        encoded_polyline?: string;
+        total_distance: number;
+        total_duration: number;
+      };
+      total_deliveries: number;
+      start_time: string;
+      estimated_end_time: string;
+    }>;
+    summary: {
+      total_drivers_used: number;
+      total_deliveries_assigned: number;
+      total_distance: number;
+      total_duration: number;
+      unassigned_deliveries: string[];
+    };
+  };
+  error?: string;
+}
+export async function bulkAssignRoutes(req: Request, res: Response) {
+  try {
+    // Logic to bulk assign routes
+    const { deliveries, date } = req.body;
+
+    if (!deliveries || !Array.isArray(deliveries) || deliveries.length === 0) {
+      res.status(400).json({
+        success: false,
+        message: "Valid deliveries array is required",
+        data: null,
+      });
+      return;
     }
+    // This is mainly for the Assign deliveries section in admin where we assign drivers and store them in assignments routes
+    //first get all the active drivers with their start locations
+    const availableDrivers = await prisma.driver.findMany({
+      where: {
+        status: "ACTIVE",
+        start_location_latitude: { not: null },
+        start_location_longitude: { not: null },
+      },
+      select: {
+        driver_id: true,
+        first_name: true,
+        start_location_latitude: true,
+        start_location_longitude: true,
+        phone_number: true,
+      },
+    });
+    if (availableDrivers.length === 0) {
+      // throw new Error("No active drivers available for route assignment.");
+      // This will be caught in the controller and returned as a 500 error
+      res.status(404).json({
+        success: false,
+        data: null,
+        message: "No active drivers available for route assignment.",
+      });
+      return;
+    }
+    //no call the google or tolls api to get the routes and assign them
+    const optimizationRequest: OptimizationRequest = {
+      delivery_persons: availableDrivers.map((driver) => ({
+        id: driver.driver_id,
+        name: driver.first_name,
+        location: {
+          lat: driver.start_location_latitude!,
+          lng: driver.start_location_longitude!,
+        },
+      })),
+      // current_time: new Date().toISOString().split(".")[0],//as the current time for now doing hardcoded so else this shd be
+      // current_time: new Date(date).toISOString().split(".")[0], // Use the date provided in the request(shd be this to work)
+      current_time: "2025-05-26T08:00:00",//for now to work we use this
+      deliveries: deliveries
+        .filter(
+          (delivery: getTommorrowScheduledDeliveries) =>
+            delivery.Assignment.length === 0
+        )
+        .map((delivery: getTommorrowScheduledDeliveries) => {
+          // Parse preferred time slot
+          const [startTime, endTime] = delivery.preffered_time.split(" - ");
+          const deliveryDate = new Date(date);
+
+          const startDateTime = new Date(deliveryDate);
+          const [startHour, startMinute] = startTime.split(":").map(Number);
+          startDateTime.setHours(startHour, startMinute, 0, 0);
+
+          const endDateTime = new Date(deliveryDate);
+          const [endHour, endMinute] = endTime.split(":").map(Number);
+          endDateTime.setHours(endHour, endMinute, 0, 0);
+
+          return {
+            id: delivery.delivery_id,
+            customer:
+              delivery.customer.first_name +
+              " " +
+              (delivery.customer.last_name || ""),
+            location: {
+              lat: delivery.customer.latitude as number,
+              lng: delivery.customer.longitude as number,
+              address: delivery.dropoff_location,
+            },
+            time_window: {
+              start: startDateTime.toISOString().split(".")[0],
+              end: endDateTime.toISOString().split(".")[0],
+            },
+            package_details: {
+              weight: delivery.weight as number,
+              size: delivery.size as string,
+              description: `Priority ${delivery.priority} delivery`,
+            },
+          };
+        }),
+    };
+    console.log("Optimization Request:", optimizationRequest.deliveries);
+    console.log(
+      "Available Drivers for Optimization:",
+      optimizationRequest.delivery_persons
+    );
+    console.log(
+      "Current Time for Optimization:",
+      optimizationRequest.current_time
+    );
+    // Call the optimization service
+    const optimizationResponse = await axios.post<OptimizationResponse>(
+      `${process.env.OPTIMIZATION_SERVICE_URL}/optimize-multi-route`,
+      optimizationRequest,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        timeout: 60000, // 60 second timeout
+      }
+    );
+
+    if (
+      optimizationResponse.data.status !== "success" ||
+      !optimizationResponse.data.data
+    ) {
+      throw new Error(optimizationResponse.data.error || "Optimization failed");
+    }
+
+    const optimizedRoutes = optimizationResponse.data.data.routes;
+
+    // Store routes in database and create assignments
+    const assignments = [];
+    const routes = [];
+
+    for (const route of optimizedRoutes) {
+      // Create route record
+      const routeRecord = await prisma.route.create({
+        data: {
+          driver_id: route.driver_id,
+          delivery_id: route.deliveries[0]?.delivery_id || "", // Primary delivery
+          route_details: {
+            driver_id: route.driver_id,
+            driver_name: route.driver_name,
+            deliveries: route.deliveries,
+            route_geometry: route.route_geometry,
+            total_deliveries: route.total_deliveries,
+            start_time: route.start_time,
+            estimated_end_time: route.estimated_end_time,
+            waypoints: route.route_geometry.waypoints,
+            total_distance: route.route_geometry.total_distance,
+            total_duration: route.route_geometry.total_duration,
+          },
+        },
+      });
+
+      routes.push(routeRecord);
+
+      // Create assignments for each delivery in this route
+      for (const delivery of route.deliveries) {
+        const assignment = await prisma.assignment.create({
+          data: {
+            delivery_id: delivery.delivery_id,
+            driver_id: route.driver_id,
+            route_id: routeRecord.route_id,
+            assigned_at: new Date(),
+            sequence_order: delivery.sequence,
+            expected_arrival_time: new Date(delivery.estimated_arrival),
+          },
+        });
+
+        assignments.push(assignment);
+
+        // Update delivery status
+        //   await prisma.delivery.update({
+        //     where: { delivery_id: delivery.delivery_id },
+        //     data: { status: "ASSIGNED" },
+        //   });
+        // Create delivery queue entry so that we can see that for the driver
+        await prisma.deliveryQueue.create({
+          data: {
+            delivery_id: delivery.delivery_id,
+            driver_id: route.driver_id,
+            date: date, //this date is the date of delivery,
+            position: delivery.sequence,
+            status: "pending",
+          },
+        });
+      }
+    }
+
+    //   // Fetch updated deliveries with assignments
+    //   const updatedDeliveries = await prisma.delivery.findMany({
+    //     where: {
+    //       delivery_id: {
+    //         in: deliveries.map((d: getTommorrowScheduledDeliveries) => d.delivery_id),
+    //       },
+    //     },
+    //     include: {
+    //       customer: {
+    //         select: {
+    //           customer_id: true,
+    //           first_name: true,
+    //           last_name: true,
+    //           address: true,
+    //           latitude: true,
+    //           longitude: true,
+    //           email: true,
+    //           phone_number: true,
+    //             createdAt: true,
+    //             updatedAt: true,
+    //         },
+    //       },
+    //       Assignment: {
+    //         include: {
+    //           driver: {
+    //             select: {
+    //               driver_id: true,
+    //               first_name: true,
+    //                 last_name: true,
+    //             },
+    //           },
+    //           route: {
+    //             select: {
+    //               route_id: true,
+    //               route_details: true,
+    //             },
+    //           },
+    //         },
+    //       },
+    //       time_slot:{
+    //         select: {
+    //           time_slot_id: true,
+    //           start_time: true,
+    //           end_time: true,
+    //         },
+    //       }
+    //     },
+    //   });
+
+    //   // Format response
+    //   const formattedUpdatedDeliveries: getTommorrowScheduledDeliveries[] = updatedDeliveries.map(
+    //     (delivery) => ({
+    //       delivery_id: delivery.delivery_id,
+    //       dropoff_location: delivery.dropoff_location,
+    //       priority: delivery.priority,
+    //       customer: delivery.customer,
+    //       Assignment: delivery.Assignment.map((assignment) => ({
+    //         driver_id: assignment.driver.driver_id,
+    //         driver_name: assignment.driver.first_name + " " + (assignment.driver.last_name || ""),
+    //         route_id: assignment.route_id,
+    //       })),
+    //       weight: delivery.weight,
+    //       size: delivery.size,
+    //       preffered_time: delivery.time_slot.start_time.toISOString().slice(11, 16) + " - " +
+    //         delivery.time_slot.end_time.toISOString().slice(11, 16),
+    //     })
+    //   );
+    const updatedDeliveries = await getDeliveriesByDateService(date);
+    if (updatedDeliveries?.length === 0) {
+      //if the length is 0 then no deliveries found
+      res.status(404).json({
+        success: false,
+        message: "No deliveries found for this date",
+        data: null,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        optimizedDeliveries: updatedDeliveries,
+        totalAssignments: assignments.length,
+        totalDrivers: optimizedRoutes.length,
+        totalRoutes: routes.length,
+        summary: optimizationResponse.data.data.summary,
+      },
+      message: "Bulk routes assigned successfully",
+    });
+    return;
+  } catch (error) {
+    console.error("Get Deliveries Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+    return;
+  }
 }
 
-export async function optimizeRoute(req:Request, res:Response) {
-    try {
-        const { driver_id, date } = req.params;
-        // Logic to optimize route by driver ID and date
-        res.status(200).json({ message: `Optimized route for driver ${driver_id} on date ${date}` });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to optimize route" });
-    }
+export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
+  try {
+    const { driver_id, date } = req.params;
+    // Logic to get route by driver ID and date
+    res
+      .status(200)
+      .json({ message: `Route for driver ${driver_id} on date ${date}` });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get route" });
+  }
+}
+
+export async function optimizeRoute(req: Request, res: Response) {
+  try {
+    const { driver_id, date } = req.params;
+    // Logic to optimize route by driver ID and date
+    res
+      .status(200)
+      .json({
+        message: `Optimized route for driver ${driver_id} on date ${date}`,
+      });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to optimize route" });
+  }
 }

@@ -30,6 +30,8 @@ export async function getDeliveriesByDateService(date: string) {
           phone_number: true,
           address: true,
           customer_id: true,
+          latitude: true,
+          longitude: true,
         },
       },
       Assignment: {
@@ -113,6 +115,7 @@ export async function getDeliveriesByDateService(date: string) {
       dropoff_location: d.dropoff_location,
       priority: d.priority,
       customer: d.customer,
+      weight: d.weight,
       Assignment: d.Assignment.map((assign) => ({
         ...assign,
         driver: {
