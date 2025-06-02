@@ -104,7 +104,7 @@ export async function getDriverByEmailService(email:string){
     return driver;
 }
 
-export async function createDriverService(driverData:Omit<Driver, "driver_id" | "createdAt" | "updatedAt" | "refresh_token" | "hashed_password"| "address" | "last_name" | "start_location">){
+export async function createDriverService(driverData:Omit<Driver, "driver_id" | "createdAt" | "updatedAt" | "refresh_token" | "hashed_password"| "address" | "last_name">){
     const newDriver:newDriver = await prisma.driver.create({
         data: {
             ...driverData,
@@ -328,6 +328,8 @@ export async function getDeliveryForDriver(id: string, date: string, delivery_id
               first_name: true,
               last_name: true,
               phone_number: true,
+              latitude: true,
+              longitude: true,
               address: true,
               customer_id: true,
             },

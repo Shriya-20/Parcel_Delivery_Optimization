@@ -24,7 +24,8 @@ export async function getTomorrowScheduledDeliveries() {
     // tomorrow.setDate(tomorrow.getDate() + 1);
     // const formattedDate = tomorrow.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
     //for now we will use today's date
-    const formattedDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    // const formattedDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    const formattedDate = "2025-05-26";
     const res = await axios.get(`${backendURL}/delivery?date=${formattedDate}`);
     const data: getTomorrowScheduledDeliveriesResponse = res.data;
     if (data.success) {
@@ -88,5 +89,13 @@ export async function getPeakHours(days: number) {
 
 export async function getFleetStatus(){
     const res = await axios.get(`${backendURL}/dashboard/fleet-status`);
+    return res;
+}
+
+export async function assignBulkRoutes(deliveries : getTommorrowScheduledDeliveries[], date:string){
+    const res = await axios.post(`${backendURL}/routes/assignbulk`, {
+      deliveries,
+      date,
+    });
     return res;
 }

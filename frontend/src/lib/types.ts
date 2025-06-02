@@ -428,6 +428,8 @@ export interface getTommorrowScheduledDeliveries {
   delivery_id: string;
   dropoff_location: string;
   priority: number;
+  weight: number;
+  size: string;
   customer: Customer;
   Assignment: AssignedDriver[];
   preffered_time: string; //formatted as "HH:mm - HH:mm"

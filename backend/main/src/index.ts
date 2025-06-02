@@ -23,7 +23,7 @@ app.use("/api/auth",authRouter);
 app.use("/api/drivers", driverRouter);
 app.use("/api/delivery", deliveryRouter);
 app.use("/api/customers", customerRouter);
-app.use("/api/route", routeRouter);
+app.use("/api/routes", routeRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/admin", adminRouter);
 

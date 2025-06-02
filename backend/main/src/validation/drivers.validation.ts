@@ -6,7 +6,7 @@ export const driverSchema = z.object({
   last_name: z.string().min(2).max(100).optional(),
   email: z.string().email(),
   phone_number: z.string().min(10).max(15),
-  start_location: z.string().min(2).max(100).optional(),
+  start_location: z.string().min(2).max(100),
   password: z.string().min(8).max(100),
   address: z.string().min(2).max(100).optional(),
   refresh_token: z.string().optional(),
