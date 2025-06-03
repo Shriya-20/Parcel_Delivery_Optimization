@@ -402,7 +402,7 @@ import {
   assignBulkRoutes,
   getDriversData,
   getTomorrowScheduledDeliveries,
-} from "@/lib/fetchDataService";
+} from "@/lib/clientSideDataServices";
 import { getAllDrivers, getTommorrowScheduledDeliveries } from "@/lib/types";
 import { CustomerModal } from "./CustomerModal";
 import { DriverModal } from "./DriverModal";

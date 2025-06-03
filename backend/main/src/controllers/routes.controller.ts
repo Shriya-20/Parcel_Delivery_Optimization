@@ -171,14 +171,14 @@ export async function bulkAssignRoutes(req: Request, res: Response) {
       optimizationRequest.current_time
     );
     // Call the optimization service
-    const optimizationResponse = await axios.post<OptimizationResponse>(
+    const optimizationResponse = await axios.post(
       `${process.env.OPTIMIZATION_SERVICE_URL}/optimize-multi-route`,
       optimizationRequest,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        timeout: 60000, // 60 second timeout
+        timeout: 120000, // 120 second timeout
       }
     );
 
@@ -188,10 +188,79 @@ export async function bulkAssignRoutes(req: Request, res: Response) {
     ) {
       throw new Error(optimizationResponse.data.error || "Optimization failed");
     }
+    // const transformed = optimizationResponse.data.data.routes.map((route:any) => {
+    //   const deliveries = route.stops.map((stop:any, index:any) => ({
+    //     delivery_id: stop.id,
+    //     sequence: index + 1,
+    //     estimated_arrival: stop.estimated_arrival || new Date().toISOString(),
+    //     travel_time_from_previous: stop.travel_time_from_previous || 0,
+    //   }));
 
-    const optimizedRoutes = optimizationResponse.data.data.routes;
+    //   const waypoints = route.waypoints.map((wp:any) => ({
+    //     lat: wp.lat,
+    //     lng: wp.lng,
+    //     address: wp.address || undefined,
+    //   }));
 
+    //   return {
+    //     driver_id: route.delivery_person.id,
+    //     driver_name: route.delivery_person.name,
+    //     deliveries,
+    //     route_geometry: {
+    //       waypoints,
+    //       encoded_polyline: route.encoded_polyline || undefined,
+    //       total_distance: route.total_distance_meters,
+    //       total_duration: route.total_time_minutes,
+    //     },
+    //     total_deliveries: deliveries.length,
+    //     start_time:
+    //       deliveries[0]?.estimated_arrival || new Date().toISOString(),
+    //     estimated_end_time:
+    //       deliveries[deliveries.length - 1]?.estimated_arrival ||
+    //       new Date().toISOString(),
+    //   };
+    // });
+    
+    const transformed = optimizationResponse.data.data.routes.map((route:any) => {
+      const deliveries = route.stops.map((stop:any, index:any) => ({
+        delivery_id: stop.delivery.id,
+        sequence: index + 1,
+        estimated_arrival: stop.arrival_time || new Date().toISOString(),
+        travel_time_from_previous: 0, // You can calculate this if needed
+      }));
+
+      const waypoints = route.waypoints.map((wp:any) => ({
+        lat: wp.lat,
+        lng: wp.lng,
+        address: wp.name || undefined, // or wp.address if available
+      }));
+
+      return {
+        driver_id: route.delivery_person.id,
+        driver_name: route.delivery_person.name,
+        deliveries,
+        route_geometry: {
+          waypoints,
+          encoded_polyline: route.encoded_polyline || undefined,
+          total_distance: route.total_distance_meters,
+          total_duration: route.total_time_minutes,
+        },
+        total_deliveries: deliveries.length,
+        start_time:
+          deliveries[0]?.estimated_arrival || new Date().toISOString(),
+        estimated_end_time:
+          deliveries[deliveries.length - 1]?.estimated_arrival ||
+          new Date().toISOString(),
+      };
+    });
+    
+    const optimizedRoutes = transformed;
+    console.log("Optimized Routes:", optimizedRoutes);
     // Store routes in database and create assignments
+    console.log("seeing the first one", optimizedRoutes[0]);
+    console.log("seeing the deliveries", optimizedRoutes[0].deliveries);
+    console.log("seeing the route geometry", optimizedRoutes[0].route_geometry);
+    console.log("seeing the waypoints", optimizedRoutes[0].route_geometry.waypoints);
     const assignments = [];
     const routes = [];
 
@@ -243,7 +312,8 @@ export async function bulkAssignRoutes(req: Request, res: Response) {
           data: {
             delivery_id: delivery.delivery_id,
             driver_id: route.driver_id,
-            date: date, //this date is the date of delivery,
+            // date: date, //this date is the date of delivery, shd be converted to iso-8601 format
+            date: new Date(date).toISOString(),
             position: delivery.sequence,
             status: "pending",
           },
@@ -355,12 +425,71 @@ export async function bulkAssignRoutes(req: Request, res: Response) {
 export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
   try {
     const { driver_id, date } = req.params;
+    if (!driver_id || !date) {
+      res.status(400).json({
+        success: false,
+        message: "Driver ID and date are required",
+        data: null,
+      });
+      return;
+    }
     // Logic to get route by driver ID and date
-    res
-      .status(200)
-      .json({ message: `Route for driver ${driver_id} on date ${date}` });
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const routes = await prisma.route.findMany({
+      where: {
+        driver_id: driver_id,
+        createdAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      include: {
+        driver: {
+          select: {
+            driver_id: true,
+            first_name: true,
+            last_name: true,
+            phone_number: true,
+          },
+        },
+        Assignment: {
+          include: {
+            delivery: {
+              include: {
+                customer: true,
+              },
+            },
+          },
+          orderBy: {
+            sequence_order: "asc",
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `Route for driver ${driver_id} on date ${date}`,
+      data: routes,
+    });
+    return;
   } catch (error) {
-    res.status(500).json({ error: "Failed to get route" });
+    console.error("Get Deliveries Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+    return;
   }
 }
 

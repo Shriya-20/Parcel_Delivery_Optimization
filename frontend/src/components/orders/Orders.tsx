@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getOrderHistory } from "@/lib/fetchDataService";
+import { getOrderHistory } from "@/lib/clientSideDataServices";
 import { Customer,DriverWithRelations, OrderData } from "@/lib/types";
 import CompletedOrders from "./completedOrders";
 import OngoingOrders from "./ongoingOrders";
