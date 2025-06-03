@@ -1,6 +1,6 @@
 "use server"
 import axios from 'axios';
-import { getAllDrivers, getTommorrowScheduledDeliveries, OrderData, ResponseData } from './types';
+import { getAllDrivers, getTommorrowScheduledDeliveries, ResponseData } from './types';
 
 const backendURL = process.env.NEXT_PUBLIC_API_URL as string; 
 
@@ -33,69 +33,73 @@ export async function getTomorrowScheduledDeliveries() {
     }
     throw new Error(data.message);
 }
-interface OrderHistoryResponse extends ResponseData {
-  data: {
-      completed: OrderData[];
-      ongoing: OrderData[];
-      pending: OrderData[];
-      summary: {
-        total_completed: number;
-        total_ongoing: number;
-        total_pending: number;
-        total_orders: number;
-      };
-    };
-}
-export async function getOrderHistory() {
-    const res = await axios.get(`${backendURL}/delivery/orderhistory`);
-    const data: OrderHistoryResponse = res.data;
-    console.log("Order History Data:", data);
-    if (data.success) {
-        return data.data;
-    }
-    throw new Error(data.message);
-}
+// interface OrderHistoryResponse extends ResponseData {
+//   data: {
+//       completed: OrderData[];
+//       ongoing: OrderData[];
+//       pending: OrderData[];
+//       summary: {
+//         total_completed: number;
+//         total_ongoing: number;
+//         total_pending: number;
+//         total_orders: number;
+//       };
+//     };
+// }
+// export async function getOrderHistory() {
+//     const res = await axios.get(`${backendURL}/delivery/orderhistory`);
+//     const data: OrderHistoryResponse = res.data;
+//     console.log("Order History Data:", data);
+//     if (data.success) {
+//         return data.data;
+//     }
+//     throw new Error(data.message);
+// }
 
-export async function getDashboardStats(){
-    const res = await axios.get(`${backendURL}/dashboard/stats`);
-    return res;
-}
-export async function getDailyPerformance(days: number){
-    const res = await axios.get(`${backendURL}/dashboard/performance?days=${days}`);
-    return res;
-}
+// export async function getDashboardStats(){
+//     const res = await axios.get(`${backendURL}/dashboard/stats`);
+//     return res;
+// }
+// export async function getDailyPerformance(days: number){
+//     const res = await axios.get(`${backendURL}/dashboard/performance?days=${days}`);
+//     return res;
+// }
 
-export async function getStatusDistribution() {
-    const res = await axios.get(`${backendURL}/dashboard/status-distribution`);
-    return res;
-}
+// export async function getStatusDistribution() {
+//     const res = await axios.get(`${backendURL}/dashboard/status-distribution`);
+//     return res;
+// }
 
-export async function fetchtopDrivers(){
-    const res = await axios.get(`${backendURL}/dashboard/drivers/top?limit=5`);
-    return res;
-}
+// export async function fetchtopDrivers(){
+//     const res = await axios.get(`${backendURL}/dashboard/drivers/top?limit=5`);
+//     return res;
+// }
 
-export async function getRecentActivities() {
-    const res = await axios.get(`${backendURL}/dashboard/activity?limit=10`);
-    return res;
-}
+// export async function getRecentActivities() {
+//     const res = await axios.get(`${backendURL}/dashboard/activity?limit=10`);
+//     return res;
+// }
 
-export async function getPeakHours(days: number) {
-    const res = await axios.get(
-      `${backendURL}/dashboard/peak-hours?days=${days}`
-    );
-    return res;
-}
+// export async function getPeakHours(days: number) {
+//     const res = await axios.get(
+//       `${backendURL}/dashboard/peak-hours?days=${days}`
+//     );
+//     return res;
+// }
 
-export async function getFleetStatus(){
-    const res = await axios.get(`${backendURL}/dashboard/fleet-status`);
-    return res;
-}
+// export async function getFleetStatus(){
+//     const res = await axios.get(`${backendURL}/dashboard/fleet-status`);
+//     return res;
+// }
 
-export async function assignBulkRoutes(deliveries : getTommorrowScheduledDeliveries[], date:string){
-    const res = await axios.post(`${backendURL}/routes/assignbulk`, {
-      deliveries,
-      date,
-    });
-    return res;
-}
+// export async function assignBulkRoutes(deliveries : getTommorrowScheduledDeliveries[], date:string){
+//     const res = await axios.post(`${backendURL}/routes/assignbulk`, {
+//       deliveries,
+//       date,
+//     });
+//     return res;
+// }
+// export async function getRouteByDriverIdAndDate(driver_id: string, date: string) {
+//     const res = await axios.get(`${backendURL}/routes/route/${driver_id}/${date}`);
+//     return res;
+// }
