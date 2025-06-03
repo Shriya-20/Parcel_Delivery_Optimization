@@ -475,3 +475,72 @@ export interface OrderData {
   delivery_distance?: number;
   position?: number;
 }
+
+// interface RouteWaypoint {
+//   lat: number;
+//   lng: number;
+//   address: string;
+//   delivery_id?: string;
+// }
+
+// interface RouteDelivery {
+//   delivery_id: string;
+//   sequence: number;
+//   estimated_arrival: string;
+//   travel_time_from_previous: number;
+// }
+
+// export interface RouteData extends Route {
+//   Assignment?: Assignment[];
+//   delivery: DeliveryWithRelations;
+//   driver: DriverWithRelations;
+//   route_details: {
+//     driver_id: string;
+//     driver_name: string;
+//     deliveries: RouteDelivery[];
+//     route_geometry: {
+//       waypoints: RouteWaypoint[];
+//       encoded_polyline?: string;
+//       total_distance: number;
+//       total_duration: number;
+//     };
+//     total_deliveries: number;
+//     start_time: string;
+//     estimated_end_time: string;
+//   };
+// }
+
+export interface RouteResponse {
+  delivery_id: string;
+  sequence: number;
+  estimated_arrival: string;
+  travel_time_from_previous: number;
+  latitude: number;
+  longitude: number;
+  waypoints: {
+    lat: number;
+    lng: number;
+  }[];
+  encoded_polyline: string | undefined;
+  driver_id: string;
+  driver_name: string;
+  total_distance: number;
+  total_duration: number;
+  route_start_time: string;
+  route_estimated_end_time: string;
+  drop_location: string;
+  time_slot: string;
+  customer: {
+    createdAt: Date;
+    updatedAt: Date;
+    customer_id: string;
+    latitude: number;
+    longitude: number;
+    first_name: string;
+    last_name: string | null;
+    email: string;
+    phone_number: string;
+    address: string | null;
+  };
+  sequence_order: number;
+}

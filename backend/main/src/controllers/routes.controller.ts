@@ -421,10 +421,164 @@ export async function bulkAssignRoutes(req: Request, res: Response) {
     return;
   }
 }
+interface RouteWaypoint {
+  lat: number;
+  lng: number;
+  address: string;
+  delivery_id?: string;
+}
 
+interface RouteDelivery {
+  delivery_id: string;
+  sequence: number;
+  estimated_arrival: string;
+  travel_time_from_previous: number;
+}
+
+interface RouteDetails {
+    driver_id: string;
+    driver_name: string;
+    deliveries: RouteDelivery[];
+    route_geometry: {
+      waypoints: RouteWaypoint[];
+      encoded_polyline?: string;
+      total_distance: number;
+      total_duration: number;
+    };
+    total_deliveries: number;
+    start_time: string;
+    estimated_end_time: string;
+  };
+// export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
+//   try {
+//     const { driver_id, date } = req.params;
+//     console.log("Driver ID:", driver_id);
+//     console.log("Date:", date);
+//     if (!driver_id || !date) {
+//       res.status(400).json({
+//         success: false,
+//         message: "Driver ID and date are required",
+//         data: null,
+//       });
+//       return;
+//     }
+//     // Logic to get route by driver ID and date
+//     const targetDate = new Date(date);
+//     const startOfDay = new Date(targetDate);
+//     startOfDay.setHours(0, 0, 0, 0);
+
+//     const endOfDay = new Date(targetDate);
+//     endOfDay.setHours(23, 59, 59, 999);
+
+//     // const routes = await prisma.route.findMany({
+//     //   where: {
+//     //     driver_id: driver_id,
+//     //     createdAt: {
+//     //       gte: startOfDay,
+//     //       lte: endOfDay,
+//     //     },
+//     //   },
+//     //   include: {
+//     //     driver: {
+//     //       select: {
+//     //         driver_id: true,
+//     //         first_name: true,
+//     //         last_name: true,
+//     //         phone_number: true,
+//     //       },
+//     //     },
+//     //     Assignment: {
+//     //       include: {
+//     //         delivery: {
+//     //           include: {
+//     //             customer: true,
+//     //           },
+//     //         },
+//     //       },
+//     //       orderBy: {
+//     //         sequence_order: "asc",
+//     //       },
+//     //     },
+//     //   },
+//     //   orderBy: {
+//     //     createdAt: "desc",
+//     //   },
+//     // });
+//     const routes = await prisma.route.findMany({
+//       where:{
+//         driver_id: driver_id,
+//         createdAt: {
+//           gte: startOfDay,
+//           lte: endOfDay,
+//         },
+//       },
+//       include:{
+//         driver: true,
+//         delivery: {
+//           include:{
+//             customer: true,
+//             time_slot: true,
+//           }
+//         },
+//       }
+//     })
+//     if( routes.length === 0) {
+//       res.status(404).json({
+//         success: false,
+//         message: "No routes found for this driver on the selected date",
+//         data: null,
+//       });
+//       return;
+//     }
+//     const formattedRoutes =routes[0];
+//     const routeDetails = formattedRoutes.route_details as unknown as RouteDetails;
+//     const betterResult = routeDetails.deliveries.map((delivery) => ({
+//       delivery_id: delivery.delivery_id,
+//       sequence: delivery.sequence,
+//       estimated_arrival: delivery.estimated_arrival,
+//       travel_time_from_previous: delivery.travel_time_from_previous,
+//       latitude: formattedRoutes.delivery.customer.latitude,//this the locaion of the customer or the dropoff basically
+//       longitude: formattedRoutes.delivery.customer.longitude,
+//       waypoints: routeDetails.route_geometry.waypoints.map((wp) => ({
+//         lat: wp.lat,
+//         lng: wp.lng,
+//       })),
+//       encoded_polyline: routeDetails.route_geometry.encoded_polyline,
+//       driver_id: routeDetails.driver_id,
+//       driver_name: routeDetails.driver_name,
+//       total_distance: routeDetails.route_geometry.total_distance,
+//       total_duration: routeDetails.route_geometry.total_duration,
+//       route_start_time: routeDetails.start_time,
+//       route_estimated_end_time: routeDetails.estimated_end_time,
+//       drop_location: formattedRoutes.delivery.dropoff_location,
+//       time_slot: formattedRoutes.delivery.time_slot.start_time.toISOString().slice(11, 16) + " - " +
+//         formattedRoutes.delivery.time_slot.end_time.toISOString().slice(11, 16),
+//       customer: formattedRoutes.delivery.customer,
+//       sequence_order: delivery.sequence,
+//     }));
+
+//     res.json({
+//       success: true,
+//       message: `Route for driver ${driver_id} on date ${date}`,
+//       data: betterResult,
+//     });
+//     return;
+//   } catch (error) {
+//     console.error("Get Deliveries Error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//       error: (error as Error).message,
+//     });
+//     return;
+//   }
+// }
 export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
   try {
     const { driver_id, date } = req.params;
+    console.log("Driver ID:", driver_id);
+    console.log("Date:", date);
+
     if (!driver_id || !date) {
       res.status(400).json({
         success: false,
@@ -433,11 +587,10 @@ export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
       });
       return;
     }
-    // Logic to get route by driver ID and date
+
     const targetDate = new Date(date);
     const startOfDay = new Date(targetDate);
     startOfDay.setHours(0, 0, 0, 0);
-
     const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -450,36 +603,90 @@ export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
         },
       },
       include: {
-        driver: {
-          select: {
-            driver_id: true,
-            first_name: true,
-            last_name: true,
-            phone_number: true,
-          },
-        },
-        Assignment: {
-          include: {
-            delivery: {
-              include: {
-                customer: true,
-              },
-            },
-          },
-          orderBy: {
-            sequence_order: "asc",
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
+        driver: true,
+        // Remove this if route doesn't have a direct delivery relationship
+        // delivery: {
+        //   include: {
+        //     customer: true,
+        //     time_slot: true,
+        //   }
+        // },
       },
     });
+
+    if (routes.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "No routes found for this driver on the selected date",
+        data: null,
+      });
+      return;
+    }
+
+    const route = routes[0];
+    const routeDetails = route.route_details as unknown as RouteDetails;
+
+    // Get all deliveries for this route with their details
+    const deliveryIds = routeDetails.deliveries.map((d) => d.delivery_id);
+    const deliveries = await prisma.delivery.findMany({
+      where: {
+        delivery_id: { in: deliveryIds },
+      },
+      include: {
+        customer: true,
+        time_slot: true,
+      },
+    });
+
+    // Create a map for quick delivery lookup
+    const deliveryMap = new Map(deliveries.map((d) => [d.delivery_id, d]));
+
+    const betterResult = routeDetails.deliveries
+      .map((routeDelivery) => {
+        const deliveryData = deliveryMap.get(routeDelivery.delivery_id);
+
+        if (!deliveryData) {
+          console.warn(
+            `Delivery ${routeDelivery.delivery_id} not found in database`
+          );
+          return null;
+        }
+
+        return {
+          delivery_id: routeDelivery.delivery_id,
+          sequence: routeDelivery.sequence,
+          estimated_arrival: routeDelivery.estimated_arrival,
+          travel_time_from_previous: routeDelivery.travel_time_from_previous,
+          latitude: deliveryData.customer.latitude,
+          longitude: deliveryData.customer.longitude,
+          // Include waypoints only if they're specific to this delivery
+          // Otherwise, consider moving this to route level
+          waypoints: routeDetails.route_geometry.waypoints.map((wp) => ({
+            lat: wp.lat,
+            lng: wp.lng,
+          })),
+          encoded_polyline: routeDetails.route_geometry.encoded_polyline,
+          driver_id: routeDetails.driver_id,
+          driver_name: routeDetails.driver_name,
+          total_distance: routeDetails.route_geometry.total_distance,
+          total_duration: routeDetails.route_geometry.total_duration,
+          route_start_time: routeDetails.start_time,
+          route_estimated_end_time: routeDetails.estimated_end_time,
+          drop_location: deliveryData.dropoff_location,
+          time_slot:
+            deliveryData.time_slot.start_time.toISOString().slice(11, 16) +
+            " - " +
+            deliveryData.time_slot.end_time.toISOString().slice(11, 16),
+          customer: deliveryData.customer,
+          sequence_order: routeDelivery.sequence,
+        };
+      })
+      .filter(Boolean); // Remove null entries
 
     res.json({
       success: true,
       message: `Route for driver ${driver_id} on date ${date}`,
-      data: routes,
+      data: betterResult,
     });
     return;
   } catch (error) {
