@@ -1,5 +1,6 @@
 import express, { urlencoded, json } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes";
 import driverRouter from "./routes/drivers.routes";
 import deliveryRouter from "./routes/delivery.routes";
@@ -13,7 +14,11 @@ const app = express();
 
 app.use(urlencoded({ extended: true }));
 app.use(json());
-app.use(cors())
+app.use(cookieParser());
+app.use(cors({
+  origin: "*",
+  credentials: true,
+}))
 
 app.get("/", (req, res) => {
   res.status(200).json({ msg: "Server is up and running" });
