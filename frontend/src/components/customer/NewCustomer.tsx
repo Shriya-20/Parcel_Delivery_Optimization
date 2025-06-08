@@ -24,6 +24,7 @@ import {
 import { CustomerModal } from "@/components/assign/CustomerModal";
 // import { DriverModal } from "@/components/assign/DriverModal";
 import { EditTimeSlotDialog } from "./EditTimeSlotDialog";
+import { sendEmailsToCustomers } from "@/lib/clientSideDataServices";
 
 interface DeliveryWithAssignment extends getTommorrowScheduledDeliveries {
   assignedDriver?: DriverWithRelations | null;
@@ -90,8 +91,15 @@ export function Customer() {
   //   const [selectedDriver, setSelectedDriver] =
   // useState<DriverWithRatings | null>(null);
 
-  const handleSendEmails = useCallback(() => {
-    toast.success("Emails sent to customers successfully!");
+  const handleSendEmails = useCallback(async () => {
+    console.log("deliveries", deliveries);
+    const res = await sendEmailsToCustomers(deliveries);
+    if(res!=null){
+      toast.success("Emails sent to customers successfully!");
+    }else{
+      toast.error("Failed to send emails to customers.");
+    }
+    
   }, []);
 
   const handleOpenTimeSlotDialog = useCallback(

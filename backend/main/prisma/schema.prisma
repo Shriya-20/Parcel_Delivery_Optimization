@@ -100,7 +100,7 @@ model Delivery{
     weight       Float
     size         String
     delivery_instructions String?
-    time_slot_id   String  //each delivery will have a time slot i.e of the preffered time slot only if not then it will be default time slot that will be taken or set by the admin
+    time_slot_id   String?  //each delivery will have a time slot i.e of the preffered time slot only if not then it will be default time slot that will be taken or set by the admin
     dropoff_location String //for now is the address say shd be lat and long also ig she see to it
     priority     Int @default(0) // 0 is normal, 1 is high, 2 is urgent
     latitude    Float?
@@ -112,7 +112,7 @@ model Delivery{
     updatedAt   DateTime @updatedAt
 
     customer Customer @relation(fields: [customer_id], references: [customer_id])
-    time_slot TimeSlot @relation(fields: [time_slot_id], references: [time_slot_id])
+    time_slot TimeSlot? @relation(fields: [time_slot_id], references: [time_slot_id])
     DeliveryQueue DeliveryQueue[]
     OrderHistory OrderHistory[]
     route Route[]
