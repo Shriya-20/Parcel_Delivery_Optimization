@@ -140,7 +140,7 @@ export function Customer() {
       setIsLoading(true);
       setError(null);
 
-      const deliveries = await getTomorrowScheduledDeliveries(); //!IMP-> add like if assign or customer so that we can send date as one day next to today or 2 days next accordingly for customer or assign
+      const deliveries = await getTomorrowScheduledDeliveries("two"); //!IMP-> add like if assign or customer so that we can send date as one day next to today or 2 days next accordingly for customer or assign
 
       if (deliveries && deliveries.length > 0) {
         setDeliveries(deliveries);

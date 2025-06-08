@@ -26,12 +26,19 @@ export async function getRouteByDriverIdAndDate(
         },
       }
     );
+    console.log("API Response",res.data);
+    if(res.data.success === false) {
+      console.error("API Error:", res.data.message);
+      return null;
+      // throw new Error(res.data.message);
+    }
 
     console.log("API Response:", res.data);
     return res.data.data as RouteResponse[];
   } catch (error) {
     console.error("API Error:", error);
-    throw error;
+    // throw error;
+    return null;
   }
 }
 interface OrderHistoryResponse extends ResponseData {

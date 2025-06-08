@@ -21,13 +21,19 @@ export async function getDriversData(){
     throw new Error(data.message);
 }
 
-export async function getTomorrowScheduledDeliveries() {
+export async function getTomorrowScheduledDeliveries(day: "two" | "one") {
     // const tomorrow = new Date();
     // tomorrow.setDate(tomorrow.getDate() + 1);
     // const formattedDate = tomorrow.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
     //for now we will use today's date
     // const formattedDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-    const formattedDate = "2025-05-26";
+
+    let formattedDate;
+    if (day === "two") {
+        formattedDate = "2025-05-25";
+    } else {
+        formattedDate = "2025-05-26";
+    }
     const res = await axios.get(`${backendURL}/delivery?date=${formattedDate}`);
     const data: getTomorrowScheduledDeliveriesResponse = res.data;
     if (data.success) {
