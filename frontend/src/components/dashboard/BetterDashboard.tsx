@@ -45,7 +45,7 @@ import {
   getPeakHours,
   getRecentActivities,
   getStatusDistribution,
-} from "@/lib/fetchDataService";
+} from "@/lib/clientSideDataServices";
 
 
 // Types
