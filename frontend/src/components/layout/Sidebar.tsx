@@ -52,9 +52,9 @@ export function Sidebar() {
     <div className="h-screen w-64 border-r flex flex-col">
       <div className="p-4 border-b flex justify-start items-center gap-2">
         <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground font-bold">NR</span>
+          <span className="text-primary-foreground font-bold">MD</span>
         </div>
-        <span className="font-semibold text-lg">Nexustron </span>
+        <span className="font-semibold text-lg">Margadarshi </span>
       </div>
       <div className="py-4 flex-1 flex flex-col">
         <div className="px-3 mb-4">

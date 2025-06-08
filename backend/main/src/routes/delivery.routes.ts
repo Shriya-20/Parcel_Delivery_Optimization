@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDeliveries, getOrderHistory } from "../controllers/deliveries.controller";
+import { getDeliveries, getDeliveryId, getOrderHistory, updateTimeslot } from "../controllers/deliveries.controller";
 
 const deliveryRouter = Router();
 
@@ -9,5 +9,7 @@ deliveryRouter.get("/", getDeliveries)//send date in query params and this one i
 //working fine
 deliveryRouter.get("/orderhistory", getOrderHistory)//this is to get the complete order history
 
+deliveryRouter.get("/:id",getDeliveryId);
+deliveryRouter.post("/:id/time-slot",updateTimeslot);
 
 export default deliveryRouter;

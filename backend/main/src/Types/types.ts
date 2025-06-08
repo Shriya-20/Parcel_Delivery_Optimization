@@ -37,7 +37,7 @@ export type DeliveryQueueForDriver = {
   weight: number;
   size: string;
   delivery_instructions: string | null;
-  time_slot: {
+  time_slot?: {
     start_time: Date;
     end_time: Date;
   };

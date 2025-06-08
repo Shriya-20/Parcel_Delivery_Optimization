@@ -273,10 +273,12 @@ export async function getDriverDeliveriesService(id:string, date:string){
       weight: queue.delivery.weight,
       size: queue.delivery.size,
       delivery_instructions: queue.delivery.delivery_instructions,
-      time_slot: {
-        start_time: queue.delivery.time_slot.start_time,
-        end_time: queue.delivery.time_slot.end_time,
-      },
+      time_slot: queue.delivery.time_slot
+        ? {
+            start_time: queue.delivery.time_slot.start_time,
+            end_time: queue.delivery.time_slot.end_time,
+          }
+        : undefined,
     }));
     return deliveries;
 }
@@ -366,10 +368,12 @@ export async function getDeliveryForDriver(id: string, date: string, delivery_id
     weight: queue.delivery.weight,
     size: queue.delivery.size,
     delivery_instructions: queue.delivery.delivery_instructions,
-    time_slot: {
-      start_time: queue.delivery.time_slot.start_time,
-      end_time: queue.delivery.time_slot.end_time,
-    },
+    time_slot: queue.delivery.time_slot
+      ? {
+          start_time: queue.delivery.time_slot.start_time,
+          end_time: queue.delivery.time_slot.end_time,
+        }
+      : undefined,
     driver: queue.driver,
   }));
   return deliveries;

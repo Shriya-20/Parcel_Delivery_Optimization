@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/fetchDataService.ts
 // Remove any "use server" directive from this file
 import axios from "axios";
 import { getAllDrivers, getTommorrowScheduledDeliveries, OrderData, ResponseData, RouteResponse } from "./types";
+import { ParamValue } from "next/dist/server/request/params";
 
 const backendURL = process.env.NEXT_PUBLIC_API_URL as string; 
 
@@ -808,5 +810,61 @@ export async function getOptimizedPolylineFromGoogleMaps(
   } catch (error) {
     console.error("Error fetching optimized polyline:", error);
     return "";
+  }
+}
+
+export async function fetchDeliveryByDeliveryId(deliveryId: string){
+  try {
+    const res = await axios.get(`${backendURL}/delivery/${deliveryId}`);
+    const resData =  res.data;
+    if(resData.success){
+      return resData.data;
+    }
+  } catch (error) {
+    console.error("Error fetching delivery by ID:", error);
+    throw error;
+  }
+}
+
+export async function sendTimeslot(payload: {
+  deliveryId: ParamValue;
+  timeSlot: {
+    start_time: any;
+    end_time: any;
+  };
+}) {
+  try {
+    console.log("Sending timeslot for delivery ID:", payload.deliveryId);
+    console.log("Timeslot data:", payload.timeSlot);
+    const res = await axios.post(
+      `http://localhost:8000/api/delivery/${payload.deliveryId}/time-slot`,
+      payload
+    );
+    const resData = res.data;
+    if (resData.success) {
+      return resData.data;
+    }
+  } catch (error) {
+    console.error("Error sending time slot:", error);
+    throw error;
+  }
+}
+
+export async function sendEmailsToCustomers(deliveries: getTommorrowScheduledDeliveries[]) {
+  try {
+    console.log("Sending emails for deliveries:", deliveries);
+    const res = await axios.post(
+      `${backendURL}/email/send-timeslots-emails`,
+      { deliveries }
+    );
+    const resData = res.data;
+    if (resData.success) {
+      return resData.data;
+    } else {
+      throw new Error(resData.message);
+    }
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    throw error;
   }
 }
