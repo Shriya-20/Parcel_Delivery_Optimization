@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 import axios from 'axios';
 import { getAllDrivers, getTommorrowScheduledDeliveries, ResponseData } from './types';
+// import { ParamValue } from 'next/dist/server/request/params';
 
 const backendURL = process.env.NEXT_PUBLIC_API_URL as string; 
 
@@ -103,3 +105,4 @@ export async function getTomorrowScheduledDeliveries() {
 //     const res = await axios.get(`${backendURL}/routes/route/${driver_id}/${date}`);
 //     return res;
 // }
+

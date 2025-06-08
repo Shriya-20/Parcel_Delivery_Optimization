@@ -8,6 +8,7 @@ import customerRouter from "./routes/customer.routes";
 import routeRouter from "./routes/route.routes";
 import dashboardRouter from "./routes/dashboard.routes";
 import adminRouter from "./routes/admin.routes";
+import emailRouter from "./routes/email.routes";
 
 const port = process.env.PORT || 8000;
 const app = express();
@@ -31,6 +32,7 @@ app.use("/api/customers", customerRouter);
 app.use("/api/routes", routeRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/email", emailRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening at port ${port}`);

@@ -674,9 +674,11 @@ export async function getRouteByDriverIdAndDate(req: Request, res: Response) {
           route_estimated_end_time: routeDetails.estimated_end_time,
           drop_location: deliveryData.dropoff_location,
           time_slot:
-            deliveryData.time_slot.start_time.toISOString().slice(11, 16) +
-            " - " +
-            deliveryData.time_slot.end_time.toISOString().slice(11, 16),
+            deliveryData.time_slot
+              ? deliveryData.time_slot.start_time.toISOString().slice(11, 16) +
+                " - " +
+                deliveryData.time_slot.end_time.toISOString().slice(11, 16)
+              : null,
           customer: deliveryData.customer,
           sequence_order: routeDelivery.sequence,
         };

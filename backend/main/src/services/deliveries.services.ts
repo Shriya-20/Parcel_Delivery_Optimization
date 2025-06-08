@@ -124,9 +124,9 @@ export async function getDeliveriesByDateService(date: string) {
           completed_deliveries: completedMap[assign.driver.driver_id] ?? 0,
         },
       })),
-      preffered_time: `${
-        new Date(d.time_slot.start_time).toTimeString().split(" ")[0]
-      } - ${new Date(d.time_slot.end_time).toTimeString().split(" ")[0]}`,
+      preffered_time: d.time_slot
+        ? `${new Date(d.time_slot.start_time).toTimeString().split(" ")[0]} - ${new Date(d.time_slot.end_time).toTimeString().split(" ")[0]}`
+        : null,
     };
   });
 
@@ -315,7 +315,9 @@ export async function getCompleteOrderHistoryService() {
       },
       customer: order.customer,
       driver: order.driver,
-      preferred_time: `${order.delivery.time_slot.start_time} - ${order.delivery.time_slot.end_time}`,
+      preferred_time: order.delivery.time_slot
+        ? `${order.delivery.time_slot.start_time} - ${order.delivery.time_slot.end_time}`
+        : null,
       completed_time: order.completed_at,
       delivery_date: order.date,
       delivery_duration: order.delivery_duration,
@@ -338,7 +340,9 @@ export async function getCompleteOrderHistoryService() {
       },
       customer: queue.delivery.customer,
       driver: queue.driver,
-      preferred_time: `${queue.delivery.time_slot.start_time} - ${queue.delivery.time_slot.end_time}`,
+      preferred_time: queue.delivery.time_slot
+        ? `${queue.delivery.time_slot.start_time} - ${queue.delivery.time_slot.end_time}`
+        : null,
       queue_date: queue.date,
       position: queue.position,
       completed_time: null,
@@ -363,7 +367,9 @@ export async function getCompleteOrderHistoryService() {
       },
       customer: queue.delivery.customer,
       driver: queue.driver,
-      preferred_time: `${queue.delivery.time_slot.start_time} - ${queue.delivery.time_slot.end_time}`,
+      preferred_time: queue.delivery.time_slot
+        ? `${queue.delivery.time_slot.start_time} - ${queue.delivery.time_slot.end_time}`
+        : null,
       queue_date: queue.date,
       position: queue.position,
       completed_time: null,
@@ -436,3 +442,129 @@ export async function getCompleteOrderHistoryService() {
 //     };
 //   }
 // }
+
+export async function getDeliveryByIdService(deliveryId: string) {
+  try {
+    const delivery = await prisma.delivery.findUnique({
+      where: { delivery_id: deliveryId },
+      include: {
+        customer: {
+          select: {
+            first_name: true,
+            last_name: true,
+            email: true,
+            phone_number: true,
+            address: true,
+            customer_id: true,
+          },
+        },
+        time_slot: {
+          select: {
+            start_time: true,
+            end_time: true,
+          },
+        },
+      },
+    });
+
+    if (!delivery) {
+      return null;
+    }
+
+    return delivery;
+  } catch (error) {
+    console.error("Error fetching delivery by ID:", error);
+    throw new Error("Failed to fetch delivery");
+  }
+}
+
+// export async function updateDeliveryTimeSlotService(
+//   deliveryId: string,
+//   startTime: Date,
+//   endTime: Date
+// ) {
+//   try {
+//     const updatedDelivery = await prisma.delivery.update({
+//       where: { delivery_id: deliveryId },
+//       data: {
+//         time_slot: {
+//           update: {
+//             start_time: startTime,
+//             end_time: endTime,
+//           },
+//         },
+//       },
+//       include: {
+//         time_slot: true,
+//       },
+//     });
+
+//     return updatedDelivery;
+//   } catch (error) {
+//     console.error("Error updating delivery time slot:", error);
+//     throw new Error("Failed to update delivery time slot");
+//   }
+// }
+
+export async function updateDeliveryTimeSlotService(
+  deliveryId: string,
+  startTime: Date,
+  endTime: Date
+) {
+  try {
+    // First check if the delivery exists
+    const existingDelivery = await prisma.delivery.findUnique({
+      where: { delivery_id: deliveryId },
+      include: { time_slot: true },
+    });
+
+    if (!existingDelivery) {
+      throw new Error("Delivery not found");
+    }
+
+    let updatedDelivery;
+
+    if (existingDelivery.time_slot) {
+      // Update existing time slot
+      updatedDelivery = await prisma.delivery.update({
+        where: { delivery_id: deliveryId },
+        data: {
+          time_slot: {
+            update: {
+              start_time: startTime,
+              end_time: endTime,
+            },
+          },
+        },
+        include: {
+          time_slot: true,
+          customer: true,
+        },
+      });
+    } else {
+      // Create new time slot
+      updatedDelivery = await prisma.delivery.update({
+        where: { delivery_id: deliveryId },
+        data: {
+          time_slot: {
+            create: {
+              start_time: startTime,
+              end_time: endTime,
+            },
+          },
+        },
+        include: {
+          time_slot: true,
+          customer: true,
+        },
+      });
+    }
+
+    return updatedDelivery;
+  } catch (error) {
+    console.error("Error updating delivery time slot:", error);
+    throw new Error(
+      `Failed to update delivery time slot: ${(error as Error).message}`
+    );
+  }
+}
