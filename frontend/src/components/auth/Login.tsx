@@ -1,13 +1,14 @@
-"use client"
+"use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 // import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -15,25 +16,30 @@ export function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // const { toast } = useToast();
-  const router = useRouter();
+  // const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // In a real app, we would handle authentication here
-      // For demo purposes, we'll simulate a successful login
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success("Welcome back!",{
-        description: "You have successfully logged in.",
-      });
-      router.push("/dashboard");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const success = await login(email, password);
+      if (!success) {
+        toast.error("Login failed", {
+          description: "Please check your credentials and try again.",
+        });
+      }else{
+        toast.success("Login successful", {
+          description: "Welcome back Admin! You are now logged in.",
+        });
+        console.log("Login successful");
+      }
     } catch (error) {
-      toast.error( "Login failed",{
-        description: "Invalid email or password",
+      toast.error("Login failed", {
+        description: "An unexpected error occurred.",
       });
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -44,6 +50,7 @@ export function Login() {
       <div className="text-center mb-6">
         <h1 className="text-2xl font-bold">Welcome back</h1>
         <p className="text-muted-foreground">Please enter your details</p>
+        <p><Link href="/" className="text-primary text-sm hover:underline">Go back to home</Link></p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,13 +100,15 @@ export function Login() {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Sign in"}
         </Button>
-
-        <div className="text-center text-sm">
-          <span className="text-muted-foreground">Don&apos;t have an account? </span>
+        {/* For now the signup part is not done or needed ig so not there
+        {/* <div className="text-center text-sm">
+          <span className="text-muted-foreground">
+            Don&apos;t have an account?{" "}
+          </span>
           <Link href="/register" className="text-primary hover:underline">
             Sign up
           </Link>
-        </div>
+        </div> */}
       </form>
     </div>
   );

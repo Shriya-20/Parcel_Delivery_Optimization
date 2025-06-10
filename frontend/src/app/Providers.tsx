@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 // import { Toaster } from "@/components/ui/toaster";
 import { Toaster } from "sonner";
 import { useState } from "react";
+import { AuthProvider } from "@/context/AuthContext"; // Adjust path as needed
+import AuthGuard from "@/context/AuthGuard"; // Adjust path as needed
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Create a client for each request to prevent data sharing between users
@@ -24,9 +26,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             },
           }}
         />
-
+        <AuthProvider>
+          <AuthGuard>{children}</AuthGuard>
+        </AuthProvider>
         {/* <Sonner /> */}
-        {children}
+        {/* {children} */}
       </TooltipProvider>
     </QueryClientProvider>
   );

@@ -23,6 +23,7 @@ import {
   TrendingUp,
   AlertCircle,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 // Mock data based on your schema structure
 const mockData = {
@@ -238,14 +239,17 @@ function DriverRow({ driver }) {
 
 export default function DeliveryDashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState("7d");
-
+  const { admin } = useAuth();
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Welcome {admin?.first_name || "Admin"} {admin?.last_name || ""}!
+            </h1>
+            <h1 className="text-xl font-bold text-gray-900">
               Delivery Dashboard
             </h1>
             <p className="text-sm text-gray-600 mt-1">
@@ -262,7 +266,7 @@ export default function DeliveryDashboard() {
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
             </select>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+            <button className="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors">
               Refresh Data
             </button>
           </div>
