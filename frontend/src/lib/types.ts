@@ -150,14 +150,14 @@ export interface Admin {
 }
 
 export interface DriverLocation {
-  location_id: string;
+  location_id?: string;
   driver_id: string;
   latitude: number;
   longitude: number;
-  timestamp: Date;
-  speed: number | null;
-  heading: number | null;
-  battery_level: number | null;
+  timestamp?: Date;
+  speed?: number | null;
+  heading?: number | null;
+  battery_level?: number | null;
 }
 
 export interface Feedback {
