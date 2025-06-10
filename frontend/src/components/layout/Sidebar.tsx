@@ -14,6 +14,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "../ui/button";
+import Image from "next/image";
 
 // Move this inside the client component
 const SidebarLink = ({
@@ -47,13 +50,20 @@ const SidebarLink = ({
 
 export function Sidebar() {
   const pathname = usePathname();
-
+  const { logout } = useAuth();
   return (
     <div className="h-screen w-64 border-r flex flex-col">
       <div className="p-4 border-b flex justify-start items-center gap-2">
-        <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+        {/* <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
           <span className="text-primary-foreground font-bold">MD</span>
-        </div>
+        </div> */}
+        <Image
+          src="/logo.svg"
+          alt="MargaDarshi Logo"
+          width={32}
+          height={32}
+          className="rounded-md"
+        />
         <span className="font-semibold text-lg">Margadarshi </span>
       </div>
       <div className="py-4 flex-1 flex flex-col">
@@ -110,13 +120,14 @@ export function Sidebar() {
           </nav>
         </div>
         <div className="mt-auto px-3">
-          <Link
-            href="/login"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-foreground/70 hover:bg-secondary"
+          <Button
+            onClick={() => logout()}
+            // className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-foreground/70 hover:bg-secondary"
+            className="hover:bg-secondary cursor-pointer hover:text-foreground/90"
           >
             <LogOut className="h-5 w-5" />
             <span>Sign Out</span>
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

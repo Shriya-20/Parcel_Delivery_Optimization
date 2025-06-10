@@ -18,10 +18,17 @@ export function Landing() {
       <header className="border-b py-4 px-6 bg-white">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold">NR</span>
-            </div>
-            <span className="font-semibold text-lg">Nexustron</span>
+            {/* <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold">MD</span>
+            </div> */}
+            <Image
+              src="/logo.svg"
+              alt="MargaDarshi Logo"
+              width={32}
+              height={32}
+              className="rounded-md"
+            />
+            <span className="font-semibold text-lg">MargaDarshi</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <Link
@@ -45,13 +52,17 @@ export function Landing() {
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/login">
-              <Button variant="outline" size="sm">
+              <Button
+                variant="default"
+                size="lg"
+                className="hover:bg-primary/90 cursor-pointer"
+              >
                 Sign in
               </Button>
             </Link>
-            <Link href="/register">
+            {/* <Link href="/login">
               <Button size="sm">Get started</Button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </header>
@@ -67,8 +78,11 @@ export function Landing() {
             intelligent routing, and comprehensive analytics.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto">
+            <Link href="/login">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto hover:bg-primary/90 cursor-pointer"
+              >
                 Start for free
                 <ChevronRight className="h-4 w-4 ml-2" />
               </Button>
@@ -82,7 +96,7 @@ export function Landing() {
             <div className="relative w-full h-[400px]">
               <Image
                 src="/dashboard_for_landing_page.png"
-                alt="Nexustron Dashboard Preview"
+                alt="Margadarshi Dashboard Preview"
                 className="rounded-lg shadow-xl border"
                 fill
                 style={{ objectFit: "fill" }}
@@ -178,11 +192,15 @@ export function Landing() {
             Ready to streamline your delivery operations?
           </h2>
           <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that use Nexustron to manage their
+            Join thousands of businesses that use MargaDarshi to manage their
             deliveries efficiently.
           </p>
-          <Link href="/register">
-            <Button size="lg" variant="secondary">
+          <Link href="/login">
+            <Button
+              size="lg"
+              variant="secondary"
+              className="hover:bg-secondary/90 cursor-pointer"
+            >
               Get started for free
             </Button>
           </Link>
@@ -194,10 +212,17 @@ export function Landing() {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">NR</span>
-              </div>
-              <span className="font-semibold">Nexustron</span>
+              {/* <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-bold">MD</span>
+              </div> */}
+              <Image
+                src="/logo.svg"
+                alt="MargaDarshi Logo"
+                width={32}
+                height={32}
+                className="rounded-md"
+              />
+              <span className="font-semibold">MargaDarshi</span>
             </div>
             <div className="flex flex-wrap gap-8 justify-center mb-4 md:mb-0">
               <Link
@@ -226,7 +251,7 @@ export function Landing() {
               </Link>
             </div>
             <div className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Nexustron. All rights reserved.
+              © {new Date().getFullYear()} MargaDarshi. All rights reserved.
             </div>
           </div>
         </div>

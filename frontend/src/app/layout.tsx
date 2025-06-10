@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./Providers";
 
 export const metadata: Metadata = {
-  title: "Nexustron",
+  title: "MargaDarshi",
   description: "Your app description",
 };
 

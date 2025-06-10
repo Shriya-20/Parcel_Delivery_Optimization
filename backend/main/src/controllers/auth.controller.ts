@@ -2,8 +2,11 @@ import { Request, Response } from "express";
 import {
   comparePassword,
   generateJwtToken,
+  generateJwtTokenForAdmin,
+  getAdminFromEmail,
   getDriverFromEmail,
 } from "../services/auth.services";
+import { AdminRole } from "@prisma/client";
 interface DriverForLogin {
   driver_id: string;
   first_name: string;
@@ -87,6 +90,82 @@ export async function driverLogin(req: Request, res: Response) {
       message: "Driver login successful",
       data: {
         driver: driverWithoutPassword,
+        token: jwtToken,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+}
+
+interface AdminForLogin {
+  admin_id: string;
+  first_name: string;
+  last_name: string | null;
+  email: string;
+  phone_number: string;
+  role: AdminRole;
+  hashed_password: string;
+  region: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+export async function adminLogin(req: Request, res: Response) {
+  try {
+    const { email, password } = req.body;
+    console.log("Admin login request received:", { email, password });
+    if (!email || !password) {
+      res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+        data: null,
+      });
+      return;
+    }
+    const adminFromEmail = await getAdminFromEmail(email);
+    if (!adminFromEmail) {
+      res.status(404).json({
+        success: false,
+        message: "Invalid credentials",
+        data: null,
+      });
+      return;
+    }
+    const isPasswordValid = await comparePassword(
+      password,
+      adminFromEmail.hashed_password
+    );
+    if (!isPasswordValid) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+        data: null,
+      });
+      return;
+    }
+    const jwtToken = await generateJwtTokenForAdmin(adminFromEmail);
+    const adminWithoutPassword: Omit<AdminForLogin, "hashed_password"> = {
+      admin_id: adminFromEmail.admin_id,
+      first_name: adminFromEmail.first_name,
+      last_name: adminFromEmail.last_name,
+      email: adminFromEmail.email,
+      phone_number: adminFromEmail.phone_number,
+      role: adminFromEmail.role,
+      region: adminFromEmail.region,
+      createdAt: adminFromEmail.createdAt,
+      updatedAt: adminFromEmail.updatedAt,
+    };
+    res.status(200).json({
+      success: true,
+      message: "Admin login successful",
+      data: {
+        admin: adminWithoutPassword,
         token: jwtToken,
       },
     });
