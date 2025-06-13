@@ -1,11 +1,13 @@
+#app.py
 from flask import Flask, request, jsonify
 import datetime
 import os
+import csv
+import json
 from typing import List, Dict, Any
 from flask_cors import CORS, cross_origin
 
-# Import the MultiVehicleDeliveryOptimizer class
-from multi_vehcile_optimizer import MultiVehicleDeliveryOptimizer
+from multi_vehicle_optimizer import MultiVehicleDeliveryOptimizer
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -14,60 +16,139 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 GRAPH_PATH = os.environ.get('GRAPH_PATH', '../../data/udupi.graphml')
 optimizer = MultiVehicleDeliveryOptimizer(graph_path=GRAPH_PATH)
 
+# CSV storage configuration
+CSV_STORAGE_DIR = os.environ.get('CSV_STORAGE_DIR', './csv_data')
+CSV_REQUESTS_FILE = os.path.join(CSV_STORAGE_DIR, 'delivery_requests.csv')
+CSV_ROUTES_FILE = os.path.join(CSV_STORAGE_DIR, 'delivery_routes.csv')
+CSV_DELIVERIES_FILE = os.path.join(CSV_STORAGE_DIR, 'delivery_details.csv')
+
+def ensure_csv_directory():
+    """Create CSV storage directory if it doesn't exist"""
+    if not os.path.exists(CSV_STORAGE_DIR):
+        os.makedirs(CSV_STORAGE_DIR)
+
+def initialize_csv_files():
+    """Initialize CSV files with headers if they don't exist"""
+    ensure_csv_directory()
+    
+    # Initialize delivery requests CSV
+    if not os.path.exists(CSV_REQUESTS_FILE):
+        with open(CSV_REQUESTS_FILE, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                'request_id', 'timestamp', 'current_time', 'num_delivery_persons', 
+                'num_deliveries', 'total_vehicles_used', 'fallback_used', 'status'
+            ])
+    
+    # Initialize delivery routes CSV
+    if not os.path.exists(CSV_ROUTES_FILE):
+        with open(CSV_ROUTES_FILE, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                'request_id', 'delivery_person_id', 'delivery_person_name', 
+                'start_lat', 'start_lng', 'total_stops', 'total_time_minutes', 
+                'total_distance_meters', 'route_note'
+            ])
+    
+    # Initialize delivery details CSV
+    if not os.path.exists(CSV_DELIVERIES_FILE):
+        with open(CSV_DELIVERIES_FILE, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                'request_id', 'delivery_person_id', 'delivery_id', 'customer_name',
+                'delivery_lat', 'delivery_lng', 'delivery_address', 'arrival_time',
+                'time_window_start', 'time_window_end', 'wait_time_minutes',
+                'stop_sequence', 'package_weight', 'package_description'
+            ])
+
+def generate_request_id():
+    """Generate a unique request ID"""
+    return f"REQ_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
+
+def store_request_data(request_id: str, request_data: Dict, route_plan: Dict):
+    """Store the request and route data to CSV files"""
+    try:
+        timestamp = datetime.datetime.now().isoformat()
+        
+        # Store main request info
+        with open(CSV_REQUESTS_FILE, 'a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow([
+                request_id,
+                timestamp,
+                request_data.get('current_time', ''),
+                len(request_data.get('delivery_persons', [])),
+                len(request_data.get('deliveries', [])),
+                route_plan.get('total_vehicles_used', 0),
+                route_plan.get('fallback_used', False),
+                route_plan.get('status', 'unknown')
+            ])
+        
+        # Store route information
+        with open(CSV_ROUTES_FILE, 'a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            for route in route_plan.get('routes', []):
+                dp = route['delivery_person']
+                writer.writerow([
+                    request_id,
+                    dp.get('id', ''),
+                    dp.get('name', ''),
+                    dp['location']['lat'],
+                    dp['location']['lng'],
+                    len(route.get('stops', [])),
+                    route.get('total_time_minutes', 0),
+                    route.get('total_distance_meters', 0),
+                    route.get('note', '')
+                ])
+        
+        # Store individual delivery details
+        with open(CSV_DELIVERIES_FILE, 'a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            for route in route_plan.get('routes', []):
+                dp_id = route['delivery_person'].get('id', '')
+                for idx, stop in enumerate(route.get('stops', [])):
+                    delivery = stop['delivery']
+                    package_details = delivery.get('package_details', {})
+                    
+                    writer.writerow([
+                        request_id,
+                        dp_id,
+                        delivery.get('id', ''),
+                        delivery.get('customer', ''),
+                        delivery['location']['lat'],
+                        delivery['location']['lng'],
+                        delivery['location'].get('address', ''),
+                        stop.get('arrival_time', ''),
+                        delivery.get('time_window', {}).get('start', ''),
+                        delivery.get('time_window', {}).get('end', ''),
+                        stop.get('wait_time_minutes', 0),
+                        idx + 1,  # Stop sequence
+                        package_details.get('weight', ''),
+                        package_details.get('description', '')
+                    ])
+        
+        print(f"Successfully stored data for request {request_id}")
+        return True
+        
+    except Exception as e:
+        print(f"Error storing CSV data: {e}")
+        return False
+
 @app.route('/api/optimize-multi-route', methods=['POST', 'OPTIONS'])
 @cross_origin(origin='*')
 def optimize_multi_route():
     """
     API endpoint to get optimized delivery routes for multiple delivery persons.
-    
-    Request JSON format:
-    {
-        "delivery_persons": [
-            {
-                "id": string,
-                "name": string,
-                "location": {
-                    "lat": float,
-                    "lng": float
-                }
-            },
-            ...
-        ],
-        "current_time": "ISO-format datetime string" (optional, defaults to now),
-        "deliveries": [
-            {
-                "id": string,
-                "customer": string,
-                "location": {
-                    "lat": float,
-                    "lng": float,
-                    "address": string (optional)
-                },
-                "time_window": {
-                    "start": "ISO-format datetime string",
-                    "end": "ISO-format datetime string"
-                },
-                "package_details": {
-                    "weight": float (optional),
-                    "description": string (optional)
-                }
-            },
-            ...
-        ]
-    }
-    
-    Response:
-    {
-        "status": "success" or "error",
-        "data": {route plan object} or null,
-        "error": error message if status is "error"
-    }
+    Now includes CSV storage functionality.
     """
     try:
         if request.method == 'OPTIONS':
             # CORS preflight
             return '', 200
-            
+        
+        # Generate unique request ID
+        request_id = generate_request_id()
+        
         # Parse request JSON
         data = request.get_json()
         
@@ -75,7 +156,8 @@ def optimize_multi_route():
             return jsonify({
                 "status": "error",
                 "error": "No data provided",
-                "data": None
+                "data": None,
+                "request_id": request_id
             }), 400
         
         # Validate required fields
@@ -83,14 +165,16 @@ def optimize_multi_route():
             return jsonify({
                 "status": "error",
                 "error": "Missing or empty delivery_persons list",
-                "data": None
+                "data": None,
+                "request_id": request_id
             }), 400
             
         if 'deliveries' not in data or not data['deliveries']:
             return jsonify({
                 "status": "error",
                 "error": "Missing or empty deliveries list",
-                "data": None
+                "data": None,
+                "request_id": request_id
             }), 400
         
         # Process current time (use provided time or current time)
@@ -102,7 +186,8 @@ def optimize_multi_route():
                 return jsonify({
                     "status": "error",
                     "error": "Invalid current_time format. Use ISO format (YYYY-MM-DDTHH:MM:SS)",
-                    "data": None
+                    "data": None,
+                    "request_id": request_id
                 }), 400
         
         # Validate delivery persons
@@ -111,14 +196,16 @@ def optimize_multi_route():
                 return jsonify({
                     "status": "error",
                     "error": f"Delivery person missing required fields (id, location)",
-                    "data": None
+                    "data": None,
+                    "request_id": request_id
                 }), 400
                 
             if not all(key in dp['location'] for key in ['lat', 'lng']):
                 return jsonify({
                     "status": "error",
                     "error": f"Delivery person {dp.get('id', 'unknown')} location missing lat/lng",
-                    "data": None
+                    "data": None,
+                    "request_id": request_id
                 }), 400
         
         # Process deliveries and convert time windows to datetime objects
@@ -129,7 +216,8 @@ def optimize_multi_route():
                 return jsonify({
                     "status": "error",
                     "error": f"Delivery {delivery.get('id', 'unknown')} missing required fields",
-                    "data": None
+                    "data": None,
+                    "request_id": request_id
                 }), 400
                 
             # Check location fields
@@ -137,7 +225,8 @@ def optimize_multi_route():
                 return jsonify({
                     "status": "error",
                     "error": f"Delivery {delivery.get('id', 'unknown')} location missing lat/lng",
-                    "data": None
+                    "data": None,
+                    "request_id": request_id
                 }), 400
             
             # Process time windows
@@ -150,7 +239,8 @@ def optimize_multi_route():
                 return jsonify({
                     "status": "error",
                     "error": f"Delivery {delivery.get('id', 'unknown')} has invalid time_window format",
-                    "data": None
+                    "data": None,
+                    "request_id": request_id
                 }), 400
             
             # Create processed delivery object
@@ -169,29 +259,147 @@ def optimize_multi_route():
             current_time=current_time,
             deliveries=processed_deliveries
         )
-        
-        # Process the route plan to include waypoints in an easy-to-use format
+
+        # Always return a result (either VRPTW success or VRP fallback)
         if route_plan['status'] == 'success':
             enriched_route_plan = enrich_route_plan(route_plan)
+            
+            # Store data to CSV files
+            store_request_data(request_id, data, enriched_route_plan)
+            
             return jsonify({
                 "status": "success",
                 "data": enriched_route_plan,
-                "error": None
+                "error": None,
+                "request_id": request_id,
+                "fallback_used": route_plan.get('fallback_used', False)
             }), 200
+        else:
+            # This should rarely happen now with fallback
+            return jsonify({
+                "status": "error",
+                "error": route_plan.get('message', 'Both VRPTW and VRP failed'),
+                "data": None,
+                "request_id": request_id
+            }), 500
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "error": str(e),
+            "data": None,
+            "request_id": request_id if 'request_id' in locals() else "unknown"
+        }), 500
+
+@app.route('/api/csv-data', methods=['GET'])
+@cross_origin(origin='*')
+def get_csv_data():
+    """
+    API endpoint to retrieve stored CSV data.
+    Query parameters:
+    - type: 'requests', 'routes', or 'deliveries'
+    - limit: number of records to return (optional)
+    - request_id: filter by specific request ID (optional)
+    """
+    try:
+        data_type = request.args.get('type', 'requests')
+        limit = request.args.get('limit', type=int)
+        request_id_filter = request.args.get('request_id')
+        
+        # Determine which CSV file to read
+        if data_type == 'requests':
+            csv_file = CSV_REQUESTS_FILE
+        elif data_type == 'routes':
+            csv_file = CSV_ROUTES_FILE
+        elif data_type == 'deliveries':
+            csv_file = CSV_DELIVERIES_FILE
         else:
             return jsonify({
                 "status": "error",
-                "error": route_plan.get('message', 'Failed to optimize routes'),
+                "error": "Invalid type. Use 'requests', 'routes', or 'deliveries'",
                 "data": None
-            }), 500
-            
+            }), 400
+        
+        if not os.path.exists(csv_file):
+            return jsonify({
+                "status": "success",
+                "data": [],
+                "message": f"No {data_type} data found"
+            }), 200
+        
+        # Read CSV data
+        data = []
+        with open(csv_file, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                # Filter by request_id if specified
+                if request_id_filter and row.get('request_id') != request_id_filter:
+                    continue
+                data.append(row)
+        
+        # Apply limit if specified
+        if limit and limit > 0:
+            data = data[-limit:]  # Get last N records
+        
+        return jsonify({
+            "status": "success",
+            "data": data,
+            "count": len(data),
+            "type": data_type
+        }), 200
+        
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         return jsonify({
             "status": "error",
             "error": str(e),
             "data": None
+        }), 500
+
+@app.route('/api/export-csv', methods=['GET'])
+@cross_origin(origin='*')
+def export_csv():
+    """
+    API endpoint to export CSV files.
+    Query parameters:
+    - type: 'requests', 'routes', or 'deliveries'
+    """
+    try:
+        data_type = request.args.get('type', 'requests')
+        
+        # Determine which CSV file to send
+        if data_type == 'requests':
+            csv_file = CSV_REQUESTS_FILE
+            filename = 'delivery_requests.csv'
+        elif data_type == 'routes':
+            csv_file = CSV_ROUTES_FILE
+            filename = 'delivery_routes.csv'
+        elif data_type == 'deliveries':
+            csv_file = CSV_DELIVERIES_FILE
+            filename = 'delivery_details.csv'
+        else:
+            return jsonify({
+                "status": "error",
+                "error": "Invalid type. Use 'requests', 'routes', or 'deliveries'"
+            }), 400
+        
+        if not os.path.exists(csv_file):
+            return jsonify({
+                "status": "error",
+                "error": f"No {data_type} data file found"
+            }), 404
+        
+        # Send file
+        from flask import send_file
+        return send_file(
+            csv_file,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='text/csv'
+        )
+        
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "error": str(e)
         }), 500
 
 def enrich_route_plan(route_plan: Dict[str, Any]) -> Dict[str, Any]:
@@ -501,6 +709,9 @@ def generate_html_visualization(route_plan, file_path):
             </body>
             </html>
             """)
+
+# Initialize CSV files when the app starts
+initialize_csv_files()
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))

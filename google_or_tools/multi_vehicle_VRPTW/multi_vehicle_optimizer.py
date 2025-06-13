@@ -36,88 +36,64 @@ class MultiVehicleDeliveryOptimizer:
         self.nearest_node_cache = {}
         
     def optimize_routes(self, 
-                      delivery_persons: List[Dict[str, Any]],
-                      current_time: datetime.datetime,
-                      deliveries: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Find optimal delivery routes for multiple delivery persons.
+                  delivery_persons: List[Dict[str, Any]],
+                  current_time: datetime.datetime,
+                  deliveries: List[Dict[str, Any]]) -> Dict[str, Any]:
+    
+    #Find optimal delivery routes for multiple delivery persons.
+    #First tries VRPTW, then falls back to VRP if needed.
+    
+        # First attempt: VRPTW with time windows
+        try:
+            result = self._solve_with_time_windows(delivery_persons, current_time, deliveries)
+            if result['status'] == 'success':
+                return result
+        except Exception as e:
+            print(f"VRPTW failed: {e}")
         
-        Args:
-            delivery_persons: List of delivery persons with their locations and IDs
-            current_time: Current datetime 
-            deliveries: List of deliveries with location and time window info
-            
-        Returns:
-            Optimized route plan for each delivery person
-        """
-        # Prepare data for OR-Tools
+        # Fallback: VRP without time windows
+        print("Falling back to VRP without time windows...")
+        return self._solve_without_time_windows(delivery_persons, current_time, deliveries)
+
+
+    def _solve_with_time_windows(self, delivery_persons, current_time, deliveries):
+        """Solve using VRPTW (with time windows)"""
         data = self._create_data_model(delivery_persons, current_time, deliveries)
         
-        # Create Routing Model
         manager = pywrapcp.RoutingIndexManager(
-            len(data['time_matrix']),
-            data['num_vehicles'],
-            data['starts'],
-            data['ends']
+            len(data['time_matrix']), data['num_vehicles'], 
+            data['starts'], data['ends']
         )
         routing = pywrapcp.RoutingModel(manager)
         
-        # Define transit callback (travel time between locations)
+        # Transit callback
         def time_callback(from_index, to_index):
             from_node = manager.IndexToNode(from_index)
             to_node = manager.IndexToNode(to_index)
             return data['time_matrix'][from_node][to_node]
         
         transit_callback_index = routing.RegisterTransitCallback(time_callback)
-        
-        # Set arc costs to travel times
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
         
-        # Add time window constraints
+        # Add time dimension
         self._add_time_dimension(routing, manager, transit_callback_index, data)
         
-        # Set solution parameters
+        # Solve
         search_parameters = pywrapcp.DefaultRoutingSearchParameters()
         search_parameters.first_solution_strategy = (
             routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
         )
-        # Add local search metaheuristic for better solutions
-        search_parameters.local_search_metaheuristic = (
-            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
-        )
-        # Add timeout for real-time applications
-        #!IMP was 10
-        search_parameters.time_limit.seconds = 60
-        #! was not there earlier
-        search_parameters.log_search = True  # Enable logging for debugging
+        search_parameters.time_limit.seconds = 30  # Reduced timeout
         
-        # Solve the problem
         solution = routing.SolveWithParameters(search_parameters)
-        #!was not there earlier
-        if not solution:
-            # Try with relaxed constraints
-            print("Initial solve failed, trying with relaxed constraints...")
-            
-            # Remove time window constraints temporarily
-            routing.solver().Add(routing.solver().AllowUnjustifiedAssignment())
-            solution = routing.SolveWithParameters(search_parameters)
+        
         if solution:
-            return self._process_solution(data, manager, routing, solution, delivery_persons, deliveries, current_time)
+            return self._process_solution(data, manager, routing, solution, 
+                                        delivery_persons, deliveries, current_time)
         else:
-            # return {"status": "failed", "message": "No solution found"}
-            # Return debug information
-            return {
-                "status": "failed", 
-                "message": "No solution found",
-                "debug_info": {
-                    "num_locations": len(data['time_matrix']),
-                    "num_vehicles": data['num_vehicles'],
-                    "time_windows": data['time_windows'],
-                    "max_travel_time": max(max(row) for row in data['time_matrix']),
-                    "current_time": current_time.isoformat(),
-                    "first_delivery_time": deliveries[0]['time_window']['start'].isoformat() if deliveries else None
-                }
-            }
+            return {"status": "failed", "message": "VRPTW failed"}
+
+
 
     def _create_data_model(self, 
                           delivery_persons: List[Dict[str, Any]], 
@@ -578,3 +554,105 @@ class MultiVehicleDeliveryOptimizer:
         # Save to file
         route_map.save(file_name)
         print(f"Multi-route map saved to {file_name}")
+
+
+
+        def _solve_without_time_windows(self, delivery_persons, current_time, deliveries):
+            '''Solve using basic VRP (ignoring time windows)'''
+            data = self._create_data_model_no_time_windows(delivery_persons, current_time, deliveries)
+            
+            manager = pywrapcp.RoutingIndexManager(
+                len(data['time_matrix']), data['num_vehicles'],
+                data['starts'], data['ends']
+            )
+            routing = pywrapcp.RoutingModel(manager)
+            
+            # Transit callback
+            def distance_callback(from_index, to_index):
+                from_node = manager.IndexToNode(from_index)
+                to_node = manager.IndexToNode(to_index)
+                return data['time_matrix'][from_node][to_node]
+            
+            transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+            
+            # Solve without time constraints
+            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+            search_parameters.first_solution_strategy = (
+                routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+            )
+            search_parameters.time_limit.seconds = 60
+            
+            solution = routing.SolveWithParameters(search_parameters)
+            
+            if solution:
+                return self._process_solution_no_time_windows(data, manager, routing, solution,
+                                                            delivery_persons, deliveries, current_time)
+            else:
+                return {"status": "failed", "message": "Both VRPTW and VRP failed"}
+
+        def _create_data_model_no_time_windows(self, delivery_persons, current_time, deliveries):
+            """Create data model without time windows"""
+            data = self._create_data_model(delivery_persons, current_time, deliveries)
+            # Remove time windows - not needed for basic VRP
+            del data['time_windows']
+            return data
+
+        def _process_solution_no_time_windows(self, data, manager, routing, solution, 
+                                            delivery_persons, deliveries, current_time):
+            """Process VRP solution without time considerations"""
+            routes = []
+            
+            for vehicle_id in range(data["num_vehicles"]):
+                if routing.IsVehicleUsed(solution, vehicle_id):
+                    vehicle_route = {
+                        'delivery_person': delivery_persons[vehicle_id],
+                        'stops': [],
+                        'total_time_minutes': 0,
+                        'total_distance_meters': 0,
+                        'note': 'Generated using VRP (time windows ignored)'
+                    }
+                    
+                    index = routing.Start(vehicle_id)
+                    route_time = 0
+                    previous_node_index = manager.IndexToNode(index)
+                    
+                    while not routing.IsEnd(index):
+                        node_index = manager.IndexToNode(index)
+                        
+                        if node_index >= len(delivery_persons):
+                            delivery_index = node_index - len(delivery_persons)
+                            delivery = deliveries[delivery_index].copy()
+                            
+                            # Estimate arrival time based on route order
+                            travel_time = data['time_matrix'][previous_node_index][node_index]
+                            route_time += travel_time
+                            arrival_time = current_time + datetime.timedelta(minutes=route_time)
+                            
+                            # Get path details
+                            detailed_path = self._get_detailed_path(
+                                data['osm_nodes'][previous_node_index],
+                                data['osm_nodes'][node_index]
+                            )
+                            
+                            vehicle_route['stops'].append({
+                                'delivery': delivery,
+                                'arrival_time': arrival_time.isoformat(),
+                                'wait_time_minutes': 0,
+                                'detailed_path': detailed_path
+                            })
+                            
+                            previous_node_index = node_index
+                        
+                        index = solution.Value(routing.NextVar(index))
+                    
+                    vehicle_route['total_time_minutes'] = route_time
+                    routes.append(vehicle_route)
+            
+            return {
+                'status': 'success',
+                'routes': routes,
+                'total_vehicles_used': len(routes),
+                'fallback_used': True,
+                'message': 'Routes generated using VRP fallback (time windows ignored)'
+            }

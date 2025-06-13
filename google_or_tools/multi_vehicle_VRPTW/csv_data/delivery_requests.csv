@@ -1,0 +1,4 @@
+request_id,timestamp,current_time,num_delivery_persons,num_deliveries,total_vehicles_used,fallback_used,status
+REQ_20250611_105925_586603,2025-06-11T10:59:29.032727,2025-05-26T08:00:00,5,4,2,False,success
+REQ_20250611_112930_718878,2025-06-11T11:29:32.674836,2025-05-26T08:30:00,5,4,2,False,success
+REQ_20250611_113739_696363,2025-06-11T11:37:40.553293,2025-05-26T08:30:00,5,4,2,False,success
