@@ -18,11 +18,11 @@ export async function getDeliveries(
     const allDeliveries = await getDeliveriesByDateService(date);
     if (allDeliveries?.length=== 0) {
       //if the length is 0 then no deliveries found
-       res.status(404).json({
+       res.status(200).json({
         success: false,
         message: "No deliveries found for this date",
         data: null,
-      });
+      });//shd be a 200 as proper but no deliveries found so else if 404 then goes as error
       return;
     }
     res.status(200).json({

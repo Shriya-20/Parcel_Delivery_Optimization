@@ -89,14 +89,10 @@ export function debugDate(date: Date, label: string = 'Date'): void {
   });
 }
 
-export const timeslots = [
-  "9:00 - 10:00",
-  "10:00 - 11:00",
-  "11:00 - 12:00",
-  "12:00 - 13:00",
-  "13:00 - 14:00",
-  "14:00 - 15:00",
-  "15:00 - 16:00",
-  "16:00 - 17:00",
-  "17:00 - 18:00",
-];
+export function formatDateForFetching(date: Date): string {
+  //format date to YYYY-MM-DD for API requests
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}

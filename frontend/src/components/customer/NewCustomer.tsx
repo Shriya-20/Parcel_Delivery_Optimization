@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Calendar, Edit, Mail } from "lucide-react";
 // import { AssignDriverDialog } from "./AssignDriverDialog";
-import { getTomorrowScheduledDeliveries } from "@/lib/fetchDataService";
+import { getTomorrowScheduledDeliveries } from "@/lib/clientSideDataServices";
 import {
   //   DriverWithRatings,
   DriverWithRelations,
@@ -25,6 +25,7 @@ import { CustomerModal } from "@/components/assign/CustomerModal";
 // import { DriverModal } from "@/components/assign/DriverModal";
 import { EditTimeSlotDialog } from "./EditTimeSlotDialog";
 import { sendEmailsToCustomers } from "@/lib/clientSideDataServices";
+import { formatDateForFetching } from "@/lib/utils";
 
 interface DeliveryWithAssignment extends getTommorrowScheduledDeliveries {
   assignedDriver?: DriverWithRelations | null;
@@ -100,7 +101,7 @@ export function Customer() {
       toast.error("Failed to send emails to customers.");
     }
     
-  }, []);
+  }, [deliveries]);
 
   const handleOpenTimeSlotDialog = useCallback(
     (delivery: DeliveryWithAssignment) => {
@@ -140,7 +141,14 @@ export function Customer() {
       setIsLoading(true);
       setError(null);
 
-      const deliveries = await getTomorrowScheduledDeliveries("two"); //!IMP-> add like if assign or customer so that we can send date as one day next to today or 2 days next accordingly for customer or assign
+      //dynamically get fro two days later as for customer it is two days later and for assign it is one day later
+      const today = new Date();
+      const twoDaysLater = new Date(today); // Create another new Date object based on today
+      twoDaysLater.setDate(today.getDate() + 2); // Add 2 days to the current date
+      const twoDaysLaterFormatted = formatDateForFetching(twoDaysLater);
+
+
+      const deliveries = await getTomorrowScheduledDeliveries(twoDaysLaterFormatted); //!IMP-> add like if assign or customer so that we can send date as one day next to today or 2 days next accordingly for customer or assign
 
       if (deliveries && deliveries.length > 0) {
         setDeliveries(deliveries);
@@ -179,7 +187,7 @@ export function Customer() {
         className="p-0 h-auto font-normal text-foreground hover:text-primary"
         onClick={() => handleOpenCustomerModal(customer)}
       >
-        <span className="underline">{customerName}</span>
+        <span className="underline hover:cursor-pointer">{customerName}</span>
       </Button>
     );
   };
@@ -284,7 +292,7 @@ export function Customer() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell >
                       {renderCustomerInfo(delivery.customer)}
                     </TableCell>
                     <TableCell>

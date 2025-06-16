@@ -1,15 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Search, Plus, Filter } from "lucide-react";
+import { Search } from "lucide-react";
+// import {Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ import { getDriversData } from "@/lib/fetchDataService";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import AddDriverDialog from "./AddDriverDialog";
 
 export function Carriers() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,7 +75,7 @@ export function Carriers() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
@@ -84,11 +86,25 @@ export function Carriers() {
               <DropdownMenuItem>Filter by vehicle type</DropdownMenuItem>
               <DropdownMenuItem>Filter by rating</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Driver
-          </Button>
+          </DropdownMenu> */}
+          {/* <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" size="icon" className="w-fit px-2 hover:bg-primary/90 cursor-pointer">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Driver
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog> */}
+          <AddDriverDialog/>
         </div>
       </div>
 
