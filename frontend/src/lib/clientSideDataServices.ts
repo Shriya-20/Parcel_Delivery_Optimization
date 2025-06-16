@@ -129,14 +129,16 @@ export async function getDriversData() {
   throw new Error(data.message);
 }
 
-export async function getTomorrowScheduledDeliveries() {
+export async function getTomorrowScheduledDeliveries(Date: string) {
   // const tomorrow = new Date();
   // tomorrow.setDate(tomorrow.getDate() + 1);
   // const formattedDate = tomorrow.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
   //for now we will use today's date
   // const formattedDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-  const formattedDate = "2025-05-26";
-  const res = await axios.get(`${backendURL}/delivery?date=${formattedDate}`);
+  // const formattedDate = "2025-05-26";
+
+  //!IMP-> we expect to get proper date i.e for assign one day next ka and for customer two days next ka in YYYY-MM-DD format
+  const res = await axios.get(`${backendURL}/delivery?date=${Date}`);
   const data: getTomorrowScheduledDeliveriesResponse = res.data;
   if (data.success) {
     return data.data;
@@ -865,8 +867,9 @@ export async function sendEmailsToCustomers(deliveries: getTommorrowScheduledDel
       { deliveries }
     );
     const resData = res.data;
+    console.log("Email response data:", resData);
     if (resData.success) {
-      return resData.data;
+      return resData;
     } else {
       throw new Error(resData.message);
     }

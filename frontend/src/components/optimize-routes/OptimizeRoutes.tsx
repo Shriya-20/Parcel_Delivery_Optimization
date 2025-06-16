@@ -928,7 +928,7 @@ export function OptimizeRoutes() {
   const [selectedMarker, setSelectedMarker] = useState<MarkerInfo | null>(null);
   const [polylines, setPolylines] = useState<string[]>([]);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
-  const [isOptimizing, setIsOptimizing] = useState(false);
+  // const [isOptimizing, setIsOptimizing] = useState(false);
 
   // Memoized function to get driver name
   const getDriverName = useCallback(
@@ -950,40 +950,41 @@ export function OptimizeRoutes() {
     setOptimized(false);
   };
 
-  const handleOptimizeRoute = async () => {
-    if (!selectedDriver || routes.length === 0) return;
+  // for now no need of reoptimizing and all so commented
+  // const handleOptimizeRoute = async () => {
+  //   if (!selectedDriver || routes.length === 0) return;
 
-    setIsOptimizing(true);
-    try {
-      // Simulate optimization process - in real app, this would call your optimization API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   setIsOptimizing(true);
+  //   try {
+  //     // Simulate optimization process - in real app, this would call your optimization API
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Simple shuffle simulation - replace with actual optimization logic
-      const optimizedRoutes = [...routes]
-        .sort(() => Math.random() - 0.5)
-        .map((route, index) => ({ ...route, sequence: index + 1 }));
+  //     // Simple shuffle simulation - replace with actual optimization logic
+  //     const optimizedRoutes = [...routes]
+  //       .sort(() => Math.random() - 0.5)
+  //       .map((route, index) => ({ ...route, sequence: index + 1 }));
 
-      setRoutes(optimizedRoutes);
-      setOptimized(true);
+  //     setRoutes(optimizedRoutes);
+  //     setOptimized(true);
 
-      // Fetch new polylines for optimized route
-      const newPolylines = await getPolylineFromGoogleMaps(
-        optimizedRoutes,
-        selectedDriver,
-        drivers
-      );
-      if (newPolylines && newPolylines.length > 0) {
-        setPolylines(newPolylines);
-      }
+  //     // Fetch new polylines for optimized route
+  //     const newPolylines = await getPolylineFromGoogleMaps(
+  //       optimizedRoutes,
+  //       selectedDriver,
+  //       drivers
+  //     );
+  //     if (newPolylines && newPolylines.length > 0) {
+  //       setPolylines(newPolylines);
+  //     }
 
-      toast.success(`Route re-optimized for ${getDriverName(selectedDriver)}`);
-    } catch (error) {
-      toast.error("Failed to optimize route");
-      console.error("Optimization error:", error);
-    } finally {
-      setIsOptimizing(false);
-    }
-  };
+  //     toast.success(`Route re-optimized for ${getDriverName(selectedDriver)}`);
+  //   } catch (error) {
+  //     toast.error("Failed to optimize route");
+  //     console.error("Optimization error:", error);
+  //   } finally {
+  //     setIsOptimizing(false);
+  //   }
+  // };
 
   const handleGetRoute = async () => {
     if (!selectedDriver || !date) {
@@ -1145,8 +1146,9 @@ export function OptimizeRoutes() {
                   )}
                   {isLoadingRoute ? "Loading..." : "Get Route"}
                 </Button>
-
-                <Button
+                
+                {/* no need of optimizing and all */}
+                {/* <Button
                   className="w-full gap-2"
                   onClick={handleOptimizeRoute}
                   disabled={
@@ -1160,7 +1162,7 @@ export function OptimizeRoutes() {
                     <Route className="h-4 w-4" />
                   )}
                   {isOptimizing ? "Optimizing..." : "Re-optimize Route"}
-                </Button>
+                </Button> */}
 
                 {selectedDriver && routes.length > 0 && (
                   <div className="border rounded-md p-4 bg-muted/30">

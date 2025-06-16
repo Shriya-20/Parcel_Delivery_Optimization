@@ -7,7 +7,6 @@ import {
   Map,
   Truck,
   ClipboardList,
-  Settings,
   Calendar,
   Users,
   Route,
@@ -111,12 +110,12 @@ export function Sidebar() {
               label="Order History"
               currentPath={pathname}
             />
-            <SidebarLink
+            {/* <SidebarLink
               to="/settings"
               icon={Settings}
               label="Settings"
               currentPath={pathname}
-            />
+            /> */}
           </nav>
         </div>
         <div className="mt-auto px-3">

@@ -406,6 +406,7 @@ import {
 import { getAllDrivers, getTommorrowScheduledDeliveries } from "@/lib/types";
 import { CustomerModal } from "./CustomerModal";
 import { DriverModal } from "./DriverModal";
+import { formatDateForFetching } from "@/lib/utils";
 
 interface DeliveryWithAssignment extends getTommorrowScheduledDeliveries {
   assignedDriver?: getAllDrivers | null;
@@ -508,8 +509,15 @@ export function Assign() {
     setIsAssigning(true);
     try {
       // const tomorrowDate = getTomorrowDate();
-      const date = "2025-05-26";//for now hardcoded date
-      const response = await assignBulkRoutes(deliveries, date);
+      // const date = "2025-05-26";//for now hardcoded date
+
+      //to get the tommorrow date dynamically
+      const today = new Date();
+      const tomorrow = new Date(today); // Create a new Date object based on today
+      tomorrow.setDate(today.getDate() + 1); // Add 1 day to the current date
+      const tomorrowFormatted = formatDateForFetching(tomorrow);
+
+      const response = await assignBulkRoutes(deliveries, tomorrowFormatted);
 
       if (response.status < 200 || response.status >= 300) {
         throw new Error("Failed to assign deliveries");
@@ -534,13 +542,13 @@ export function Assign() {
     }
   }, [deliveries]);
 
-  const handleOpenAssignDialog = useCallback(
-    (delivery: DeliveryWithAssignment) => {
-      setSelectedDelivery(delivery);
-      setShowAssignDialog(true);
-    },
-    []
-  );
+  // const handleOpenAssignDialog = useCallback(
+  //   (delivery: DeliveryWithAssignment) => {
+  //     setSelectedDelivery(delivery);
+  //     setShowAssignDialog(true);
+  //   },
+  //   []
+  // );
 
   const handleAssignDriverToDelivery = useCallback(
     (driverId: string, driverName: string) => {
@@ -592,8 +600,13 @@ export function Assign() {
     try {
       setIsLoading(true);
       setError(null);
-
-      const deliveries = await getTomorrowScheduledDeliveries();
+      //to get the tommorrow date dynamically
+      const today = new Date();
+      const tomorrow = new Date(today); // Create a new Date object based on today
+      tomorrow.setDate(today.getDate() + 1); // Add 1 day to the current date
+      const tomorrowFormatted = formatDateForFetching(tomorrow);
+      //so fetching deliveries for tomorrow
+      const deliveries = await getTomorrowScheduledDeliveries(tomorrowFormatted);
       const driversData = await getDriversData();
 
       if (!driversData || driversData.length === 0) {
@@ -601,7 +614,7 @@ export function Assign() {
       }
 
       setDrivers(driversData);
-      
+
       if (deliveries && deliveries.length > 0) {
         setDeliveries(deliveries);
         console.log("deliveries", deliveries);
@@ -650,7 +663,7 @@ export function Assign() {
           }
           disabled={!assignment.driver}
         >
-          <span className="underline">{driverName}</span>
+          <span className="underline hover:cursor-pointer">{driverName}</span>
         </Button>
       </div>
     );
@@ -668,7 +681,7 @@ export function Assign() {
         className="p-0 h-auto font-normal text-foreground hover:text-primary"
         onClick={() => handleOpenCustomerModal(customer)}
       >
-        <span className="underline">{customerName}</span>
+        <span className="underline hover:cursor-pointer">{customerName}</span>
       </Button>
     );
   };
@@ -768,7 +781,7 @@ export function Assign() {
                 <TableHead>Preferred Time</TableHead>
                 <TableHead>Customer Name</TableHead>
                 <TableHead>Assigned Driver</TableHead>
-                <TableHead className="w-[100px]">Action</TableHead>
+                {/* <TableHead className="w-[100px]">Action</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -817,7 +830,7 @@ export function Assign() {
                       {renderCustomerInfo(delivery.customer)}
                     </TableCell>
                     <TableCell>{renderDriverInfo(delivery)}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Button
                         variant="outline"
                         size="sm"
@@ -825,7 +838,7 @@ export function Assign() {
                       >
                         {delivery.Assignment.length > 0 ? "Reassign" : "Assign"}
                       </Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               )}

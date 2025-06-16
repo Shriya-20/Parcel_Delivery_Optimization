@@ -73,6 +73,7 @@ export async function getDriverById(req: Request, res: Response) {
 
 export async function createDriver(req: Request, res: Response) {
   try {
+    console.log("Create Driver Request Body:", req.body);
     const validationResult = driverSchema.safeParse(req.body);
     if (validationResult.success) {
       const driverData = validationResult.data;
@@ -94,6 +95,7 @@ export async function createDriver(req: Request, res: Response) {
       return;
     }
     if (!validationResult.success) {
+      console.error("Validation Error:", validationResult.error.errors);
       res.status(400).json({
         success: false,
         message: "Validation Error",
