@@ -261,6 +261,8 @@ def optimize_multi_route():
         )
 
         # Always return a result (either VRPTW success or VRP fallback)
+        
+        # In the optimize_multi_route endpoint:
         if route_plan['status'] == 'success':
             enriched_route_plan = enrich_route_plan(route_plan)
             
