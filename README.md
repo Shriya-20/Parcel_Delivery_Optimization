@@ -6,20 +6,66 @@ This project optimizes parcel delivery routes using Reinforcement Learning (RL) 
 
 ## Features
 
--   **Realistic Delivery Environment:** Utilizes OpenStreetMap (OSM) road network and delivery data to simulate real-world conditions.
--   **Optimized Route Planning:** Employs advanced algorithms to determine the most efficient delivery routes and timings.
--   **Admin Dashboard:** Allows administrators to:
-    -   Optimize daily delivery routes.
-    -   Assign routes to available drivers.
-    -   Track deliveries in real-time.
-    -   View order history.
-    -   Manage customer and carrier information.
--   **Driver Mobile App:** Enables delivery personnel to:
-    -   View assigned delivery details.
-    -   Mark tasks as complete or incomplete.
-    -   Navigate routes.
-    -   Contact customers.
--   **Multiple Optimization Models:** Offers different models for route optimization to cater to various needs and complexities.
+### Admin Dashboard (Frontend)
+*   Assign deliveries to drivers.
+*   Manage carriers (add, view, edit).
+*   Manage customers (add, view, edit).
+*   View overall dashboard with key metrics.
+*   User authentication (login, registration).
+*   Optimize delivery routes (likely triggers backend optimization).
+*   Manage orders (create, view, update status).
+*   View planned routes on a map.
+*   Configure application settings.
+*   Manage delivery time slots for customers.
+*   Live track delivery vehicles on a map.
+
+### Driver Mobile App (driver_frontend)
+*   Driver account management (profile, settings).
+*   View and manage active deliveries.
+*   Detailed view of individual deliveries (customer info, address, time window).
+*   Mark deliveries as completed or failed.
+*   View assigned route on a map.
+*   Navigate to delivery locations (likely integrates with a map app).
+*   Dashboard/Home screen with summary information.
+
+### Backend API
+*   Handles user authentication and authorization.
+*   Manages customer data.
+*   Provides data for the admin dashboard.
+*   Manages delivery lifecycle (creation, assignment, status updates).
+*   Manages driver data and assignments.
+*   Sends email notifications (e.g., order confirmation, delivery updates).
+*   Manages and serves optimized routes.
+*   Live location tracking updates from drivers.
+
+### Reinforcement Learning Route Optimization (RL_gym_environment)
+*   Custom OpenAI Gym environment (`UdupiDeliveryEnv`) for simulating deliveries in Udupi.
+*   Utilizes real-world road network data (from `data/udupi.graphml`) and delivery details (`data/deliveries.csv`).
+*   Agent learns to optimize routes based on:
+    *   Current location and time.
+    *   Time left in the delivery day (8 AM to 8 PM).
+    *   Urgency of nearest delivery deadline.
+    *   Number of remaining deliveries.
+    *   Delivery time windows.
+*   Reward function encourages:
+    *   On-time deliveries.
+    *   Minimizing travel time and distance.
+    *   Prioritizing urgent deliveries.
+    *   Completing all deliveries.
+    *   Finishing the day early.
+*   Tracks metrics: on-time deliveries, off-time deliveries, total distance.
+
+### Google OR-Tools Route Optimization (google_or_tools)
+*   Solves Vehicle Routing Problems (VRP).
+*   **Single Vehicle Optimization API:**
+    *   Provides an API endpoint for optimizing routes for a single vehicle.
+    *   Visualizes initial and optimized routes on HTML maps.
+*   **Multi-Vehicle Optimization with Time Windows (VRPTW):**
+    *   Optimizes routes for multiple vehicles considering delivery time windows.
+    *   Provides an API endpoint for multi-vehicle optimization.
+    *   Uses CSV files for delivery requests and vehicle details.
+    *   Generates HTML reports with optimized multi-vehicle routes.
+*   **ML-Enhanced Travel Time:** The main README mentions an "ML Layer to modify the matrix based on several features like day of week, month, is_weekend, is_rush_hour, is_night, temperature, humidity, weather_condition, wind_speed, visibility, package_weight, etc." This is likely used in conjunction with OR-Tools to provide more accurate travel time estimations.
 
 ## Technologies Used
 
