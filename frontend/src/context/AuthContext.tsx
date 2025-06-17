@@ -67,6 +67,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const adminString = localStorage.getItem("admin");
         const tokenString = localStorage.getItem("token");
+        // if(!adminString ||  !tokenString) {
+        //   console.log("No admin or token found in localStorage");
+        //   setIsAuthenticated(false);
+        //   setisMainLoading(false);
+        // }
         if (adminString) {
           const adminData = JSON.parse(adminString);
           setAdmin(adminData);

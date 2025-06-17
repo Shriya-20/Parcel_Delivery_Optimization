@@ -158,6 +158,7 @@ export interface DriverLocation {
   speed?: number | null;
   heading?: number | null;
   battery_level?: number | null;
+  updatedAt?: Date;
 }
 
 export interface Feedback {
